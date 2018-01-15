@@ -26,6 +26,8 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Pango
 
+from datetime import datetime, timedelta
+
 from cpu import CPU
 from registers import Registers
 from main_menu import Sim_main_menu
@@ -270,6 +272,47 @@ class Memory_editor(Gtk.Frame):
             self.mem.store_word_at(self.addr + addr, new_val)
 
 
+class ExecutionTime(Gtk.Frame):
+    """ Muestra el tiempo de ejecucion en pasos del procesador
+    """
+    def __init__(self, toplevel):
+        super(ExecutionTime, self).__init__()
+        # self.connect("button-press-event", self.on_button_pressed)
+
+        # Quito el borde del Gtk.Frame
+        self.set_shadow_type(Gtk.ShadowType.NONE)
+
+        self.toplevel = toplevel
+
+        self.time_start = datetime.now()                                # Tiempo de inicio
+        self.delta_time = datetime.now() - self.time_start              # Delta de tiempo entre el tiempo actual y el inicial
+
+        self.label = Gtk.Label(self.format_value(self.delta_time.seconds))
+        self.label.modify_font(Pango.FontDescription("Mono 10"));
+        self.add(self.label)
+
+    def format_value(self, delta_time_seconds):
+        return 'Tiempo de ejecución: {}'.format(timedelta(seconds=delta_time_seconds))
+
+    def get_time_start(self):
+        return self.time_start
+
+    def set_time_start(self):
+        self.time_start = datetime.now()
+
+    def get_delta_time(self):
+        return self.delta_time
+
+    def set_delta_time(self):
+        self.delta_time = datetime.now() - self.get_time_start()
+
+    def update_time(self, delta_time_seconds):
+        self.label.set_text(self.format_value(delta_time_seconds))
+
+    def reset_time(self):
+        print("0")
+        self.update_time(0)
+
 
 class Tools(Gtk.Frame):
     """ Botones para hacer pasos, reset, etc """
@@ -354,12 +397,18 @@ class Source_code(Gtk.Frame):
 
         self.select_at_pc(self.toplevel.cpu.reg.get_PC())
 
+        self.toplevel.exectime.set_delta_time()
+        self.toplevel.exectime.update_time(self.toplevel.exectime.get_delta_time().seconds)
+        self.toplevel.exectime.set_time_start()
+
 
     def reset(self, btn):
         """ Ejecutar un 'reset': PC buscará vector de inicio en 0xfffe """
         self.toplevel.cpu.reset()
         self.toplevel.registers.show_registers()
         self.select_at_pc(self.toplevel.cpu.reg.get_PC())
+
+        self.toplevel.exectime.reset_time()
 
 
 
@@ -379,6 +428,8 @@ class MainWindow(Gtk.Window):
         self.memedit = Memory_editor(self, self.cpu.ROM)
         self.tools = Tools(self, "Tools")
 
+        self.exectime = ExecutionTime(self)
+
         self.create_buttons()
 
         center_hbox = Gtk.HBox(spacing = 4, margin = 6)
@@ -389,9 +440,13 @@ class MainWindow(Gtk.Window):
         bottom_nb.append_page(self.registers, Gtk.Label("Registros"))
         bottom_nb.append_page(self.memedit, Gtk.Label("Memoria"))
 
+        exectime_hbox = Gtk.HBox(spacing = 4, margin = 6)
+        exectime_hbox.pack_end(self.exectime, False, False, 0)
+
         vbox = Gtk.VBox()
         vbox.pack_start(main_menu, False, False, 0)
         vbox.pack_start(center_hbox, True, True, 0)
+        vbox.pack_start(exectime_hbox, False, True, 0)
         vbox.pack_start(bottom_nb, False, False, 0)
 
         self.add(vbox)
