@@ -1,0 +1,19 @@
+Comandos Python debugger:
+
+punto de parada:
+
+        pdb.set_trace()
+        
+        tr = pdb.set_trace
+        tr()
+        
+comandos:
+
+n       Ejecutar 1 linea (si es llamada a rutina, lo ejecuta)
+s       Hacer 1 paso (si es rutina, entra)
+l       listar
+q       salir del pdb
+p       imprime una expresion
+h o ?   Ayuda
+c       Continuar
+b <nro> Punto de parada

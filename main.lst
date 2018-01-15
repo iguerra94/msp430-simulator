@@ -1,0 +1,3270 @@
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE    1
+
+       1            ;-------------------------------------------------------------------------------
+       2            ; MSP430 Assembler Code Template for use with TI Code Composer Studio
+       3            ;
+       4            ;
+       5            ;-------------------------------------------------------------------------------
+       6                        .cdecls C,LIST,"msp430.h"       ; Include device header file
+ A     1            ; ------------------------------------------
+ A     2            ; Assembly Generated from C/C++ Source Code
+ A     3            ; ------------------------------------------
+ A     4            
+ A     5            ; ASM HEADER WARNING - pragma 'LPM_INFO' not supported
+ A     6            ; ASM HEADER WARNING - pragma 'HW_MPY32' not supported
+ A     7            ; ASM HEADER WARNING - pragma 'PORTS_INIT_INFO' not supported
+ A     8            ; ASM HEADER WARNING - pragma 'HW_MPY_INTR_SAFE' not supported
+ A     9            ; =========== MACRO DEFINITIONS ===========
+ A    10            ; ASM HEADER WARNING - function-like macro 'SFR_8BIT(address)' not supported
+ A    11            ; ASM HEADER WARNING - function-like macro 'SFR_16BIT(address)' not supported
+ A    12            ; ASM HEADER WARNING - function-like macro 'SFR_20BIT(address)' not supported
+ A    13            ; ASM HEADER WARNING - function-like macro 'SFR_32BIT(address)' not supported
+ A    14            ; ASM HEADER WARNING - function-like macro 'VECTOR_NAME(name)' not supported
+ A    15            ; ASM HEADER WARNING - function-like macro 'EMIT_PRAGMA(x)' not supported
+ A    16            ; ASM HEADER WARNING - function-like macro 'CREATE_VECTOR(name)' not supported
+ A    17            ; ASM HEADER WARNING - function-like macro 'PLACE_VECTOR(vector,section)' not supported
+ A    18            ; ASM HEADER WARNING - function-like macro 'PLACE_INTERRUPT(func)' not supported
+ A    19            ; ASM HEADER WARNING - function-like macro 'ISR_VECTOR(func,offset)' not supported
+ A    20                       .define "(0x0008)",ACCTEIE 
+ A    21                       .define "(0x0008)",ACCTEIE_L 
+ A    22                       .define "(0x0008)",ACCTEIFG 
+ A    23                       .define "(0x0008)",ACCTEIFG_L 
+ A    24                       .define "(0x0010)",ACCVIE 
+ A    25                       .define "(0x0010)",ACCVIE_L 
+ A    26                       .define "(0x0001)",ACCVIFG 
+ A    27                       .define "(0x0001)",ACCVIFG_L 
+ A    28                       .define "(0x0001)",ACLKREQEN 
+ A    29                       .define "(0x0001)",ACLKREQEN_L 
+ A    30                       .define "(0x0001)",ADC10BUSY 
+ A    31                       .define "(0x0001)",ADC10BUSY_L 
+ A    32                       .define "(0x0002)",ADC10CONSEQ0 
+ A    33                       .define "(0x0002)",ADC10CONSEQ0_L 
+ A    34                       .define "(0x0004)",ADC10CONSEQ1 
+ A    35                       .define "(0x0004)",ADC10CONSEQ1_L 
+ A    36                       .define "(0*2u)",ADC10CONSEQ_0 
+ A    37                       .define "(1*2u)",ADC10CONSEQ_1 
+ A    38                       .define "(2*2u)",ADC10CONSEQ_2 
+ A    39                       .define "(3*2u)",ADC10CONSEQ_3 
+ A    40                       .define "(0x0008)",ADC10DF 
+ A    41                       .define "(0x0008)",ADC10DF_L 
+ A    42                       .define "(0x0020)",ADC10DIV0 
+ A    43                       .define "(0x0020)",ADC10DIV0_L 
+ A    44                       .define "(0x0040)",ADC10DIV1 
+ A    45                       .define "(0x0040)",ADC10DIV1_L 
+ A    46                       .define "(0x0080)",ADC10DIV2 
+ A    47                       .define "(0x0080)",ADC10DIV2_L 
+ A    48                       .define "(0*0x20u)",ADC10DIV_0 
+ A    49                       .define "(1*0x20u)",ADC10DIV_1 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE    2
+
+ A    50                       .define "(2*0x20u)",ADC10DIV_2 
+ A    51                       .define "(3*0x20u)",ADC10DIV_3 
+ A    52                       .define "(4*0x20u)",ADC10DIV_4 
+ A    53                       .define "(5*0x20u)",ADC10DIV_5 
+ A    54                       .define "(6*0x20u)",ADC10DIV_6 
+ A    55                       .define "(7*0x20u)",ADC10DIV_7 
+ A    56                       .define "(0x0002)",ADC10ENC 
+ A    57                       .define "(0x0002)",ADC10ENC_L 
+ A    58                       .define "(0x0008)",ADC10HIIE 
+ A    59                       .define "(0x0008)",ADC10HIIE_L 
+ A    60                       .define "(0x0008)",ADC10HIIFG 
+ A    61                       .define "(0x0008)",ADC10HIIFG_L 
+ A    62                       .define "(0x0001)",ADC10IE0 
+ A    63                       .define "(0x0001)",ADC10IE0_L 
+ A    64                       .define "(0x0001)",ADC10IFG0 
+ A    65                       .define "(0x0001)",ADC10IFG0_L 
+ A    66                       .define "(0x0001)",ADC10INCH0 
+ A    67                       .define "(0x0001)",ADC10INCH0_L 
+ A    68                       .define "(0x0002)",ADC10INCH1 
+ A    69                       .define "(0x0002)",ADC10INCH1_L 
+ A    70                       .define "(0x0004)",ADC10INCH2 
+ A    71                       .define "(0x0004)",ADC10INCH2_L 
+ A    72                       .define "(0x0008)",ADC10INCH3 
+ A    73                       .define "(0x0008)",ADC10INCH3_L 
+ A    74                       .define "(0)",ADC10INCH_0 
+ A    75                       .define "(1)",ADC10INCH_1 
+ A    76                       .define "(10)",ADC10INCH_10 
+ A    77                       .define "(11)",ADC10INCH_11 
+ A    78                       .define "(12)",ADC10INCH_12 
+ A    79                       .define "(13)",ADC10INCH_13 
+ A    80                       .define "(14)",ADC10INCH_14 
+ A    81                       .define "(15)",ADC10INCH_15 
+ A    82                       .define "(2)",ADC10INCH_2 
+ A    83                       .define "(3)",ADC10INCH_3 
+ A    84                       .define "(4)",ADC10INCH_4 
+ A    85                       .define "(5)",ADC10INCH_5 
+ A    86                       .define "(6)",ADC10INCH_6 
+ A    87                       .define "(7)",ADC10INCH_7 
+ A    88                       .define "(8)",ADC10INCH_8 
+ A    89                       .define "(9)",ADC10INCH_9 
+ A    90                       .define "(0x0002)",ADC10INIE 
+ A    91                       .define "(0x0002)",ADC10INIE_L 
+ A    92                       .define "(0x0002)",ADC10INIFG 
+ A    93                       .define "(0x0002)",ADC10INIFG_L 
+ A    94                       .define "(0x0100)",ADC10ISSH 
+ A    95                       .define "(0x0001)",ADC10ISSH_H 
+ A    96                       .define "(0x0006)",ADC10IV_ADC10HIIFG 
+ A    97                       .define "(0x000C)",ADC10IV_ADC10IFG 
+ A    98                       .define "(0x000A)",ADC10IV_ADC10INIFG 
+ A    99                       .define "(0x0008)",ADC10IV_ADC10LOIFG 
+ A   100                       .define "(0x0002)",ADC10IV_ADC10OVIFG 
+ A   101                       .define "(0x0004)",ADC10IV_ADC10TOVIFG 
+ A   102                       .define "(0x0000)",ADC10IV_NONE 
+ A   103                       .define "(0x0004)",ADC10LOIE 
+ A   104                       .define "(0x0004)",ADC10LOIE_L 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE    3
+
+ A   105                       .define "(0x0004)",ADC10LOIFG 
+ A   106                       .define "(0x0004)",ADC10LOIFG_L 
+ A   107                       .define "(0x0080)",ADC10MSC 
+ A   108                       .define "(0x0080)",ADC10MSC_L 
+ A   109                       .define "(0x0010)",ADC10ON 
+ A   110                       .define "(0x0010)",ADC10ON_L 
+ A   111                       .define "(0x0010)",ADC10OVIE 
+ A   112                       .define "(0x0010)",ADC10OVIE_L 
+ A   113                       .define "(0x0010)",ADC10OVIFG 
+ A   114                       .define "(0x0010)",ADC10OVIFG_L 
+ A   115                       .define "(0x0100)",ADC10PDIV0 
+ A   116                       .define "(0x0001)",ADC10PDIV0_H 
+ A   117                       .define "(0x0200)",ADC10PDIV1 
+ A   118                       .define "(0x0002)",ADC10PDIV1_H 
+ A   119                       .define "(0x0000)",ADC10PDIV_0 
+ A   120                       .define "(0x0100)",ADC10PDIV_1 
+ A   121                       .define "(0x0200)",ADC10PDIV_2 
+ A   122                       .define "(0x0300)",ADC10PDIV_3 
+ A   123                       .define "(0x0000)",ADC10PDIV__1 
+ A   124                       .define "(0x0100)",ADC10PDIV__4 
+ A   125                       .define "(0x0200)",ADC10PDIV__64 
+ A   126                       .define "(0x0001)",ADC10REFBURST 
+ A   127                       .define "(0x0001)",ADC10REFBURST_L 
+ A   128                       .define "(0x0010)",ADC10RES 
+ A   129                       .define "(0x0010)",ADC10RES_L 
+ A   130                       .define "(0x0001)",ADC10SC 
+ A   131                       .define "(0x0001)",ADC10SC_L 
+ A   132                       .define "(0x0200)",ADC10SHP 
+ A   133                       .define "(0x0002)",ADC10SHP_H 
+ A   134                       .define "(0x0400)",ADC10SHS0 
+ A   135                       .define "(0x0004)",ADC10SHS0_H 
+ A   136                       .define "(0x0800)",ADC10SHS1 
+ A   137                       .define "(0x0008)",ADC10SHS1_H 
+ A   138                       .define "(0*0x400u)",ADC10SHS_0 
+ A   139                       .define "(1*0x400u)",ADC10SHS_1 
+ A   140                       .define "(2*0x400u)",ADC10SHS_2 
+ A   141                       .define "(3*0x400u)",ADC10SHS_3 
+ A   142                       .define "(0x0100)",ADC10SHT0 
+ A   143                       .define "(0x0001)",ADC10SHT0_H 
+ A   144                       .define "(0x0200)",ADC10SHT1 
+ A   145                       .define "(0x0002)",ADC10SHT1_H 
+ A   146                       .define "(0x0400)",ADC10SHT2 
+ A   147                       .define "(0x0004)",ADC10SHT2_H 
+ A   148                       .define "(0x0800)",ADC10SHT3 
+ A   149                       .define "(0x0008)",ADC10SHT3_H 
+ A   150                       .define "(0*0x100u)",ADC10SHT_0 
+ A   151                       .define "(1*0x100u)",ADC10SHT_1 
+ A   152                       .define "(10*0x100u)",ADC10SHT_10 
+ A   153                       .define "(11*0x100u)",ADC10SHT_11 
+ A   154                       .define "(12*0x100u)",ADC10SHT_12 
+ A   155                       .define "(13*0x100u)",ADC10SHT_13 
+ A   156                       .define "(14*0x100u)",ADC10SHT_14 
+ A   157                       .define "(15*0x100u)",ADC10SHT_15 
+ A   158                       .define "(2*0x100u)",ADC10SHT_2 
+ A   159                       .define "(3*0x100u)",ADC10SHT_3 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE    4
+
+ A   160                       .define "(4*0x100u)",ADC10SHT_4 
+ A   161                       .define "(5*0x100u)",ADC10SHT_5 
+ A   162                       .define "(6*0x100u)",ADC10SHT_6 
+ A   163                       .define "(7*0x100u)",ADC10SHT_7 
+ A   164                       .define "(8*0x100u)",ADC10SHT_8 
+ A   165                       .define "(9*0x100u)",ADC10SHT_9 
+ A   166                       .define "(0x0004)",ADC10SR 
+ A   167                       .define "(0x0010)",ADC10SREF0 
+ A   168                       .define "(0x0010)",ADC10SREF0_L 
+ A   169                       .define "(0x0020)",ADC10SREF1 
+ A   170                       .define "(0x0020)",ADC10SREF1_L 
+ A   171                       .define "(0x0040)",ADC10SREF2 
+ A   172                       .define "(0x0040)",ADC10SREF2_L 
+ A   173                       .define "(0*0x10u)",ADC10SREF_0 
+ A   174                       .define "(1*0x10u)",ADC10SREF_1 
+ A   175                       .define "(2*0x10u)",ADC10SREF_2 
+ A   176                       .define "(3*0x10u)",ADC10SREF_3 
+ A   177                       .define "(4*0x10u)",ADC10SREF_4 
+ A   178                       .define "(5*0x10u)",ADC10SREF_5 
+ A   179                       .define "(6*0x10u)",ADC10SREF_6 
+ A   180                       .define "(7*0x10u)",ADC10SREF_7 
+ A   181                       .define "(0x0004)",ADC10SR_L 
+ A   182                       .define "(0x0008)",ADC10SSEL0 
+ A   183                       .define "(0x0008)",ADC10SSEL0_L 
+ A   184                       .define "(0x0010)",ADC10SSEL1 
+ A   185                       .define "(0x0010)",ADC10SSEL1_L 
+ A   186                       .define "(0*8u)",ADC10SSEL_0 
+ A   187                       .define "(1*8u)",ADC10SSEL_1 
+ A   188                       .define "(2*8u)",ADC10SSEL_2 
+ A   189                       .define "(3*8u)",ADC10SSEL_3 
+ A   190                       .define "(0x0020)",ADC10TOVIE 
+ A   191                       .define "(0x0020)",ADC10TOVIE_L 
+ A   192                       .define "(0x0020)",ADC10TOVIFG 
+ A   193                       .define "(0x0020)",ADC10TOVIFG_L 
+ A   194                       .define "__MSP430_BASEADDRESS_ADC10_B__",ADC10_B_BASE 
+ A   195                       .define """.int46""",ADC10_VECTOR 
+ A   196                       .define "(0x0800)",BGMODE 
+ A   197                       .define "(0x0008)",BGMODE_H 
+ A   198                       .define "(0x0001)",BIT0 
+ A   199                       .define "(0x0002)",BIT1 
+ A   200                       .define "(0x0004)",BIT2 
+ A   201                       .define "(0x0008)",BIT3 
+ A   202                       .define "(0x0010)",BIT4 
+ A   203                       .define "(0x0020)",BIT5 
+ A   204                       .define "(0x0040)",BIT6 
+ A   205                       .define "(0x0080)",BIT7 
+ A   206                       .define "(0x0100)",BIT8 
+ A   207                       .define "(0x0200)",BIT9 
+ A   208                       .define "(0x0400)",BITA 
+ A   209                       .define "(0x0800)",BITB 
+ A   210                       .define "(0x1000)",BITC 
+ A   211                       .define "(0x2000)",BITD 
+ A   212                       .define "(0x4000)",BITE 
+ A   213                       .define "(0x8000)",BITF 
+ A   214                       .define "(0x0001)",BUSY 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE    5
+
+ A   215                       .define "(0x0001)",BUSY_L 
+ A   216                       .define "(0x0001)",C 
+ A   217                       .define "(0x0100)",CAP 
+ A   218                       .define "(0x0020)",CBDIE 
+ A   219                       .define "(0x0020)",CBDIE_L 
+ A   220                       .define "(0x0002)",CBDIFG 
+ A   221                       .define "(0x0002)",CBDIFG_L 
+ A   222                       .define "(0x0008)",CCI 
+ A   223                       .define "(0x0010)",CCIE 
+ A   224                       .define "(0x0001)",CCIFG 
+ A   225                       .define "(0x1000)",CCIS0 
+ A   226                       .define "(0x2000)",CCIS1 
+ A   227                       .define "(0*0x1000u)",CCIS_0 
+ A   228                       .define "(1*0x1000u)",CCIS_1 
+ A   229                       .define "(2*0x1000u)",CCIS_2 
+ A   230                       .define "(3*0x1000u)",CCIS_3 
+ A   231                       .define "(0x0020)",CDEX 
+ A   232                       .define "(0x0020)",CDEX_L 
+ A   233                       .define "(0x0004)",CDF 
+ A   234                       .define "(0x0040)",CDFDLY0 
+ A   235                       .define "(0x0040)",CDFDLY0_L 
+ A   236                       .define "(0x0080)",CDFDLY1 
+ A   237                       .define "(0x0080)",CDFDLY1_L 
+ A   238                       .define "(0x0000)",CDFDLY_0 
+ A   239                       .define "(0x0040)",CDFDLY_1 
+ A   240                       .define "(0x0080)",CDFDLY_2 
+ A   241                       .define "(0x00C0)",CDFDLY_3 
+ A   242                       .define "(0x0004)",CDF_L 
+ A   243                       .define "(0x0100)",CDIE 
+ A   244                       .define "(0x0008)",CDIES 
+ A   245                       .define "(0x0008)",CDIES_L 
+ A   246                       .define "(0x0001)",CDIE_H 
+ A   247                       .define "(0x0001)",CDIFG 
+ A   248                       .define "(0x0001)",CDIFG_L 
+ A   249                       .define "(0x0200)",CDIIE 
+ A   250                       .define "(0x0002)",CDIIE_H 
+ A   251                       .define "(0x0002)",CDIIFG 
+ A   252                       .define "(0x0002)",CDIIFG_L 
+ A   253                       .define "(0x8000)",CDIMEN 
+ A   254                       .define "(0x0080)",CDIMEN_H 
+ A   255                       .define "(0x0100)",CDIMSEL0 
+ A   256                       .define "(0x0001)",CDIMSEL0_H 
+ A   257                       .define "(0x0200)",CDIMSEL1 
+ A   258                       .define "(0x0002)",CDIMSEL1_H 
+ A   259                       .define "(0x0400)",CDIMSEL2 
+ A   260                       .define "(0x0004)",CDIMSEL2_H 
+ A   261                       .define "(0x0800)",CDIMSEL3 
+ A   262                       .define "(0x0008)",CDIMSEL3_H 
+ A   263                       .define "(0x0000)",CDIMSEL_0 
+ A   264                       .define "(0x0100)",CDIMSEL_1 
+ A   265                       .define "(0x0A00)",CDIMSEL_10 
+ A   266                       .define "(0x0B00)",CDIMSEL_11 
+ A   267                       .define "(0x0C00)",CDIMSEL_12 
+ A   268                       .define "(0x0D00)",CDIMSEL_13 
+ A   269                       .define "(0x0E00)",CDIMSEL_14 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE    6
+
+ A   270                       .define "(0x0F00)",CDIMSEL_15 
+ A   271                       .define "(0x0200)",CDIMSEL_2 
+ A   272                       .define "(0x0300)",CDIMSEL_3 
+ A   273                       .define "(0x0400)",CDIMSEL_4 
+ A   274                       .define "(0x0500)",CDIMSEL_5 
+ A   275                       .define "(0x0600)",CDIMSEL_6 
+ A   276                       .define "(0x0700)",CDIMSEL_7 
+ A   277                       .define "(0x0800)",CDIMSEL_8 
+ A   278                       .define "(0x0900)",CDIMSEL_9 
+ A   279                       .define "(0x0080)",CDIPEN 
+ A   280                       .define "(0x0080)",CDIPEN_L 
+ A   281                       .define "(0x0001)",CDIPSEL0 
+ A   282                       .define "(0x0001)",CDIPSEL0_L 
+ A   283                       .define "(0x0002)",CDIPSEL1 
+ A   284                       .define "(0x0002)",CDIPSEL1_L 
+ A   285                       .define "(0x0004)",CDIPSEL2 
+ A   286                       .define "(0x0004)",CDIPSEL2_L 
+ A   287                       .define "(0x0008)",CDIPSEL3 
+ A   288                       .define "(0x0008)",CDIPSEL3_L 
+ A   289                       .define "(0x0000)",CDIPSEL_0 
+ A   290                       .define "(0x0001)",CDIPSEL_1 
+ A   291                       .define "(0x000A)",CDIPSEL_10 
+ A   292                       .define "(0x000B)",CDIPSEL_11 
+ A   293                       .define "(0x000C)",CDIPSEL_12 
+ A   294                       .define "(0x000D)",CDIPSEL_13 
+ A   295                       .define "(0x000E)",CDIPSEL_14 
+ A   296                       .define "(0x000F)",CDIPSEL_15 
+ A   297                       .define "(0x0002)",CDIPSEL_2 
+ A   298                       .define "(0x0003)",CDIPSEL_3 
+ A   299                       .define "(0x0004)",CDIPSEL_4 
+ A   300                       .define "(0x0005)",CDIPSEL_5 
+ A   301                       .define "(0x0006)",CDIPSEL_6 
+ A   302                       .define "(0x0007)",CDIPSEL_7 
+ A   303                       .define "(0x0008)",CDIPSEL_8 
+ A   304                       .define "(0x0009)",CDIPSEL_9 
+ A   305                       .define "(0x0002)",CDIV_CDIFG 
+ A   306                       .define "(0x0004)",CDIV_CDIIFG 
+ A   307                       .define "(0x0000)",CDIV_NONE 
+ A   308                       .define "(0x0800)",CDMRVL 
+ A   309                       .define "(0x0008)",CDMRVL_H 
+ A   310                       .define "(0x1000)",CDMRVS 
+ A   311                       .define "(0x0010)",CDMRVS_H 
+ A   312                       .define "(0x0400)",CDON 
+ A   313                       .define "(0x0004)",CDON_H 
+ A   314                       .define "(0x0001)",CDOUT 
+ A   315                       .define "(0x0002)",CDOUTPOL 
+ A   316                       .define "(0x0002)",CDOUTPOL_L 
+ A   317                       .define "(0x0001)",CDOUT_L 
+ A   318                       .define "(0x0001)",CDPD0 
+ A   319                       .define "(0x0001)",CDPD0_L 
+ A   320                       .define "(0x0002)",CDPD1 
+ A   321                       .define "(0x0400)",CDPD10 
+ A   322                       .define "(0x0004)",CDPD10_H 
+ A   323                       .define "(0x0800)",CDPD11 
+ A   324                       .define "(0x0008)",CDPD11_H 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE    7
+
+ A   325                       .define "(0x1000)",CDPD12 
+ A   326                       .define "(0x0010)",CDPD12_H 
+ A   327                       .define "(0x2000)",CDPD13 
+ A   328                       .define "(0x0020)",CDPD13_H 
+ A   329                       .define "(0x4000)",CDPD14 
+ A   330                       .define "(0x0040)",CDPD14_H 
+ A   331                       .define "(0x8000)",CDPD15 
+ A   332                       .define "(0x0080)",CDPD15_H 
+ A   333                       .define "(0x0002)",CDPD1_L 
+ A   334                       .define "(0x0004)",CDPD2 
+ A   335                       .define "(0x0004)",CDPD2_L 
+ A   336                       .define "(0x0008)",CDPD3 
+ A   337                       .define "(0x0008)",CDPD3_L 
+ A   338                       .define "(0x0010)",CDPD4 
+ A   339                       .define "(0x0010)",CDPD4_L 
+ A   340                       .define "(0x0020)",CDPD5 
+ A   341                       .define "(0x0020)",CDPD5_L 
+ A   342                       .define "(0x0040)",CDPD6 
+ A   343                       .define "(0x0040)",CDPD6_L 
+ A   344                       .define "(0x0080)",CDPD7 
+ A   345                       .define "(0x0080)",CDPD7_L 
+ A   346                       .define "(0x0100)",CDPD8 
+ A   347                       .define "(0x0001)",CDPD8_H 
+ A   348                       .define "(0x0200)",CDPD9 
+ A   349                       .define "(0x0002)",CDPD9_H 
+ A   350                       .define "(0x0001)",CDREF00 
+ A   351                       .define "(0x0001)",CDREF00_L 
+ A   352                       .define "(0x0002)",CDREF01 
+ A   353                       .define "(0x0002)",CDREF01_L 
+ A   354                       .define "(0x0004)",CDREF02 
+ A   355                       .define "(0x0004)",CDREF02_L 
+ A   356                       .define "(0x0008)",CDREF03 
+ A   357                       .define "(0x0008)",CDREF03_L 
+ A   358                       .define "(0x0010)",CDREF04 
+ A   359                       .define "(0x0010)",CDREF04_L 
+ A   360                       .define "(0x0000)",CDREF0_0 
+ A   361                       .define "(0x0001)",CDREF0_1 
+ A   362                       .define "(0x000A)",CDREF0_10 
+ A   363                       .define "(0x000B)",CDREF0_11 
+ A   364                       .define "(0x000C)",CDREF0_12 
+ A   365                       .define "(0x000D)",CDREF0_13 
+ A   366                       .define "(0x000E)",CDREF0_14 
+ A   367                       .define "(0x000F)",CDREF0_15 
+ A   368                       .define "(0x0010)",CDREF0_16 
+ A   369                       .define "(0x0011)",CDREF0_17 
+ A   370                       .define "(0x0012)",CDREF0_18 
+ A   371                       .define "(0x0013)",CDREF0_19 
+ A   372                       .define "(0x0002)",CDREF0_2 
+ A   373                       .define "(0x0014)",CDREF0_20 
+ A   374                       .define "(0x0015)",CDREF0_21 
+ A   375                       .define "(0x0016)",CDREF0_22 
+ A   376                       .define "(0x0017)",CDREF0_23 
+ A   377                       .define "(0x0018)",CDREF0_24 
+ A   378                       .define "(0x0019)",CDREF0_25 
+ A   379                       .define "(0x001A)",CDREF0_26 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE    8
+
+ A   380                       .define "(0x001B)",CDREF0_27 
+ A   381                       .define "(0x001C)",CDREF0_28 
+ A   382                       .define "(0x001D)",CDREF0_29 
+ A   383                       .define "(0x0003)",CDREF0_3 
+ A   384                       .define "(0x001E)",CDREF0_30 
+ A   385                       .define "(0x001F)",CDREF0_31 
+ A   386                       .define "(0x0004)",CDREF0_4 
+ A   387                       .define "(0x0005)",CDREF0_5 
+ A   388                       .define "(0x0006)",CDREF0_6 
+ A   389                       .define "(0x0007)",CDREF0_7 
+ A   390                       .define "(0x0008)",CDREF0_8 
+ A   391                       .define "(0x0009)",CDREF0_9 
+ A   392                       .define "(0x0100)",CDREF10 
+ A   393                       .define "(0x0001)",CDREF10_H 
+ A   394                       .define "(0x0200)",CDREF11 
+ A   395                       .define "(0x0002)",CDREF11_H 
+ A   396                       .define "(0x0400)",CDREF12 
+ A   397                       .define "(0x0004)",CDREF12_H 
+ A   398                       .define "(0x0800)",CDREF13 
+ A   399                       .define "(0x0008)",CDREF13_H 
+ A   400                       .define "(0x1000)",CDREF14 
+ A   401                       .define "(0x0010)",CDREF14_H 
+ A   402                       .define "(0x0000)",CDREF1_0 
+ A   403                       .define "(0x0100)",CDREF1_1 
+ A   404                       .define "(0x0A00)",CDREF1_10 
+ A   405                       .define "(0x0B00)",CDREF1_11 
+ A   406                       .define "(0x0C00)",CDREF1_12 
+ A   407                       .define "(0x0D00)",CDREF1_13 
+ A   408                       .define "(0x0E00)",CDREF1_14 
+ A   409                       .define "(0x0F00)",CDREF1_15 
+ A   410                       .define "(0x1000)",CDREF1_16 
+ A   411                       .define "(0x1100)",CDREF1_17 
+ A   412                       .define "(0x1200)",CDREF1_18 
+ A   413                       .define "(0x1300)",CDREF1_19 
+ A   414                       .define "(0x0200)",CDREF1_2 
+ A   415                       .define "(0x1400)",CDREF1_20 
+ A   416                       .define "(0x1500)",CDREF1_21 
+ A   417                       .define "(0x1600)",CDREF1_22 
+ A   418                       .define "(0x1700)",CDREF1_23 
+ A   419                       .define "(0x1800)",CDREF1_24 
+ A   420                       .define "(0x1900)",CDREF1_25 
+ A   421                       .define "(0x1A00)",CDREF1_26 
+ A   422                       .define "(0x1B00)",CDREF1_27 
+ A   423                       .define "(0x1C00)",CDREF1_28 
+ A   424                       .define "(0x1D00)",CDREF1_29 
+ A   425                       .define "(0x0300)",CDREF1_3 
+ A   426                       .define "(0x1E00)",CDREF1_30 
+ A   427                       .define "(0x1F00)",CDREF1_31 
+ A   428                       .define "(0x0400)",CDREF1_4 
+ A   429                       .define "(0x0500)",CDREF1_5 
+ A   430                       .define "(0x0600)",CDREF1_6 
+ A   431                       .define "(0x0700)",CDREF1_7 
+ A   432                       .define "(0x0800)",CDREF1_8 
+ A   433                       .define "(0x0900)",CDREF1_9 
+ A   434                       .define "(0x8000)",CDREFACC 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE    9
+
+ A   435                       .define "(0x0080)",CDREFACC_H 
+ A   436                       .define "(0x2000)",CDREFL0 
+ A   437                       .define "(0x0020)",CDREFL0_H 
+ A   438                       .define "(0x4000)",CDREFL1 
+ A   439                       .define "(0x0040)",CDREFL1_H 
+ A   440                       .define "(0x0000)",CDREFL_0 
+ A   441                       .define "(0x2000)",CDREFL_1 
+ A   442                       .define "(0x4000)",CDREFL_2 
+ A   443                       .define "(0x6000)",CDREFL_3 
+ A   444                       .define "(0x0040)",CDRS0 
+ A   445                       .define "(0x0040)",CDRS0_L 
+ A   446                       .define "(0x0080)",CDRS1 
+ A   447                       .define "(0x0080)",CDRS1_L 
+ A   448                       .define "(0x0020)",CDRSEL 
+ A   449                       .define "(0x0020)",CDRSEL_L 
+ A   450                       .define "(0x0000)",CDRS_0 
+ A   451                       .define "(0x0040)",CDRS_1 
+ A   452                       .define "(0x0080)",CDRS_2 
+ A   453                       .define "(0x00C0)",CDRS_3 
+ A   454                       .define "(0x0010)",CDSHORT 
+ A   455                       .define "(0x0010)",CDSHORT_L 
+ A   456                       .define "(0x0200)",CLLD0 
+ A   457                       .define "(0x0400)",CLLD1 
+ A   458                       .define "(0*0x0200u)",CLLD_0 
+ A   459                       .define "(1*0x0200u)",CLLD_1 
+ A   460                       .define "(2*0x0200u)",CLLD_2 
+ A   461                       .define "(3*0x0200u)",CLLD_3 
+ A   462                       .define "(0x4000)",CM0 
+ A   463                       .define "(0x8000)",CM1 
+ A   464                       .define "(0*0x4000u)",CM_0 
+ A   465                       .define "(1*0x4000u)",CM_1 
+ A   466                       .define "(2*0x4000u)",CM_2 
+ A   467                       .define "(3*0x4000u)",CM_3 
+ A   468                       .define "(0x0800)",CNTL0 
+ A   469                       .define "(0x1000)",CNTL1 
+ A   470                       .define "(0*0x0800u)",CNTL_0 
+ A   471                       .define "(1*0x0800u)",CNTL_1 
+ A   472                       .define "(2*0x0800u)",CNTL_2 
+ A   473                       .define "(3*0x0800u)",CNTL_3 
+ A   474                       .define "(2*0x0800u)",CNTL__10 
+ A   475                       .define "(1*0x0800u)",CNTL__12 
+ A   476                       .define "(0*0x0800u)",CNTL__16 
+ A   477                       .define "(3*0x0800u)",CNTL__8 
+ A   478                       .define "__MSP430_BASEADDRESS_COMPD__",COMP_D_BASE 
+ A   479                       .define """.int52""",COMP_D_VECTOR 
+ A   480                       .define "(0x0002)",COV 
+ A   481                       .define "(0x0010)",CPUOFF 
+ A   482                       .define "__MSP430_BASEADDRESS_CRC__",CRC_BASE 
+ A   483                       .define "(0xA500)",CSKEY 
+ A   484                       .define "(0xA5)",CSKEY_H 
+ A   485                       .define "__MSP430_BASEADDRESS_CS__",CS_BASE 
+ A   486                       .define "(0x0040)",DBDIEN 
+ A   487                       .define "(0x0004)",DBDIFG 
+ A   488                       .define "(0x0080)",DBDRSTEN 
+ A   489                       .define "(0x0002)",DCOFSEL0 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   10
+
+ A   490                       .define "(0x0002)",DCOFSEL0_L 
+ A   491                       .define "(0x0004)",DCOFSEL1 
+ A   492                       .define "(0x0004)",DCOFSEL1_L 
+ A   493                       .define "(0x0000)",DCOFSEL_0 
+ A   494                       .define "(0x0002)",DCOFSEL_1 
+ A   495                       .define "(0x0004)",DCOFSEL_2 
+ A   496                       .define "(0x0006)",DCOFSEL_3 
+ A   497                       .define "(0x0080)",DCORSEL 
+ A   498                       .define "(0x0080)",DCORSEL_L 
+ A   499                       .define "(0x0100)",DIVA0 
+ A   500                       .define "(0x0001)",DIVA0_H 
+ A   501                       .define "(0x0200)",DIVA1 
+ A   502                       .define "(0x0002)",DIVA1_H 
+ A   503                       .define "(0x0400)",DIVA2 
+ A   504                       .define "(0x0004)",DIVA2_H 
+ A   505                       .define "(0x0000)",DIVA_0 
+ A   506                       .define "(0x0100)",DIVA_1 
+ A   507                       .define "(0x0200)",DIVA_2 
+ A   508                       .define "(0x0300)",DIVA_3 
+ A   509                       .define "(0x0400)",DIVA_4 
+ A   510                       .define "(0x0500)",DIVA_5 
+ A   511                       .define "(0x0000)",DIVA__1 
+ A   512                       .define "(0x0400)",DIVA__16 
+ A   513                       .define "(0x0100)",DIVA__2 
+ A   514                       .define "(0x0500)",DIVA__32 
+ A   515                       .define "(0x0200)",DIVA__4 
+ A   516                       .define "(0x0300)",DIVA__8 
+ A   517                       .define "(0x0001)",DIVM0 
+ A   518                       .define "(0x0001)",DIVM0_L 
+ A   519                       .define "(0x0002)",DIVM1 
+ A   520                       .define "(0x0002)",DIVM1_L 
+ A   521                       .define "(0x0004)",DIVM2 
+ A   522                       .define "(0x0004)",DIVM2_L 
+ A   523                       .define "(0x0000)",DIVM_0 
+ A   524                       .define "(0x0001)",DIVM_1 
+ A   525                       .define "(0x0002)",DIVM_2 
+ A   526                       .define "(0x0003)",DIVM_3 
+ A   527                       .define "(0x0004)",DIVM_4 
+ A   528                       .define "(0x0005)",DIVM_5 
+ A   529                       .define "(0x0000)",DIVM__1 
+ A   530                       .define "(0x0004)",DIVM__16 
+ A   531                       .define "(0x0001)",DIVM__2 
+ A   532                       .define "(0x0005)",DIVM__32 
+ A   533                       .define "(0x0002)",DIVM__4 
+ A   534                       .define "(0x0003)",DIVM__8 
+ A   535                       .define "(0x0010)",DIVS0 
+ A   536                       .define "(0x0010)",DIVS0_L 
+ A   537                       .define "(0x0020)",DIVS1 
+ A   538                       .define "(0x0020)",DIVS1_L 
+ A   539                       .define "(0x0040)",DIVS2 
+ A   540                       .define "(0x0040)",DIVS2_L 
+ A   541                       .define "(0x0000)",DIVS_0 
+ A   542                       .define "(0x0010)",DIVS_1 
+ A   543                       .define "(0x0020)",DIVS_2 
+ A   544                       .define "(0x0030)",DIVS_3 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   11
+
+ A   545                       .define "(0x0040)",DIVS_4 
+ A   546                       .define "(0x0050)",DIVS_5 
+ A   547                       .define "(0x0000)",DIVS__1 
+ A   548                       .define "(0x0040)",DIVS__16 
+ A   549                       .define "(0x0010)",DIVS__2 
+ A   550                       .define "(0x0050)",DIVS__32 
+ A   551                       .define "(0x0020)",DIVS__4 
+ A   552                       .define "(0x0030)",DIVS__8 
+ A   553                       .define "(0x0001)",DMA0TSEL0 
+ A   554                       .define "(0x0001)",DMA0TSEL0_L 
+ A   555                       .define "(0x0002)",DMA0TSEL1 
+ A   556                       .define "(0x0002)",DMA0TSEL1_L 
+ A   557                       .define "(0x0004)",DMA0TSEL2 
+ A   558                       .define "(0x0004)",DMA0TSEL2_L 
+ A   559                       .define "(0x0008)",DMA0TSEL3 
+ A   560                       .define "(0x0008)",DMA0TSEL3_L 
+ A   561                       .define "(0x0010)",DMA0TSEL4 
+ A   562                       .define "(0x0010)",DMA0TSEL4_L 
+ A   563                       .define "(0*0x0001u)",DMA0TSEL_0 
+ A   564                       .define "(1*0x0001u)",DMA0TSEL_1 
+ A   565                       .define "(10*0x0001u)",DMA0TSEL_10 
+ A   566                       .define "(11*0x0001u)",DMA0TSEL_11 
+ A   567                       .define "(12*0x0001u)",DMA0TSEL_12 
+ A   568                       .define "(13*0x0001u)",DMA0TSEL_13 
+ A   569                       .define "(14*0x0001u)",DMA0TSEL_14 
+ A   570                       .define "(15*0x0001u)",DMA0TSEL_15 
+ A   571                       .define "(16*0x0001u)",DMA0TSEL_16 
+ A   572                       .define "(17*0x0001u)",DMA0TSEL_17 
+ A   573                       .define "(18*0x0001u)",DMA0TSEL_18 
+ A   574                       .define "(19*0x0001u)",DMA0TSEL_19 
+ A   575                       .define "(2*0x0001u)",DMA0TSEL_2 
+ A   576                       .define "(20*0x0001u)",DMA0TSEL_20 
+ A   577                       .define "(21*0x0001u)",DMA0TSEL_21 
+ A   578                       .define "(22*0x0001u)",DMA0TSEL_22 
+ A   579                       .define "(23*0x0001u)",DMA0TSEL_23 
+ A   580                       .define "(24*0x0001u)",DMA0TSEL_24 
+ A   581                       .define "(25*0x0001u)",DMA0TSEL_25 
+ A   582                       .define "(26*0x0001u)",DMA0TSEL_26 
+ A   583                       .define "(27*0x0001u)",DMA0TSEL_27 
+ A   584                       .define "(28*0x0001u)",DMA0TSEL_28 
+ A   585                       .define "(29*0x0001u)",DMA0TSEL_29 
+ A   586                       .define "(3*0x0001u)",DMA0TSEL_3 
+ A   587                       .define "(30*0x0001u)",DMA0TSEL_30 
+ A   588                       .define "(31*0x0001u)",DMA0TSEL_31 
+ A   589                       .define "(4*0x0001u)",DMA0TSEL_4 
+ A   590                       .define "(5*0x0001u)",DMA0TSEL_5 
+ A   591                       .define "(6*0x0001u)",DMA0TSEL_6 
+ A   592                       .define "(7*0x0001u)",DMA0TSEL_7 
+ A   593                       .define "(8*0x0001u)",DMA0TSEL_8 
+ A   594                       .define "(9*0x0001u)",DMA0TSEL_9 
+ A   595                       .define "(26*0x0001u)",DMA0TSEL__ADC10IFG 
+ A   596                       .define "(30*0x0001u)",DMA0TSEL__DMA2IFG 
+ A   597                       .define "(31*0x0001u)",DMA0TSEL__DMAE0 
+ A   598                       .define "(0*0x0001u)",DMA0TSEL__DMAREQ 
+ A   599                       .define "(29*0x0001u)",DMA0TSEL__MPY 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   12
+
+ A   600                       .define "(13*0x0001u)",DMA0TSEL__RES13 
+ A   601                       .define "(27*0x0001u)",DMA0TSEL__RES27 
+ A   602                       .define "(28*0x0001u)",DMA0TSEL__RES28 
+ A   603                       .define "(5*0x0001u)",DMA0TSEL__RES5 
+ A   604                       .define "(6*0x0001u)",DMA0TSEL__RES6 
+ A   605                       .define "(1*0x0001u)",DMA0TSEL__TA0CCR0 
+ A   606                       .define "(2*0x0001u)",DMA0TSEL__TA0CCR2 
+ A   607                       .define "(3*0x0001u)",DMA0TSEL__TA1CCR0 
+ A   608                       .define "(4*0x0001u)",DMA0TSEL__TA1CCR2 
+ A   609                       .define "(7*0x0001u)",DMA0TSEL__TB0CCR0 
+ A   610                       .define "(8*0x0001u)",DMA0TSEL__TB0CCR2 
+ A   611                       .define "(9*0x0001u)",DMA0TSEL__TB1CCR0 
+ A   612                       .define "(10*0x0001u)",DMA0TSEL__TB1CCR2 
+ A   613                       .define "(11*0x0001u)",DMA0TSEL__TB2CCR0 
+ A   614                       .define "(12*0x0001u)",DMA0TSEL__TB2CCR2 
+ A   615                       .define "(14*0x0001u)",DMA0TSEL__UCA0RXIFG 
+ A   616                       .define "(15*0x0001u)",DMA0TSEL__UCA0TXIFG 
+ A   617                       .define "(16*0x0001u)",DMA0TSEL__UCA1RXIFG 
+ A   618                       .define "(17*0x0001u)",DMA0TSEL__UCA1TXIFG 
+ A   619                       .define "(18*0x0001u)",DMA0TSEL__UCB0RXIFG0 
+ A   620                       .define "(20*0x0001u)",DMA0TSEL__UCB0RXIFG1 
+ A   621                       .define "(22*0x0001u)",DMA0TSEL__UCB0RXIFG2 
+ A   622                       .define "(24*0x0001u)",DMA0TSEL__UCB0RXIFG3 
+ A   623                       .define "(19*0x0001u)",DMA0TSEL__UCB0TXIFG0 
+ A   624                       .define "(21*0x0001u)",DMA0TSEL__UCB0TXIFG1 
+ A   625                       .define "(23*0x0001u)",DMA0TSEL__UCB0TXIFG2 
+ A   626                       .define "(25*0x0001u)",DMA0TSEL__UCB0TXIFG3 
+ A   627                       .define "(0x0100)",DMA1TSEL0 
+ A   628                       .define "(0x0001)",DMA1TSEL0_H 
+ A   629                       .define "(0x0200)",DMA1TSEL1 
+ A   630                       .define "(0x0002)",DMA1TSEL1_H 
+ A   631                       .define "(0x0400)",DMA1TSEL2 
+ A   632                       .define "(0x0004)",DMA1TSEL2_H 
+ A   633                       .define "(0x0800)",DMA1TSEL3 
+ A   634                       .define "(0x0008)",DMA1TSEL3_H 
+ A   635                       .define "(0x1000)",DMA1TSEL4 
+ A   636                       .define "(0x0010)",DMA1TSEL4_H 
+ A   637                       .define "(0*0x0100u)",DMA1TSEL_0 
+ A   638                       .define "(1*0x0100u)",DMA1TSEL_1 
+ A   639                       .define "(10*0x0100u)",DMA1TSEL_10 
+ A   640                       .define "(11*0x0100u)",DMA1TSEL_11 
+ A   641                       .define "(12*0x0100u)",DMA1TSEL_12 
+ A   642                       .define "(13*0x0100u)",DMA1TSEL_13 
+ A   643                       .define "(14*0x0100u)",DMA1TSEL_14 
+ A   644                       .define "(15*0x0100u)",DMA1TSEL_15 
+ A   645                       .define "(16*0x0100u)",DMA1TSEL_16 
+ A   646                       .define "(17*0x0100u)",DMA1TSEL_17 
+ A   647                       .define "(18*0x0100u)",DMA1TSEL_18 
+ A   648                       .define "(19*0x0100u)",DMA1TSEL_19 
+ A   649                       .define "(2*0x0100u)",DMA1TSEL_2 
+ A   650                       .define "(20*0x0100u)",DMA1TSEL_20 
+ A   651                       .define "(21*0x0100u)",DMA1TSEL_21 
+ A   652                       .define "(22*0x0100u)",DMA1TSEL_22 
+ A   653                       .define "(23*0x0100u)",DMA1TSEL_23 
+ A   654                       .define "(24*0x0100u)",DMA1TSEL_24 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   13
+
+ A   655                       .define "(25*0x0100u)",DMA1TSEL_25 
+ A   656                       .define "(26*0x0100u)",DMA1TSEL_26 
+ A   657                       .define "(27*0x0100u)",DMA1TSEL_27 
+ A   658                       .define "(28*0x0100u)",DMA1TSEL_28 
+ A   659                       .define "(29*0x0100u)",DMA1TSEL_29 
+ A   660                       .define "(3*0x0100u)",DMA1TSEL_3 
+ A   661                       .define "(30*0x0100u)",DMA1TSEL_30 
+ A   662                       .define "(31*0x0100u)",DMA1TSEL_31 
+ A   663                       .define "(4*0x0100u)",DMA1TSEL_4 
+ A   664                       .define "(5*0x0100u)",DMA1TSEL_5 
+ A   665                       .define "(6*0x0100u)",DMA1TSEL_6 
+ A   666                       .define "(7*0x0100u)",DMA1TSEL_7 
+ A   667                       .define "(8*0x0100u)",DMA1TSEL_8 
+ A   668                       .define "(9*0x0100u)",DMA1TSEL_9 
+ A   669                       .define "(26*0x0100u)",DMA1TSEL__ADC10IFG 
+ A   670                       .define "(30*0x0100u)",DMA1TSEL__DMA0IFG 
+ A   671                       .define "(31*0x0100u)",DMA1TSEL__DMAE0 
+ A   672                       .define "(0*0x0100u)",DMA1TSEL__DMAREQ 
+ A   673                       .define "(29*0x0100u)",DMA1TSEL__MPY 
+ A   674                       .define "(13*0x0100u)",DMA1TSEL__RES13 
+ A   675                       .define "(27*0x0100u)",DMA1TSEL__RES27 
+ A   676                       .define "(28*0x0100u)",DMA1TSEL__RES28 
+ A   677                       .define "(5*0x0100u)",DMA1TSEL__RES5 
+ A   678                       .define "(6*0x0100u)",DMA1TSEL__RES6 
+ A   679                       .define "(1*0x0100u)",DMA1TSEL__TA0CCR0 
+ A   680                       .define "(2*0x0100u)",DMA1TSEL__TA0CCR2 
+ A   681                       .define "(3*0x0100u)",DMA1TSEL__TA1CCR0 
+ A   682                       .define "(4*0x0100u)",DMA1TSEL__TA1CCR2 
+ A   683                       .define "(7*0x0100u)",DMA1TSEL__TB0CCR0 
+ A   684                       .define "(8*0x0100u)",DMA1TSEL__TB0CCR2 
+ A   685                       .define "(9*0x0100u)",DMA1TSEL__TB1CCR0 
+ A   686                       .define "(10*0x0100u)",DMA1TSEL__TB1CCR2 
+ A   687                       .define "(11*0x0100u)",DMA1TSEL__TB2CCR0 
+ A   688                       .define "(12*0x0100u)",DMA1TSEL__TB2CCR2 
+ A   689                       .define "(14*0x0100u)",DMA1TSEL__UCA0RXIFG 
+ A   690                       .define "(15*0x0100u)",DMA1TSEL__UCA0TXIFG 
+ A   691                       .define "(16*0x0100u)",DMA1TSEL__UCA1RXIFG 
+ A   692                       .define "(17*0x0100u)",DMA1TSEL__UCA1TXIFG 
+ A   693                       .define "(18*0x0100u)",DMA1TSEL__UCB0RXIFG0 
+ A   694                       .define "(20*0x0100u)",DMA1TSEL__UCB0RXIFG1 
+ A   695                       .define "(22*0x0100u)",DMA1TSEL__UCB0RXIFG2 
+ A   696                       .define "(24*0x0100u)",DMA1TSEL__UCB0RXIFG3 
+ A   697                       .define "(19*0x0100u)",DMA1TSEL__UCB0TXIFG0 
+ A   698                       .define "(21*0x0100u)",DMA1TSEL__UCB0TXIFG1 
+ A   699                       .define "(23*0x0100u)",DMA1TSEL__UCB0TXIFG2 
+ A   700                       .define "(25*0x0100u)",DMA1TSEL__UCB0TXIFG3 
+ A   701                       .define "(0x0001)",DMA2TSEL0 
+ A   702                       .define "(0x0001)",DMA2TSEL0_L 
+ A   703                       .define "(0x0002)",DMA2TSEL1 
+ A   704                       .define "(0x0002)",DMA2TSEL1_L 
+ A   705                       .define "(0x0004)",DMA2TSEL2 
+ A   706                       .define "(0x0004)",DMA2TSEL2_L 
+ A   707                       .define "(0x0008)",DMA2TSEL3 
+ A   708                       .define "(0x0008)",DMA2TSEL3_L 
+ A   709                       .define "(0x0010)",DMA2TSEL4 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   14
+
+ A   710                       .define "(0x0010)",DMA2TSEL4_L 
+ A   711                       .define "(0*0x0001u)",DMA2TSEL_0 
+ A   712                       .define "(1*0x0001u)",DMA2TSEL_1 
+ A   713                       .define "(10*0x0001u)",DMA2TSEL_10 
+ A   714                       .define "(11*0x0001u)",DMA2TSEL_11 
+ A   715                       .define "(12*0x0001u)",DMA2TSEL_12 
+ A   716                       .define "(13*0x0001u)",DMA2TSEL_13 
+ A   717                       .define "(14*0x0001u)",DMA2TSEL_14 
+ A   718                       .define "(15*0x0001u)",DMA2TSEL_15 
+ A   719                       .define "(16*0x0001u)",DMA2TSEL_16 
+ A   720                       .define "(17*0x0001u)",DMA2TSEL_17 
+ A   721                       .define "(18*0x0001u)",DMA2TSEL_18 
+ A   722                       .define "(19*0x0001u)",DMA2TSEL_19 
+ A   723                       .define "(2*0x0001u)",DMA2TSEL_2 
+ A   724                       .define "(20*0x0001u)",DMA2TSEL_20 
+ A   725                       .define "(21*0x0001u)",DMA2TSEL_21 
+ A   726                       .define "(22*0x0001u)",DMA2TSEL_22 
+ A   727                       .define "(23*0x0001u)",DMA2TSEL_23 
+ A   728                       .define "(24*0x0001u)",DMA2TSEL_24 
+ A   729                       .define "(25*0x0001u)",DMA2TSEL_25 
+ A   730                       .define "(26*0x0001u)",DMA2TSEL_26 
+ A   731                       .define "(27*0x0001u)",DMA2TSEL_27 
+ A   732                       .define "(28*0x0001u)",DMA2TSEL_28 
+ A   733                       .define "(29*0x0001u)",DMA2TSEL_29 
+ A   734                       .define "(3*0x0001u)",DMA2TSEL_3 
+ A   735                       .define "(30*0x0001u)",DMA2TSEL_30 
+ A   736                       .define "(31*0x0001u)",DMA2TSEL_31 
+ A   737                       .define "(4*0x0001u)",DMA2TSEL_4 
+ A   738                       .define "(5*0x0001u)",DMA2TSEL_5 
+ A   739                       .define "(6*0x0001u)",DMA2TSEL_6 
+ A   740                       .define "(7*0x0001u)",DMA2TSEL_7 
+ A   741                       .define "(8*0x0001u)",DMA2TSEL_8 
+ A   742                       .define "(9*0x0001u)",DMA2TSEL_9 
+ A   743                       .define "(26*0x0001u)",DMA2TSEL__ADC10IFG 
+ A   744                       .define "(30*0x0001u)",DMA2TSEL__DMA1IFG 
+ A   745                       .define "(31*0x0001u)",DMA2TSEL__DMAE0 
+ A   746                       .define "(0*0x0001u)",DMA2TSEL__DMAREQ 
+ A   747                       .define "(29*0x0001u)",DMA2TSEL__MPY 
+ A   748                       .define "(13*0x0001u)",DMA2TSEL__RES13 
+ A   749                       .define "(27*0x0001u)",DMA2TSEL__RES27 
+ A   750                       .define "(28*0x0001u)",DMA2TSEL__RES28 
+ A   751                       .define "(5*0x0001u)",DMA2TSEL__RES5 
+ A   752                       .define "(6*0x0001u)",DMA2TSEL__RES6 
+ A   753                       .define "(1*0x0001u)",DMA2TSEL__TA0CCR0 
+ A   754                       .define "(2*0x0001u)",DMA2TSEL__TA0CCR2 
+ A   755                       .define "(3*0x0001u)",DMA2TSEL__TA1CCR0 
+ A   756                       .define "(4*0x0001u)",DMA2TSEL__TA1CCR2 
+ A   757                       .define "(7*0x0001u)",DMA2TSEL__TB0CCR0 
+ A   758                       .define "(8*0x0001u)",DMA2TSEL__TB0CCR2 
+ A   759                       .define "(9*0x0001u)",DMA2TSEL__TB1CCR0 
+ A   760                       .define "(10*0x0001u)",DMA2TSEL__TB1CCR2 
+ A   761                       .define "(11*0x0001u)",DMA2TSEL__TB2CCR0 
+ A   762                       .define "(12*0x0001u)",DMA2TSEL__TB2CCR2 
+ A   763                       .define "(14*0x0001u)",DMA2TSEL__UCA0RXIFG 
+ A   764                       .define "(15*0x0001u)",DMA2TSEL__UCA0TXIFG 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   15
+
+ A   765                       .define "(16*0x0001u)",DMA2TSEL__UCA1RXIFG 
+ A   766                       .define "(17*0x0001u)",DMA2TSEL__UCA1TXIFG 
+ A   767                       .define "(18*0x0001u)",DMA2TSEL__UCB0RXIFG0 
+ A   768                       .define "(20*0x0001u)",DMA2TSEL__UCB0RXIFG1 
+ A   769                       .define "(22*0x0001u)",DMA2TSEL__UCB0RXIFG2 
+ A   770                       .define "(24*0x0001u)",DMA2TSEL__UCB0RXIFG3 
+ A   771                       .define "(19*0x0001u)",DMA2TSEL__UCB0TXIFG0 
+ A   772                       .define "(21*0x0001u)",DMA2TSEL__UCB0TXIFG1 
+ A   773                       .define "(23*0x0001u)",DMA2TSEL__UCB0TXIFG2 
+ A   774                       .define "(25*0x0001u)",DMA2TSEL__UCB0TXIFG3 
+ A   775                       .define "(0x0002)",DMAABORT 
+ A   776                       .define "(0x0002)",DMAABORT_L 
+ A   777                       .define "(0x0080)",DMADSTBYTE 
+ A   778                       .define "(0x0080)",DMADSTBYTE_L 
+ A   779                       .define "(0x0400)",DMADSTINCR0 
+ A   780                       .define "(0x0004)",DMADSTINCR0_H 
+ A   781                       .define "(0x0800)",DMADSTINCR1 
+ A   782                       .define "(0x0008)",DMADSTINCR1_H 
+ A   783                       .define "(0*0x0400u)",DMADSTINCR_0 
+ A   784                       .define "(1*0x0400u)",DMADSTINCR_1 
+ A   785                       .define "(2*0x0400u)",DMADSTINCR_2 
+ A   786                       .define "(3*0x0400u)",DMADSTINCR_3 
+ A   787                       .define "(0x1000)",DMADT0 
+ A   788                       .define "(0x0010)",DMADT0_H 
+ A   789                       .define "(0x2000)",DMADT1 
+ A   790                       .define "(0x0020)",DMADT1_H 
+ A   791                       .define "(0x4000)",DMADT2 
+ A   792                       .define "(0x0040)",DMADT2_H 
+ A   793                       .define "(0*0x1000u)",DMADT_0 
+ A   794                       .define "(1*0x1000u)",DMADT_1 
+ A   795                       .define "(2*0x1000u)",DMADT_2 
+ A   796                       .define "(3*0x1000u)",DMADT_3 
+ A   797                       .define "(4*0x1000u)",DMADT_4 
+ A   798                       .define "(5*0x1000u)",DMADT_5 
+ A   799                       .define "(6*0x1000u)",DMADT_6 
+ A   800                       .define "(7*0x1000u)",DMADT_7 
+ A   801                       .define "(0x0010)",DMAEN 
+ A   802                       .define "(0x0010)",DMAEN_L 
+ A   803                       .define "(0x0004)",DMAIE 
+ A   804                       .define "(0x0004)",DMAIE_L 
+ A   805                       .define "(0x0008)",DMAIFG 
+ A   806                       .define "(0x0008)",DMAIFG_L 
+ A   807                       .define "(0x0002)",DMAIV_DMA0IFG 
+ A   808                       .define "(0x0004)",DMAIV_DMA1IFG 
+ A   809                       .define "(0x0006)",DMAIV_DMA2IFG 
+ A   810                       .define "(0x0000)",DMAIV_NONE 
+ A   811                       .define "(0x0020)",DMALEVEL 
+ A   812                       .define "(0x0020)",DMALEVEL_L 
+ A   813                       .define "(0x0001)",DMAREQ 
+ A   814                       .define "(0x0001)",DMAREQ_L 
+ A   815                       .define "(0x0004)",DMARMWDIS 
+ A   816                       .define "(0x0004)",DMARMWDIS_L 
+ A   817                       .define "(3*0x0040u)",DMASBDB 
+ A   818                       .define "(1*0x0040u)",DMASBDW 
+ A   819                       .define "(0x0040)",DMASRCBYTE 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   16
+
+ A   820                       .define "(0x0040)",DMASRCBYTE_L 
+ A   821                       .define "(0x0100)",DMASRCINCR0 
+ A   822                       .define "(0x0001)",DMASRCINCR0_H 
+ A   823                       .define "(0x0200)",DMASRCINCR1 
+ A   824                       .define "(0x0002)",DMASRCINCR1_H 
+ A   825                       .define "(0*0x0100u)",DMASRCINCR_0 
+ A   826                       .define "(1*0x0100u)",DMASRCINCR_1 
+ A   827                       .define "(2*0x0100u)",DMASRCINCR_2 
+ A   828                       .define "(3*0x0100u)",DMASRCINCR_3 
+ A   829                       .define "(2*0x0040u)",DMASWDB 
+ A   830                       .define "(0*0x0040u)",DMASWDW 
+ A   831                       .define "__MSP430_BASEADDRESS_DMAX_3__",DMA_BASE 
+ A   832                       .define """.int42""",DMA_VECTOR 
+ A   833                       .define "(0x0001)",ENNMI 
+ A   834                       .define "(0x0001)",ENNMI_L 
+ A   835                       .define "(0x0040)",ENSTFCNT1 
+ A   836                       .define "(0x0040)",ENSTFCNT1_L 
+ A   837                       .define "(0x0080)",ENSTFCNT2 
+ A   838                       .define "(0x0080)",ENSTFCNT2_L 
+ A   839                       .define "__MSP430_BASEADDRESS_EUSCI_A0__",EUSCI_A0_BASE 
+ A   840                       .define "__MSP430_BASEADDRESS_EUSCI_A1__",EUSCI_A1_BASE 
+ A   841                       .define "__MSP430_BASEADDRESS_EUSCI_B0__",EUSCI_B0_BASE 
+ A   842                       .define "__MSP430_BASEADDRESS_FRAM_FR5XX__",FRAM_BASE 
+ A   843                       .define "(0x9600)",FRPW 
+ A   844                       .define "(0xA500)",FWPW 
+ A   845                       .define "(0x3300)",FXPW 
+ A   846                       .define "(0x0008)",GIE 
+ A   847                       .define "(0x0040)",ID0 
+ A   848                       .define "(0x0080)",ID1 
+ A   849                       .define "(0*0x40u)",ID_0 
+ A   850                       .define "(1*0x40u)",ID_1 
+ A   851                       .define "(2*0x40u)",ID_2 
+ A   852                       .define "(3*0x40u)",ID_3 
+ A   853                       .define "(0*0x40u)",ID__1 
+ A   854                       .define "(1*0x40u)",ID__2 
+ A   855                       .define "(2*0x40u)",ID__4 
+ A   856                       .define "(3*0x40u)",ID__8 
+ A   857                       .define "(0x0040)",JMBCLR0OFF 
+ A   858                       .define "(0x0040)",JMBCLR0OFF_L 
+ A   859                       .define "(0x0080)",JMBCLR1OFF 
+ A   860                       .define "(0x0080)",JMBCLR1OFF_L 
+ A   861                       .define "(0x0001)",JMBIN0FG 
+ A   862                       .define "(0x0001)",JMBIN0FG_L 
+ A   863                       .define "(0x0002)",JMBIN1FG 
+ A   864                       .define "(0x0002)",JMBIN1FG_L 
+ A   865                       .define "(0x0040)",JMBINIE 
+ A   866                       .define "(0x0040)",JMBINIE_L 
+ A   867                       .define "(0x0040)",JMBINIFG 
+ A   868                       .define "(0x0040)",JMBINIFG_L 
+ A   869                       .define "(0x0010)",JMBMODE 
+ A   870                       .define "(0x0010)",JMBMODE_L 
+ A   871                       .define "(0x0004)",JMBOUT0FG 
+ A   872                       .define "(0x0004)",JMBOUT0FG_L 
+ A   873                       .define "(0x0008)",JMBOUT1FG 
+ A   874                       .define "(0x0008)",JMBOUT1FG_L 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   17
+
+ A   875                       .define "(0x0080)",JMBOUTIE 
+ A   876                       .define "(0x0080)",JMBOUTIE_L 
+ A   877                       .define "(0x0080)",JMBOUTIFG 
+ A   878                       .define "(0x0080)",JMBOUTIFG_L 
+ A   879                       .define "(0x0001)",LOCKLPM5 
+ A   880                       .define "(0x0001)",LOCKLPM5_L 
+ A   881                       .define "(CPUOFF)",LPM0 
+ A   882                       .define "(SCG0+CPUOFF)",LPM1 
+ A   883                       .define "(SCG1+CPUOFF)",LPM2 
+ A   884                       .define "(SCG1+SCG0+CPUOFF)",LPM3 
+ A   885                       .define "(SCG1+SCG0+OSCOFF+CPUOFF)",LPM4 
+ A   886                       .define "MAC32H_L",MAC32H_B 
+ A   887                       .define "MAC32L_L",MAC32L_B 
+ A   888                       .define "MACS32H_L",MACS32H_B 
+ A   889                       .define "MACS32L_L",MACS32L_B 
+ A   890                       .define "MACS_L",MACS_B 
+ A   891                       .define "MAC_L",MAC_B 
+ A   892                       .define "(0x0010)",MC0 
+ A   893                       .define "(0x0020)",MC1 
+ A   894                       .define "(0x0002)",MCLKREQEN 
+ A   895                       .define "(0x0002)",MCLKREQEN_L 
+ A   896                       .define "(0*0x10u)",MC_0 
+ A   897                       .define "(1*0x10u)",MC_1 
+ A   898                       .define "(2*0x10u)",MC_2 
+ A   899                       .define "(3*0x10u)",MC_3 
+ A   900                       .define "(2*0x10u)",MC__CONTINOUS 
+ A   901                       .define "(2*0x10u)",MC__CONTINUOUS 
+ A   902                       .define "(0*0x10u)",MC__STOP 
+ A   903                       .define "(1*0x10u)",MC__UP 
+ A   904                       .define "(3*0x10u)",MC__UPDOWN 
+ A   905                       .define "(0x0008)",MODCLKREQEN 
+ A   906                       .define "(0x0008)",MODCLKREQEN_L 
+ A   907                       .define "(0x0001)",MPUENA 
+ A   908                       .define "(0x0001)",MPUENA_L 
+ A   909                       .define "(0xA500)",MPUPW 
+ A   910                       .define "(0xA5)",MPUPW_H 
+ A   911                       .define "(0x0001)",MPUSB10 
+ A   912                       .define "(0x0001)",MPUSB10_L 
+ A   913                       .define "(0x0002)",MPUSB11 
+ A   914                       .define "(0x0002)",MPUSB11_L 
+ A   915                       .define "(0x0004)",MPUSB12 
+ A   916                       .define "(0x0004)",MPUSB12_L 
+ A   917                       .define "(0x0008)",MPUSB13 
+ A   918                       .define "(0x0008)",MPUSB13_L 
+ A   919                       .define "(0x0010)",MPUSB14 
+ A   920                       .define "(0x0010)",MPUSB14_L 
+ A   921                       .define "(0x0100)",MPUSB20 
+ A   922                       .define "(0x0001)",MPUSB20_H 
+ A   923                       .define "(0x0200)",MPUSB21 
+ A   924                       .define "(0x0002)",MPUSB21_H 
+ A   925                       .define "(0x0400)",MPUSB22 
+ A   926                       .define "(0x0004)",MPUSB22_H 
+ A   927                       .define "(0x0800)",MPUSB23 
+ A   928                       .define "(0x0008)",MPUSB23_H 
+ A   929                       .define "(0x1000)",MPUSB24 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   18
+
+ A   930                       .define "(0x0010)",MPUSB24_H 
+ A   931                       .define "(0x0001)",MPUSEG1IFG 
+ A   932                       .define "(0x0001)",MPUSEG1IFG_L 
+ A   933                       .define "(0x0001)",MPUSEG1RE 
+ A   934                       .define "(0x0001)",MPUSEG1RE_L 
+ A   935                       .define "(0x0008)",MPUSEG1VS 
+ A   936                       .define "(0x0008)",MPUSEG1VS_L 
+ A   937                       .define "(0x0002)",MPUSEG1WE 
+ A   938                       .define "(0x0002)",MPUSEG1WE_L 
+ A   939                       .define "(0x0004)",MPUSEG1XE 
+ A   940                       .define "(0x0004)",MPUSEG1XE_L 
+ A   941                       .define "(0x0002)",MPUSEG2IFG 
+ A   942                       .define "(0x0002)",MPUSEG2IFG_L 
+ A   943                       .define "(0x0010)",MPUSEG2RE 
+ A   944                       .define "(0x0010)",MPUSEG2RE_L 
+ A   945                       .define "(0x0080)",MPUSEG2VS 
+ A   946                       .define "(0x0080)",MPUSEG2VS_L 
+ A   947                       .define "(0x0020)",MPUSEG2WE 
+ A   948                       .define "(0x0020)",MPUSEG2WE_L 
+ A   949                       .define "(0x0040)",MPUSEG2XE 
+ A   950                       .define "(0x0040)",MPUSEG2XE_L 
+ A   951                       .define "(0x0004)",MPUSEG3IFG 
+ A   952                       .define "(0x0004)",MPUSEG3IFG_L 
+ A   953                       .define "(0x0100)",MPUSEG3RE 
+ A   954                       .define "(0x0001)",MPUSEG3RE_H 
+ A   955                       .define "(0x0800)",MPUSEG3VS 
+ A   956                       .define "(0x0008)",MPUSEG3VS_H 
+ A   957                       .define "(0x0200)",MPUSEG3WE 
+ A   958                       .define "(0x0002)",MPUSEG3WE_H 
+ A   959                       .define "(0x0400)",MPUSEG3XE 
+ A   960                       .define "(0x0004)",MPUSEG3XE_H 
+ A   961                       .define "(0x0008)",MPUSEGIIFG 
+ A   962                       .define "(0x0008)",MPUSEGIIFG_L 
+ A   963                       .define "(0x1000)",MPUSEGIRE 
+ A   964                       .define "(0x0010)",MPUSEGIRE_H 
+ A   965                       .define "(0x8000)",MPUSEGIVS 
+ A   966                       .define "(0x0080)",MPUSEGIVS_H 
+ A   967                       .define "(0x2000)",MPUSEGIWE 
+ A   968                       .define "(0x0020)",MPUSEGIWE_H 
+ A   969                       .define "(0x4000)",MPUSEGIXE 
+ A   970                       .define "(0x0040)",MPUSEGIXE_H 
+ A   971                       .define "__MSP430_BASEADDRESS_MPU__",MPU_BASE 
+ A   972                       .define "MPY32H_L",MPY32H_B 
+ A   973                       .define "MPY32L_L",MPY32L_B 
+ A   974                       .define "__MSP430_BASEADDRESS_MPY32__",MPY32_BASE 
+ A   975                       .define "(0x0001)",MPYC 
+ A   976                       .define "(0x0001)",MPYC_L 
+ A   977                       .define "(0x0200)",MPYDLY32 
+ A   978                       .define "(0x0002)",MPYDLY32_H 
+ A   979                       .define "(0x0100)",MPYDLYWRTEN 
+ A   980                       .define "(0x0001)",MPYDLYWRTEN_H 
+ A   981                       .define "(0x0004)",MPYFRAC 
+ A   982                       .define "(0x0004)",MPYFRAC_L 
+ A   983                       .define "(0x0010)",MPYM0 
+ A   984                       .define "(0x0010)",MPYM0_L 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   19
+
+ A   985                       .define "(0x0020)",MPYM1 
+ A   986                       .define "(0x0020)",MPYM1_L 
+ A   987                       .define "(0x0000)",MPYM_0 
+ A   988                       .define "(0x0010)",MPYM_1 
+ A   989                       .define "(0x0020)",MPYM_2 
+ A   990                       .define "(0x0030)",MPYM_3 
+ A   991                       .define "(0x0020)",MPYM__MAC 
+ A   992                       .define "(0x0030)",MPYM__MACS 
+ A   993                       .define "(0x0000)",MPYM__MPY 
+ A   994                       .define "(0x0010)",MPYM__MPYS 
+ A   995                       .define "MPYS32H_L",MPYS32H_B 
+ A   996                       .define "MPYS32L_L",MPYS32L_B 
+ A   997                       .define "(0x0008)",MPYSAT 
+ A   998                       .define "(0x0008)",MPYSAT_L 
+ A   999                       .define "MPYS_L",MPYS_B 
+ A  1000                       .define "MPY_L",MPY_B 
+ A  1001                       .define "(0x0004)",N 
+ A  1002                       .define "(0x0010)",NACCESS0 
+ A  1003                       .define "(0x0010)",NACCESS0_L 
+ A  1004                       .define "(0x0020)",NACCESS1 
+ A  1005                       .define "(0x0020)",NACCESS1_L 
+ A  1006                       .define "(0x0040)",NACCESS2 
+ A  1007                       .define "(0x0040)",NACCESS2_L 
+ A  1008                       .define "(0x0000)",NACCESS_0 
+ A  1009                       .define "(0x0010)",NACCESS_1 
+ A  1010                       .define "(0x0020)",NACCESS_2 
+ A  1011                       .define "(0x0030)",NACCESS_3 
+ A  1012                       .define "(0x0040)",NACCESS_4 
+ A  1013                       .define "(0x0050)",NACCESS_5 
+ A  1014                       .define "(0x0060)",NACCESS_6 
+ A  1015                       .define "(0x0070)",NACCESS_7 
+ A  1016                       .define "(0x0008)",NAUTO 
+ A  1017                       .define "(0x0008)",NAUTO_L 
+ A  1018                       .define "(0x0010)",NMIIE 
+ A  1019                       .define "(0x0010)",NMIIE_L 
+ A  1020                       .define "(0x0010)",NMIIFG 
+ A  1021                       .define "(0x0010)",NMIIFG_L 
+ A  1022                       .define "(0x0001)",NPRECHG0 
+ A  1023                       .define "(0x0001)",NPRECHG0_L 
+ A  1024                       .define "(0x0002)",NPRECHG1 
+ A  1025                       .define "(0x0002)",NPRECHG1_L 
+ A  1026                       .define "(0x0004)",NPRECHG2 
+ A  1027                       .define "(0x0004)",NPRECHG2_L 
+ A  1028                       .define "(0x0000)",NPRECHG_0 
+ A  1029                       .define "(0x0001)",NPRECHG_1 
+ A  1030                       .define "(0x0002)",NPRECHG_2 
+ A  1031                       .define "(0x0003)",NPRECHG_3 
+ A  1032                       .define "(0x0004)",NPRECHG_4 
+ A  1033                       .define "(0x0005)",NPRECHG_5 
+ A  1034                       .define "(0x0006)",NPRECHG_6 
+ A  1035                       .define "(0x0007)",NPRECHG_7 
+ A  1036                       .define "(0x0002)",OFIE 
+ A  1037                       .define "(0x0002)",OFIE_L 
+ A  1038                       .define "(0x0002)",OFIFG 
+ A  1039                       .define "(0x0002)",OFIFG_L 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   20
+
+ A  1040                       .define "(0x0040)",OP1_32 
+ A  1041                       .define "(0x0040)",OP1_32_L 
+ A  1042                       .define "OP2H_L",OP2H_B 
+ A  1043                       .define "OP2L_L",OP2L_B 
+ A  1044                       .define "(0x0080)",OP2_32 
+ A  1045                       .define "(0x0080)",OP2_32_L 
+ A  1046                       .define "OP2_L",OP2_B 
+ A  1047                       .define "(0x0020)",OSCOFF 
+ A  1048                       .define "(0x0004)",OUT 
+ A  1049                       .define "(0x0020)",OUTMOD0 
+ A  1050                       .define "(0x0040)",OUTMOD1 
+ A  1051                       .define "(0x0080)",OUTMOD2 
+ A  1052                       .define "(0*0x20u)",OUTMOD_0 
+ A  1053                       .define "(1*0x20u)",OUTMOD_1 
+ A  1054                       .define "(2*0x20u)",OUTMOD_2 
+ A  1055                       .define "(3*0x20u)",OUTMOD_3 
+ A  1056                       .define "(4*0x20u)",OUTMOD_4 
+ A  1057                       .define "(5*0x20u)",OUTMOD_5 
+ A  1058                       .define "(6*0x20u)",OUTMOD_6 
+ A  1059                       .define "(7*0x20u)",OUTMOD_7 
+ A  1060                       .define "(PADIR_L)",P1DIR 
+ A  1061                       .define "(PAIE_L)",P1IE 
+ A  1062                       .define "(PAIES_L)",P1IES 
+ A  1063                       .define "(PAIFG_L)",P1IFG 
+ A  1064                       .define "(PAIN_L)",P1IN 
+ A  1065                       .define "(0x0000)",P1IV_NONE 
+ A  1066                       .define "(0x0002)",P1IV_P1IFG0 
+ A  1067                       .define "(0x0004)",P1IV_P1IFG1 
+ A  1068                       .define "(0x0006)",P1IV_P1IFG2 
+ A  1069                       .define "(0x0008)",P1IV_P1IFG3 
+ A  1070                       .define "(0x000A)",P1IV_P1IFG4 
+ A  1071                       .define "(0x000C)",P1IV_P1IFG5 
+ A  1072                       .define "(0x000E)",P1IV_P1IFG6 
+ A  1073                       .define "(0x0010)",P1IV_P1IFG7 
+ A  1074                       .define "(PAOUT_L)",P1OUT 
+ A  1075                       .define "(PAREN_L)",P1REN 
+ A  1076                       .define "(PASEL0_L)",P1SEL0 
+ A  1077                       .define "(PASEL1_L)",P1SEL1 
+ A  1078                       .define "(PASELC_L)",P1SELC 
+ A  1079                       .define "__MSP430_BASEADDRESS_PORT1_R__",P1_BASE 
+ A  1080                       .define "(PADIR_H)",P2DIR 
+ A  1081                       .define "(PAIE_H)",P2IE 
+ A  1082                       .define "(PAIES_H)",P2IES 
+ A  1083                       .define "(PAIFG_H)",P2IFG 
+ A  1084                       .define "(PAIN_H)",P2IN 
+ A  1085                       .define "(0x0000)",P2IV_NONE 
+ A  1086                       .define "(0x0002)",P2IV_P2IFG0 
+ A  1087                       .define "(0x0004)",P2IV_P2IFG1 
+ A  1088                       .define "(0x0006)",P2IV_P2IFG2 
+ A  1089                       .define "(0x0008)",P2IV_P2IFG3 
+ A  1090                       .define "(0x000A)",P2IV_P2IFG4 
+ A  1091                       .define "(0x000C)",P2IV_P2IFG5 
+ A  1092                       .define "(0x000E)",P2IV_P2IFG6 
+ A  1093                       .define "(0x0010)",P2IV_P2IFG7 
+ A  1094                       .define "(PAOUT_H)",P2OUT 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   21
+
+ A  1095                       .define "(PAREN_H)",P2REN 
+ A  1096                       .define "(PASEL0_H)",P2SEL0 
+ A  1097                       .define "(PASEL1_H)",P2SEL1 
+ A  1098                       .define "(PASELC_H)",P2SELC 
+ A  1099                       .define "__MSP430_BASEADDRESS_PORT2_R__",P2_BASE 
+ A  1100                       .define "(PBDIR_L)",P3DIR 
+ A  1101                       .define "(PBIE_L)",P3IE 
+ A  1102                       .define "(PBIES_L)",P3IES 
+ A  1103                       .define "(PBIFG_L)",P3IFG 
+ A  1104                       .define "(PBIN_L)",P3IN 
+ A  1105                       .define "(0x0000)",P3IV_NONE 
+ A  1106                       .define "(0x0002)",P3IV_P3IFG0 
+ A  1107                       .define "(0x0004)",P3IV_P3IFG1 
+ A  1108                       .define "(0x0006)",P3IV_P3IFG2 
+ A  1109                       .define "(0x0008)",P3IV_P3IFG3 
+ A  1110                       .define "(0x000A)",P3IV_P3IFG4 
+ A  1111                       .define "(0x000C)",P3IV_P3IFG5 
+ A  1112                       .define "(0x000E)",P3IV_P3IFG6 
+ A  1113                       .define "(0x0010)",P3IV_P3IFG7 
+ A  1114                       .define "(PBOUT_L)",P3OUT 
+ A  1115                       .define "(PBREN_L)",P3REN 
+ A  1116                       .define "(PBSEL0_L)",P3SEL0 
+ A  1117                       .define "(PBSEL1_L)",P3SEL1 
+ A  1118                       .define "(PBSELC_L)",P3SELC 
+ A  1119                       .define "__MSP430_BASEADDRESS_PORT3_R__",P3_BASE 
+ A  1120                       .define "(PBDIR_H)",P4DIR 
+ A  1121                       .define "(PBIE_H)",P4IE 
+ A  1122                       .define "(PBIES_H)",P4IES 
+ A  1123                       .define "(PBIFG_H)",P4IFG 
+ A  1124                       .define "(PBIN_H)",P4IN 
+ A  1125                       .define "(0x0000)",P4IV_NONE 
+ A  1126                       .define "(0x0002)",P4IV_P4IFG0 
+ A  1127                       .define "(0x0004)",P4IV_P4IFG1 
+ A  1128                       .define "(0x0006)",P4IV_P4IFG2 
+ A  1129                       .define "(0x0008)",P4IV_P4IFG3 
+ A  1130                       .define "(0x000A)",P4IV_P4IFG4 
+ A  1131                       .define "(0x000C)",P4IV_P4IFG5 
+ A  1132                       .define "(0x000E)",P4IV_P4IFG6 
+ A  1133                       .define "(0x0010)",P4IV_P4IFG7 
+ A  1134                       .define "(PBOUT_H)",P4OUT 
+ A  1135                       .define "(PBREN_H)",P4REN 
+ A  1136                       .define "(PBSEL0_H)",P4SEL0 
+ A  1137                       .define "(PBSEL1_H)",P4SEL1 
+ A  1138                       .define "(PBSELC_H)",P4SELC 
+ A  1139                       .define "__MSP430_BASEADDRESS_PORT4_R__",P4_BASE 
+ A  1140                       .define "__MSP430_BASEADDRESS_PORTA_R__",PA_BASE 
+ A  1141                       .define "__MSP430_BASEADDRESS_PORTB_R__",PB_BASE 
+ A  1142                       .define "__MSP430_BASEADDRESS_PORTJ_R__",PJ_BASE 
+ A  1143                       .define "(0x0100)",PMMBORIFG 
+ A  1144                       .define "(0x0001)",PMMBORIFG_H 
+ A  1145                       .define "(0x8000)",PMMLPM5IFG 
+ A  1146                       .define "(0x0080)",PMMLPM5IFG_H 
+ A  1147                       .define "(0x0400)",PMMPORIFG 
+ A  1148                       .define "(0x0004)",PMMPORIFG_H 
+ A  1149                       .define "(0xA500)",PMMPW 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   22
+
+ A  1150                       .define "(0xA5)",PMMPW_H 
+ A  1151                       .define "(0x0010)",PMMREGOFF 
+ A  1152                       .define "(0x0010)",PMMREGOFF_L 
+ A  1153                       .define "(0x0200)",PMMRSTIFG 
+ A  1154                       .define "(0x0002)",PMMRSTIFG_H 
+ A  1155                       .define "(0x0004)",PMMSWBOR 
+ A  1156                       .define "(0x0004)",PMMSWBOR_L 
+ A  1157                       .define "(0x0008)",PMMSWPOR 
+ A  1158                       .define "(0x0008)",PMMSWPOR_L 
+ A  1159                       .define "__MSP430_BASEADDRESS_PMM_FR5xx__",PMM_BASE 
+ A  1160                       .define """.int39""",PORT1_VECTOR 
+ A  1161                       .define """.int36""",PORT2_VECTOR 
+ A  1162                       .define """.int33""",PORT3_VECTOR 
+ A  1163                       .define """.int32""",PORT4_VECTOR 
+ A  1164                       .define "(0x0200)",REFBGACT 
+ A  1165                       .define "(0x0002)",REFBGACT_H 
+ A  1166                       .define "(0x0100)",REFGENACT 
+ A  1167                       .define "(0x0001)",REFGENACT_H 
+ A  1168                       .define "(0x0400)",REFGENBUSY 
+ A  1169                       .define "(0x0004)",REFGENBUSY_H 
+ A  1170                       .define "(0x0001)",REFON 
+ A  1171                       .define "(0x0001)",REFON_L 
+ A  1172                       .define "(0x0008)",REFTCOFF 
+ A  1173                       .define "(0x0008)",REFTCOFF_L 
+ A  1174                       .define "(0x0010)",REFVSEL0 
+ A  1175                       .define "(0x0010)",REFVSEL0_L 
+ A  1176                       .define "(0x0020)",REFVSEL1 
+ A  1177                       .define "(0x0020)",REFVSEL1_L 
+ A  1178                       .define "(0x0000)",REFVSEL_0 
+ A  1179                       .define "(0x0010)",REFVSEL_1 
+ A  1180                       .define "(0x0020)",REFVSEL_2 
+ A  1181                       .define "(0x0030)",REFVSEL_3 
+ A  1182                       .define "__MSP430_BASEADDRESS_REF__",REF_BASE 
+ A  1183                       .define """.reset""",RESET_VECTOR 
+ A  1184                       .define "(0x0002)",ROUNDROBIN 
+ A  1185                       .define "(0x0002)",ROUNDROBIN_L 
+ A  1186                       .define "(0x0004)",RT0IP0 
+ A  1187                       .define "(0x0004)",RT0IP0_L 
+ A  1188                       .define "(0x0008)",RT0IP1 
+ A  1189                       .define "(0x0008)",RT0IP1_L 
+ A  1190                       .define "(0x0010)",RT0IP2 
+ A  1191                       .define "(0x0010)",RT0IP2_L 
+ A  1192                       .define "(0x0000)",RT0IP_0 
+ A  1193                       .define "(0x0004)",RT0IP_1 
+ A  1194                       .define "(0x0008)",RT0IP_2 
+ A  1195                       .define "(0x000C)",RT0IP_3 
+ A  1196                       .define "(0x0010)",RT0IP_4 
+ A  1197                       .define "(0x0014)",RT0IP_5 
+ A  1198                       .define "(0x0018)",RT0IP_6 
+ A  1199                       .define "(0x001C)",RT0IP_7 
+ A  1200                       .define "(0x0018)",RT0IP__128 
+ A  1201                       .define "(0x000C)",RT0IP__16 
+ A  1202                       .define "(0x0000)",RT0IP__2 
+ A  1203                       .define "(0x001C)",RT0IP__256 
+ A  1204                       .define "(0x0010)",RT0IP__32 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   23
+
+ A  1205                       .define "(0x0004)",RT0IP__4 
+ A  1206                       .define "(0x0014)",RT0IP__64 
+ A  1207                       .define "(0x0008)",RT0IP__8 
+ A  1208                       .define "RTCPS_L",RT0PS 
+ A  1209                       .define "(0x0002)",RT0PSIE 
+ A  1210                       .define "(0x0002)",RT0PSIE_L 
+ A  1211                       .define "(0x0001)",RT0PSIFG 
+ A  1212                       .define "(0x0001)",RT0PSIFG_L 
+ A  1213                       .define "(0x0004)",RT1IP0 
+ A  1214                       .define "(0x0004)",RT1IP0_L 
+ A  1215                       .define "(0x0008)",RT1IP1 
+ A  1216                       .define "(0x0008)",RT1IP1_L 
+ A  1217                       .define "(0x0010)",RT1IP2 
+ A  1218                       .define "(0x0010)",RT1IP2_L 
+ A  1219                       .define "(0x0000)",RT1IP_0 
+ A  1220                       .define "(0x0004)",RT1IP_1 
+ A  1221                       .define "(0x0008)",RT1IP_2 
+ A  1222                       .define "(0x000C)",RT1IP_3 
+ A  1223                       .define "(0x0010)",RT1IP_4 
+ A  1224                       .define "(0x0014)",RT1IP_5 
+ A  1225                       .define "(0x0018)",RT1IP_6 
+ A  1226                       .define "(0x001C)",RT1IP_7 
+ A  1227                       .define "(0x0018)",RT1IP__128 
+ A  1228                       .define "(0x000C)",RT1IP__16 
+ A  1229                       .define "(0x0000)",RT1IP__2 
+ A  1230                       .define "(0x001C)",RT1IP__256 
+ A  1231                       .define "(0x0010)",RT1IP__32 
+ A  1232                       .define "(0x0004)",RT1IP__4 
+ A  1233                       .define "(0x0014)",RT1IP__64 
+ A  1234                       .define "(0x0008)",RT1IP__8 
+ A  1235                       .define "RTCPS_H",RT1PS 
+ A  1236                       .define "(0x0002)",RT1PSIE 
+ A  1237                       .define "(0x0002)",RT1PSIE_L 
+ A  1238                       .define "(0x0001)",RT1PSIFG 
+ A  1239                       .define "(0x0001)",RT1PSIFG_L 
+ A  1240                       .define "RTCADOWDAY_H",RTCADAY 
+ A  1241                       .define "RTCADOWDAY_L",RTCADOW 
+ A  1242                       .define "(0x80)",RTCAE 
+ A  1243                       .define "RTCAMINHR_H",RTCAHOUR 
+ A  1244                       .define "(0x0020)",RTCAIE 
+ A  1245                       .define "(0x0020)",RTCAIE_L 
+ A  1246                       .define "(0x0002)",RTCAIFG 
+ A  1247                       .define "(0x0002)",RTCAIFG_L 
+ A  1248                       .define "RTCAMINHR_L",RTCAMIN 
+ A  1249                       .define "(0x8000)",RTCBCD 
+ A  1250                       .define "(0x0080)",RTCBCD_H 
+ A  1251                       .define "(0x0001)",RTCCAL0 
+ A  1252                       .define "(0x0001)",RTCCAL0_L 
+ A  1253                       .define "(0x0002)",RTCCAL1 
+ A  1254                       .define "(0x0002)",RTCCAL1_L 
+ A  1255                       .define "(0x0004)",RTCCAL2 
+ A  1256                       .define "(0x0004)",RTCCAL2_L 
+ A  1257                       .define "(0x0008)",RTCCAL3 
+ A  1258                       .define "(0x0008)",RTCCAL3_L 
+ A  1259                       .define "(0x0010)",RTCCAL4 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   24
+
+ A  1260                       .define "(0x0010)",RTCCAL4_L 
+ A  1261                       .define "(0x0020)",RTCCAL5 
+ A  1262                       .define "(0x0020)",RTCCAL5_L 
+ A  1263                       .define "(0x0100)",RTCCALF0 
+ A  1264                       .define "(0x0001)",RTCCALF0_H 
+ A  1265                       .define "(0x0200)",RTCCALF1 
+ A  1266                       .define "(0x0002)",RTCCALF1_H 
+ A  1267                       .define "(0x0000)",RTCCALF_0 
+ A  1268                       .define "(0x0100)",RTCCALF_1 
+ A  1269                       .define "(0x0200)",RTCCALF_2 
+ A  1270                       .define "(0x0300)",RTCCALF_3 
+ A  1271                       .define "(0x0080)",RTCCALS 
+ A  1272                       .define "(0x0080)",RTCCALS_L 
+ A  1273                       .define "RTCCTL01_L",RTCCTL0 
+ A  1274                       .define "RTCCTL01_H",RTCCTL1 
+ A  1275                       .define "RTCCTL23_L",RTCCTL2 
+ A  1276                       .define "RTCCTL23_H",RTCCTL3 
+ A  1277                       .define "RTCDATE_L",RTCDAY 
+ A  1278                       .define "RTCTIM1_H",RTCDOW 
+ A  1279                       .define "(0x4000)",RTCHOLD 
+ A  1280                       .define "(0x0040)",RTCHOLD_H 
+ A  1281                       .define "RTCTIM1_L",RTCHOUR 
+ A  1282                       .define "(0x0000)",RTCIV_NONE 
+ A  1283                       .define "(0x0008)",RTCIV_RT0PSIFG 
+ A  1284                       .define "(0x000A)",RTCIV_RT1PSIFG 
+ A  1285                       .define "(0x0006)",RTCIV_RTCAIFG 
+ A  1286                       .define "(0x000C)",RTCIV_RTCOFIFG 
+ A  1287                       .define "(0x0002)",RTCIV_RTCRDYIFG 
+ A  1288                       .define "(0x0004)",RTCIV_RTCTEVIFG 
+ A  1289                       .define "RTCTIM0_H",RTCMIN 
+ A  1290                       .define "RTCDATE_H",RTCMON 
+ A  1291                       .define "RTCTIM0_L",RTCNT1 
+ A  1292                       .define "RTCTIM0",RTCNT12 
+ A  1293                       .define "RTCTIM0_H",RTCNT2 
+ A  1294                       .define "RTCTIM1_L",RTCNT3 
+ A  1295                       .define "RTCTIM1",RTCNT34 
+ A  1296                       .define "RTCTIM1_H",RTCNT4 
+ A  1297                       .define "(0x0080)",RTCOFIE 
+ A  1298                       .define "(0x0080)",RTCOFIE_L 
+ A  1299                       .define "(0x0008)",RTCOFIFG 
+ A  1300                       .define "(0x0008)",RTCOFIFG_L 
+ A  1301                       .define "(0x1000)",RTCRDY 
+ A  1302                       .define "(0x0010)",RTCRDYIE 
+ A  1303                       .define "(0x0010)",RTCRDYIE_L 
+ A  1304                       .define "(0x0001)",RTCRDYIFG 
+ A  1305                       .define "(0x0001)",RTCRDYIFG_L 
+ A  1306                       .define "(0x0010)",RTCRDY_H 
+ A  1307                       .define "RTCTIM0_L",RTCSEC 
+ A  1308                       .define "(0x0100)",RTCTEV0 
+ A  1309                       .define "(0x0001)",RTCTEV0_H 
+ A  1310                       .define "(0x0200)",RTCTEV1 
+ A  1311                       .define "(0x0002)",RTCTEV1_H 
+ A  1312                       .define "(0x0040)",RTCTEVIE 
+ A  1313                       .define "(0x0040)",RTCTEVIE_L 
+ A  1314                       .define "(0x0004)",RTCTEVIFG 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   25
+
+ A  1315                       .define "(0x0004)",RTCTEVIFG_L 
+ A  1316                       .define "(0x0000)",RTCTEV_0 
+ A  1317                       .define "(0x0100)",RTCTEV_1 
+ A  1318                       .define "(0x0200)",RTCTEV_2 
+ A  1319                       .define "(0x0300)",RTCTEV_3 
+ A  1320                       .define "(0x0200)",RTCTEV__0000 
+ A  1321                       .define "(0x0300)",RTCTEV__1200 
+ A  1322                       .define "(0x0100)",RTCTEV__HOUR 
+ A  1323                       .define "(0x0000)",RTCTEV__MIN 
+ A  1324                       .define "RTCYEAR_H",RTCYEARH 
+ A  1325                       .define "RTCYEAR_L",RTCYEARL 
+ A  1326                       .define "__MSP430_BASEADDRESS_RTC_B__",RTC_B_BASE 
+ A  1327                       .define "(0x0000)",RTC_NONE 
+ A  1328                       .define "(0x0008)",RTC_RT0PSIFG 
+ A  1329                       .define "(0x000A)",RTC_RT1PSIFG 
+ A  1330                       .define "(0x0006)",RTC_RTCAIFG 
+ A  1331                       .define "(0x000C)",RTC_RTCOFIFG 
+ A  1332                       .define "(0x0002)",RTC_RTCRDYIFG 
+ A  1333                       .define "(0x0004)",RTC_RTCTEVIFG 
+ A  1334                       .define """.int31""",RTC_VECTOR 
+ A  1335                       .define "(0x0020)",SBDIEN 
+ A  1336                       .define "(0x0002)",SBDIFG 
+ A  1337                       .define "(0x0400)",SCCI 
+ A  1338                       .define "(0x0040)",SCG0 
+ A  1339                       .define "(0x0080)",SCG1 
+ A  1340                       .define "(0x0800)",SCS 
+ A  1341                       .define "(0x0100)",SELA0 
+ A  1342                       .define "(0x0001)",SELA0_H 
+ A  1343                       .define "(0x0200)",SELA1 
+ A  1344                       .define "(0x0002)",SELA1_H 
+ A  1345                       .define "(0x0400)",SELA2 
+ A  1346                       .define "(0x0004)",SELA2_H 
+ A  1347                       .define "(0x0000)",SELA_0 
+ A  1348                       .define "(0x0100)",SELA_1 
+ A  1349                       .define "(0x0200)",SELA_2 
+ A  1350                       .define "(0x0300)",SELA_3 
+ A  1351                       .define "(0x0400)",SELA_4 
+ A  1352                       .define "(0x0500)",SELA_5 
+ A  1353                       .define "(0x0600)",SELA_6 
+ A  1354                       .define "(0x0700)",SELA_7 
+ A  1355                       .define "(0x0300)",SELA__DCOCLK 
+ A  1356                       .define "(0x0100)",SELA__VLOCLK 
+ A  1357                       .define "(0x0000)",SELA__XT1CLK 
+ A  1358                       .define "(0x0500)",SELA__XT2CLK 
+ A  1359                       .define "(0x0001)",SELM0 
+ A  1360                       .define "(0x0001)",SELM0_L 
+ A  1361                       .define "(0x0002)",SELM1 
+ A  1362                       .define "(0x0002)",SELM1_L 
+ A  1363                       .define "(0x0004)",SELM2 
+ A  1364                       .define "(0x0004)",SELM2_L 
+ A  1365                       .define "(0x0000)",SELM_0 
+ A  1366                       .define "(0x0001)",SELM_1 
+ A  1367                       .define "(0x0002)",SELM_2 
+ A  1368                       .define "(0x0003)",SELM_3 
+ A  1369                       .define "(0x0004)",SELM_4 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   26
+
+ A  1370                       .define "(0x0005)",SELM_5 
+ A  1371                       .define "(0x0006)",SELM_6 
+ A  1372                       .define "(0x0007)",SELM_7 
+ A  1373                       .define "(0x0003)",SELM__DCOCLK 
+ A  1374                       .define "(0x0001)",SELM__VLOCLK 
+ A  1375                       .define "(0x0000)",SELM__XT1CLK 
+ A  1376                       .define "(0x0005)",SELM__XT2CLK 
+ A  1377                       .define "(0x0010)",SELS0 
+ A  1378                       .define "(0x0010)",SELS0_L 
+ A  1379                       .define "(0x0020)",SELS1 
+ A  1380                       .define "(0x0020)",SELS1_L 
+ A  1381                       .define "(0x0040)",SELS2 
+ A  1382                       .define "(0x0040)",SELS2_L 
+ A  1383                       .define "(0x0000)",SELS_0 
+ A  1384                       .define "(0x0010)",SELS_1 
+ A  1385                       .define "(0x0020)",SELS_2 
+ A  1386                       .define "(0x0030)",SELS_3 
+ A  1387                       .define "(0x0040)",SELS_4 
+ A  1388                       .define "(0x0050)",SELS_5 
+ A  1389                       .define "(0x0060)",SELS_6 
+ A  1390                       .define "(0x0070)",SELS_7 
+ A  1391                       .define "(0x0030)",SELS__DCOCLK 
+ A  1392                       .define "(0x0010)",SELS__VLOCLK 
+ A  1393                       .define "(0x0000)",SELS__XT1CLK 
+ A  1394                       .define "(0x0050)",SELS__XT2CLK 
+ A  1395                       .define "__MSP430_BASEADDRESS_SFR__",SFR_BASE 
+ A  1396                       .define "(0x2000)",SHR0 
+ A  1397                       .define "(0x4000)",SHR1 
+ A  1398                       .define "(0*0x2000u)",SHR_0 
+ A  1399                       .define "(1*0x2000u)",SHR_1 
+ A  1400                       .define "(2*0x2000u)",SHR_2 
+ A  1401                       .define "(3*0x2000u)",SHR_3 
+ A  1402                       .define "(0x0200)",SLSHR0 
+ A  1403                       .define "(0x0400)",SLSHR1 
+ A  1404                       .define "(0*0x0200u)",SLSHR_0 
+ A  1405                       .define "(1*0x0200u)",SLSHR_1 
+ A  1406                       .define "(2*0x0200u)",SLSHR_2 
+ A  1407                       .define "(3*0x0200u)",SLSHR_3 
+ A  1408                       .define "(0x0002)",SMCLKOFF 
+ A  1409                       .define "(0x0002)",SMCLKOFF_L 
+ A  1410                       .define "(0x0004)",SMCLKREQEN 
+ A  1411                       .define "(0x0004)",SMCLKREQEN_L 
+ A  1412                       .define "(0x0040)",SVSHE 
+ A  1413                       .define "(0x0040)",SVSHE_L 
+ A  1414                       .define "(0x2000)",SVSHIFG 
+ A  1415                       .define "(0x0020)",SVSHIFG_H 
+ A  1416                       .define "(0x0020)",SVSLE 
+ A  1417                       .define "(0x0020)",SVSLE_L 
+ A  1418                       .define "(0x1000)",SVSLIFG 
+ A  1419                       .define "(0x0010)",SVSLIFG_H 
+ A  1420                       .define "(0x0010)",SYSBSLIND 
+ A  1421                       .define "(0x0010)",SYSBSLIND_L 
+ A  1422                       .define "(0x4000)",SYSBSLOFF 
+ A  1423                       .define "(0x0040)",SYSBSLOFF_H 
+ A  1424                       .define "(0x8000)",SYSBSLPE 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   27
+
+ A  1425                       .define "(0x0080)",SYSBSLPE_H 
+ A  1426                       .define "(0x0004)",SYSBSLR 
+ A  1427                       .define "(0x0004)",SYSBSLR_L 
+ A  1428                       .define "(0x0001)",SYSBSLSIZE0 
+ A  1429                       .define "(0x0001)",SYSBSLSIZE0_L 
+ A  1430                       .define "(0x0002)",SYSBSLSIZE1 
+ A  1431                       .define "(0x0002)",SYSBSLSIZE1_L 
+ A  1432                       .define "(0x0020)",SYSJTAGPIN 
+ A  1433                       .define "(0x0020)",SYSJTAGPIN_L 
+ A  1434                       .define "(0x0001)",SYSNMI 
+ A  1435                       .define "(0x0002)",SYSNMIIES 
+ A  1436                       .define "(0x0002)",SYSNMIIES_L 
+ A  1437                       .define "(0x0001)",SYSNMI_L 
+ A  1438                       .define """.int54""",SYSNMI_VECTOR 
+ A  1439                       .define "(0x0004)",SYSPMMPE 
+ A  1440                       .define "(0x0004)",SYSPMMPE_L 
+ A  1441                       .define "(0x0001)",SYSRIVECT 
+ A  1442                       .define "(0x0001)",SYSRIVECT_L 
+ A  1443                       .define "(0x0002)",SYSRSTIV_BOR 
+ A  1444                       .define "(0x0024)",SYSRSTIV_CSKEY 
+ A  1445                       .define "(0x001C)",SYSRSTIV_DBDIFG 
+ A  1446                       .define "(0x0006)",SYSRSTIV_DOBOR 
+ A  1447                       .define "(0x0014)",SYSRSTIV_DOPOR 
+ A  1448                       .define "(0x001A)",SYSRSTIV_FRCTLPW 
+ A  1449                       .define "(0x0008)",SYSRSTIV_LPM5WU 
+ A  1450                       .define "(0x0022)",SYSRSTIV_MPUKEY 
+ A  1451                       .define "(0x0028)",SYSRSTIV_MPUSEG1IFG 
+ A  1452                       .define "(0x002A)",SYSRSTIV_MPUSEG2IFG 
+ A  1453                       .define "(0x002C)",SYSRSTIV_MPUSEG3IFG 
+ A  1454                       .define "(0x0026)",SYSRSTIV_MPUSEGIIFG 
+ A  1455                       .define "(0x0000)",SYSRSTIV_NONE 
+ A  1456                       .define "(0x001E)",SYSRSTIV_PERF 
+ A  1457                       .define "(0x0020)",SYSRSTIV_PMMKEY 
+ A  1458                       .define "(0x0010)",SYSRSTIV_RES10 
+ A  1459                       .define "(0x0012)",SYSRSTIV_RES12 
+ A  1460                       .define "(0x0004)",SYSRSTIV_RSTNMI 
+ A  1461                       .define "(0x000A)",SYSRSTIV_SECYV 
+ A  1462                       .define "(0x000E)",SYSRSTIV_SVSHIFG 
+ A  1463                       .define "(0x000C)",SYSRSTIV_SVSLIFG 
+ A  1464                       .define "(0x0018)",SYSRSTIV_WDTKEY 
+ A  1465                       .define "(0x0016)",SYSRSTIV_WDTTO 
+ A  1466                       .define "(0x0008)",SYSRSTRE 
+ A  1467                       .define "(0x0008)",SYSRSTRE_L 
+ A  1468                       .define "(0x0004)",SYSRSTUP 
+ A  1469                       .define "(0x0004)",SYSRSTUP_L 
+ A  1470                       .define "(0x0004)",SYSSNIV_ACCTIMIFG 
+ A  1471                       .define "(0x000E)",SYSSNIV_ACCVIFG 
+ A  1472                       .define "(0x0002)",SYSSNIV_DBDIFG 
+ A  1473                       .define "(0x0012)",SYSSNIV_JMBINIFG 
+ A  1474                       .define "(0x0014)",SYSSNIV_JMBOUTIFG 
+ A  1475                       .define "(0x0008)",SYSSNIV_MPUSEG1IFG 
+ A  1476                       .define "(0x000A)",SYSSNIV_MPUSEG2IFG 
+ A  1477                       .define "(0x000C)",SYSSNIV_MPUSEG3IFG 
+ A  1478                       .define "(0x0006)",SYSSNIV_MPUSEGIIFG 
+ A  1479                       .define "(0x0000)",SYSSNIV_NONE 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   28
+
+ A  1480                       .define "(0x0016)",SYSSNIV_SBDIFG 
+ A  1481                       .define "(0x0010)",SYSSNIV_VMAIFG 
+ A  1482                       .define "(0x0002)",SYSUNIV_NMIIFG 
+ A  1483                       .define "(0x0000)",SYSUNIV_NONE 
+ A  1484                       .define "(0x0004)",SYSUNIV_OFIFG 
+ A  1485                       .define "__MSP430_BASEADDRESS_SYS__",SYS_BASE 
+ A  1486                       .define "(0x0006)",TA0IV_3 
+ A  1487                       .define "(0x0008)",TA0IV_4 
+ A  1488                       .define "(0x000A)",TA0IV_5 
+ A  1489                       .define "(0x000C)",TA0IV_6 
+ A  1490                       .define "(0x0000)",TA0IV_NONE 
+ A  1491                       .define "(0x0002)",TA0IV_TA0CCR1 
+ A  1492                       .define "(0x0004)",TA0IV_TA0CCR2 
+ A  1493                       .define "(0x000E)",TA0IV_TA0IFG 
+ A  1494                       .define "(0x0002)",TA0IV_TACCR1 
+ A  1495                       .define "(0x0004)",TA0IV_TACCR2 
+ A  1496                       .define "(0x000E)",TA0IV_TAIFG 
+ A  1497                       .define "(0x0006)",TA1IV_3 
+ A  1498                       .define "(0x0008)",TA1IV_4 
+ A  1499                       .define "(0x000A)",TA1IV_5 
+ A  1500                       .define "(0x000C)",TA1IV_6 
+ A  1501                       .define "(0x0000)",TA1IV_NONE 
+ A  1502                       .define "(0x0002)",TA1IV_TA1CCR1 
+ A  1503                       .define "(0x0004)",TA1IV_TA1CCR2 
+ A  1504                       .define "(0x000E)",TA1IV_TA1IFG 
+ A  1505                       .define "(0x0002)",TA1IV_TACCR1 
+ A  1506                       .define "(0x0004)",TA1IV_TACCR2 
+ A  1507                       .define "(0x000E)",TA1IV_TAIFG 
+ A  1508                       .define "(0x0004)",TACLR 
+ A  1509                       .define "(0x0001)",TAIDEX0 
+ A  1510                       .define "(0x0002)",TAIDEX1 
+ A  1511                       .define "(0x0004)",TAIDEX2 
+ A  1512                       .define "(0*0x0001u)",TAIDEX_0 
+ A  1513                       .define "(1*0x0001u)",TAIDEX_1 
+ A  1514                       .define "(2*0x0001u)",TAIDEX_2 
+ A  1515                       .define "(3*0x0001u)",TAIDEX_3 
+ A  1516                       .define "(4*0x0001u)",TAIDEX_4 
+ A  1517                       .define "(5*0x0001u)",TAIDEX_5 
+ A  1518                       .define "(6*0x0001u)",TAIDEX_6 
+ A  1519                       .define "(7*0x0001u)",TAIDEX_7 
+ A  1520                       .define "(0x0002)",TAIE 
+ A  1521                       .define "(0x0001)",TAIFG 
+ A  1522                       .define "(0x0100)",TASSEL0 
+ A  1523                       .define "(0x0200)",TASSEL1 
+ A  1524                       .define "(0*0x100u)",TASSEL_0 
+ A  1525                       .define "(1*0x100u)",TASSEL_1 
+ A  1526                       .define "(2*0x100u)",TASSEL_2 
+ A  1527                       .define "(3*0x100u)",TASSEL_3 
+ A  1528                       .define "(1*0x100u)",TASSEL__ACLK 
+ A  1529                       .define "(3*0x100u)",TASSEL__INCLK 
+ A  1530                       .define "(2*0x100u)",TASSEL__SMCLK 
+ A  1531                       .define "(0*0x100u)",TASSEL__TACLK 
+ A  1532                       .define "(0x0006)",TB0IV_3 
+ A  1533                       .define "(0x0008)",TB0IV_4 
+ A  1534                       .define "(0x000A)",TB0IV_5 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   29
+
+ A  1535                       .define "(0x000C)",TB0IV_6 
+ A  1536                       .define "(0x0000)",TB0IV_NONE 
+ A  1537                       .define "(0x0002)",TB0IV_TB0CCR1 
+ A  1538                       .define "(0x0004)",TB0IV_TB0CCR2 
+ A  1539                       .define "(0x000E)",TB0IV_TB0IFG 
+ A  1540                       .define "(0x0002)",TB0IV_TBCCR1 
+ A  1541                       .define "(0x0004)",TB0IV_TBCCR2 
+ A  1542                       .define "(0x000E)",TB0IV_TBIFG 
+ A  1543                       .define "(0x0006)",TB1IV_3 
+ A  1544                       .define "(0x0008)",TB1IV_4 
+ A  1545                       .define "(0x000A)",TB1IV_5 
+ A  1546                       .define "(0x000C)",TB1IV_6 
+ A  1547                       .define "(0x0000)",TB1IV_NONE 
+ A  1548                       .define "(0x0002)",TB1IV_TB1CCR1 
+ A  1549                       .define "(0x0004)",TB1IV_TB1CCR2 
+ A  1550                       .define "(0x000E)",TB1IV_TB1IFG 
+ A  1551                       .define "(0x0002)",TB1IV_TBCCR1 
+ A  1552                       .define "(0x0004)",TB1IV_TBCCR2 
+ A  1553                       .define "(0x000E)",TB1IV_TBIFG 
+ A  1554                       .define "(0x0006)",TB2IV_3 
+ A  1555                       .define "(0x0008)",TB2IV_4 
+ A  1556                       .define "(0x000A)",TB2IV_5 
+ A  1557                       .define "(0x000C)",TB2IV_6 
+ A  1558                       .define "(0x0000)",TB2IV_NONE 
+ A  1559                       .define "(0x0002)",TB2IV_TB2CCR1 
+ A  1560                       .define "(0x0004)",TB2IV_TB2CCR2 
+ A  1561                       .define "(0x000E)",TB2IV_TB2IFG 
+ A  1562                       .define "(0x0002)",TB2IV_TBCCR1 
+ A  1563                       .define "(0x0004)",TB2IV_TBCCR2 
+ A  1564                       .define "(0x000E)",TB2IV_TBIFG 
+ A  1565                       .define "TB0CCR0",TBCCR0 
+ A  1566                       .define "TB0CCR1",TBCCR1 
+ A  1567                       .define "TB0CCR2",TBCCR2 
+ A  1568                       .define "TB0CCTL0",TBCCTL0 
+ A  1569                       .define "TB0CCTL1",TBCCTL1 
+ A  1570                       .define "TB0CCTL2",TBCCTL2 
+ A  1571                       .define "(0x2000)",TBCLGRP0 
+ A  1572                       .define "(0x4000)",TBCLGRP1 
+ A  1573                       .define "(0*0x2000u)",TBCLGRP_0 
+ A  1574                       .define "(1*0x2000u)",TBCLGRP_1 
+ A  1575                       .define "(2*0x2000u)",TBCLGRP_2 
+ A  1576                       .define "(3*0x2000u)",TBCLGRP_3 
+ A  1577                       .define "(0x0004)",TBCLR 
+ A  1578                       .define "TB0CTL",TBCTL 
+ A  1579                       .define "TB0EX0",TBEX0 
+ A  1580                       .define "(0x0001)",TBIDEX0 
+ A  1581                       .define "(0x0002)",TBIDEX1 
+ A  1582                       .define "(0x0004)",TBIDEX2 
+ A  1583                       .define "(0*0x0001u)",TBIDEX_0 
+ A  1584                       .define "(1*0x0001u)",TBIDEX_1 
+ A  1585                       .define "(2*0x0001u)",TBIDEX_2 
+ A  1586                       .define "(3*0x0001u)",TBIDEX_3 
+ A  1587                       .define "(4*0x0001u)",TBIDEX_4 
+ A  1588                       .define "(5*0x0001u)",TBIDEX_5 
+ A  1589                       .define "(6*0x0001u)",TBIDEX_6 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   30
+
+ A  1590                       .define "(7*0x0001u)",TBIDEX_7 
+ A  1591                       .define "(0*0x0001u)",TBIDEX__1 
+ A  1592                       .define "(1*0x0001u)",TBIDEX__2 
+ A  1593                       .define "(2*0x0001u)",TBIDEX__3 
+ A  1594                       .define "(3*0x0001u)",TBIDEX__4 
+ A  1595                       .define "(4*0x0001u)",TBIDEX__5 
+ A  1596                       .define "(5*0x0001u)",TBIDEX__6 
+ A  1597                       .define "(6*0x0001u)",TBIDEX__7 
+ A  1598                       .define "(7*0x0001u)",TBIDEX__8 
+ A  1599                       .define "(0x0002)",TBIE 
+ A  1600                       .define "(0x0001)",TBIFG 
+ A  1601                       .define "TB0IV",TBIV 
+ A  1602                       .define "TB0R",TBR   
+ A  1603                       .define "(0x0100)",TBSSEL0 
+ A  1604                       .define "(0x0200)",TBSSEL1 
+ A  1605                       .define "(0*0x0100u)",TBSSEL_0 
+ A  1606                       .define "(1*0x0100u)",TBSSEL_1 
+ A  1607                       .define "(2*0x0100u)",TBSSEL_2 
+ A  1608                       .define "(3*0x0100u)",TBSSEL_3 
+ A  1609                       .define "(1*0x100u)",TBSSEL__ACLK 
+ A  1610                       .define "(3*0x100u)",TBSSEL__INCLK 
+ A  1611                       .define "(2*0x100u)",TBSSEL__SMCLK 
+ A  1612                       .define "(0*0x100u)",TBSSEL__TACLK 
+ A  1613                       .define "(0*0x100u)",TBSSEL__TBCLK 
+ A  1614                       .define """.int45""",TIMER0_A0_VECTOR 
+ A  1615                       .define """.int44""",TIMER0_A1_VECTOR 
+ A  1616                       .define """.int51""",TIMER0_B0_VECTOR 
+ A  1617                       .define """.int50""",TIMER0_B1_VECTOR 
+ A  1618                       .define """.int41""",TIMER1_A0_VECTOR 
+ A  1619                       .define """.int40""",TIMER1_A1_VECTOR 
+ A  1620                       .define """.int38""",TIMER1_B0_VECTOR 
+ A  1621                       .define """.int37""",TIMER1_B1_VECTOR 
+ A  1622                       .define """.int35""",TIMER2_B0_VECTOR 
+ A  1623                       .define """.int34""",TIMER2_B1_VECTOR 
+ A  1624                       .define "TIMER0_B0_VECTOR",TIMERB0_VECTOR 
+ A  1625                       .define "TIMER0_B1_VECTOR",TIMERB1_VECTOR 
+ A  1626                       .define "__MSP430_BASEADDRESS_T0A3__",TIMER_A0_BASE 
+ A  1627                       .define "__MSP430_BASEADDRESS_T1A3__",TIMER_A1_BASE 
+ A  1628                       .define "__MSP430_BASEADDRESS_T0B3__",TIMER_B0_BASE 
+ A  1629                       .define "__MSP430_BASEADDRESS_T1B3__",TIMER_B1_BASE 
+ A  1630                       .define "__MSP430_BASEADDRESS_T2B3__",TIMER_B2_BASE 
+ A  1631                       .define "(0x0040)",UBDIE 
+ A  1632                       .define "(0x0040)",UBDIE_L 
+ A  1633                       .define "(0x0004)",UBDIFG 
+ A  1634                       .define "(0x0004)",UBDIFG_L 
+ A  1635                       .define "(0x0080)",UBDRSTEN 
+ A  1636                       .define "(0x0080)",UBDRSTEN_L 
+ A  1637                       .define "(0x1000)",UC7BIT 
+ A  1638                       .define "(0x0010)",UC7BIT_H 
+ A  1639                       .define "UCA0BRW_L",UCA0BR0 
+ A  1640                       .define "UCA0BRW_H",UCA0BR1 
+ A  1641                       .define "UCA0CTLW0_H",UCA0CTL0 
+ A  1642                       .define "UCA0CTLW0_L",UCA0CTL1 
+ A  1643                       .define "UCA0IRCTL_H",UCA0IRRCTL 
+ A  1644                       .define "UCA0IRCTL_L",UCA0IRTCTL 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   31
+
+ A  1645                       .define "(0x8000)",UCA10 
+ A  1646                       .define "(0x0080)",UCA10_H 
+ A  1647                       .define "UCA1BRW_L",UCA1BR0 
+ A  1648                       .define "UCA1BRW_H",UCA1BR1 
+ A  1649                       .define "UCA1CTLW0_H",UCA1CTL0 
+ A  1650                       .define "UCA1CTLW0_L",UCA1CTL1 
+ A  1651                       .define "UCA1IRCTL_H",UCA1IRRCTL 
+ A  1652                       .define "UCA1IRCTL_L",UCA1IRTCTL 
+ A  1653                       .define "(0x01)",UCABDEN 
+ A  1654                       .define "(0x0001)",UCADDMASK0 
+ A  1655                       .define "(0x0001)",UCADDMASK0_L 
+ A  1656                       .define "(0x0002)",UCADDMASK1 
+ A  1657                       .define "(0x0002)",UCADDMASK1_L 
+ A  1658                       .define "(0x0004)",UCADDMASK2 
+ A  1659                       .define "(0x0004)",UCADDMASK2_L 
+ A  1660                       .define "(0x0008)",UCADDMASK3 
+ A  1661                       .define "(0x0008)",UCADDMASK3_L 
+ A  1662                       .define "(0x0010)",UCADDMASK4 
+ A  1663                       .define "(0x0010)",UCADDMASK4_L 
+ A  1664                       .define "(0x0020)",UCADDMASK5 
+ A  1665                       .define "(0x0020)",UCADDMASK5_L 
+ A  1666                       .define "(0x0040)",UCADDMASK6 
+ A  1667                       .define "(0x0040)",UCADDMASK6_L 
+ A  1668                       .define "(0x0080)",UCADDMASK7 
+ A  1669                       .define "(0x0080)",UCADDMASK7_L 
+ A  1670                       .define "(0x0100)",UCADDMASK8 
+ A  1671                       .define "(0x0001)",UCADDMASK8_H 
+ A  1672                       .define "(0x0200)",UCADDMASK9 
+ A  1673                       .define "(0x0002)",UCADDMASK9_H 
+ A  1674                       .define "(0x0002)",UCADDR 
+ A  1675                       .define "(0x0001)",UCADDRX0 
+ A  1676                       .define "(0x0001)",UCADDRX0_L 
+ A  1677                       .define "(0x0002)",UCADDRX1 
+ A  1678                       .define "(0x0002)",UCADDRX1_L 
+ A  1679                       .define "(0x0004)",UCADDRX2 
+ A  1680                       .define "(0x0004)",UCADDRX2_L 
+ A  1681                       .define "(0x0008)",UCADDRX3 
+ A  1682                       .define "(0x0008)",UCADDRX3_L 
+ A  1683                       .define "(0x0010)",UCADDRX4 
+ A  1684                       .define "(0x0010)",UCADDRX4_L 
+ A  1685                       .define "(0x0020)",UCADDRX5 
+ A  1686                       .define "(0x0020)",UCADDRX5_L 
+ A  1687                       .define "(0x0040)",UCADDRX6 
+ A  1688                       .define "(0x0040)",UCADDRX6_L 
+ A  1689                       .define "(0x0080)",UCADDRX7 
+ A  1690                       .define "(0x0080)",UCADDRX7_L 
+ A  1691                       .define "(0x0100)",UCADDRX8 
+ A  1692                       .define "(0x0001)",UCADDRX8_H 
+ A  1693                       .define "(0x0200)",UCADDRX9 
+ A  1694                       .define "(0x0002)",UCADDRX9_H 
+ A  1695                       .define "(0x0010)",UCALIE 
+ A  1696                       .define "(0x0010)",UCALIFG 
+ A  1697                       .define "(0x0004)",UCASTP0 
+ A  1698                       .define "(0x0004)",UCASTP0_L 
+ A  1699                       .define "(0x0008)",UCASTP1 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   32
+
+ A  1700                       .define "(0x0008)",UCASTP1_L 
+ A  1701                       .define "(0x0000)",UCASTP_0 
+ A  1702                       .define "(0x0004)",UCASTP_1 
+ A  1703                       .define "(0x0008)",UCASTP_2 
+ A  1704                       .define "(0x000C)",UCASTP_3 
+ A  1705                       .define "UCB0STATW_H",UCB0BCNT 
+ A  1706                       .define "UCB0BRW_L",UCB0BR0 
+ A  1707                       .define "UCB0BRW_H",UCB0BR1 
+ A  1708                       .define "UCB0CTLW0_H",UCB0CTL0 
+ A  1709                       .define "UCB0CTLW0_L",UCB0CTL1 
+ A  1710                       .define "UCB0STATW_L",UCB0STAT 
+ A  1711                       .define "(0x0010)",UCBBUSY 
+ A  1712                       .define "(0x0100)",UCBCNT0 
+ A  1713                       .define "(0x0200)",UCBCNT1 
+ A  1714                       .define "(0x0400)",UCBCNT2 
+ A  1715                       .define "(0x0800)",UCBCNT3 
+ A  1716                       .define "(0x1000)",UCBCNT4 
+ A  1717                       .define "(0x2000)",UCBCNT5 
+ A  1718                       .define "(0x4000)",UCBCNT6 
+ A  1719                       .define "(0x8000)",UCBCNT7 
+ A  1720                       .define "(0x0040)",UCBCNTIE 
+ A  1721                       .define "(0x0040)",UCBCNTIFG 
+ A  1722                       .define "(0x4000)",UCBIT9IE 
+ A  1723                       .define "(0x4000)",UCBIT9IFG 
+ A  1724                       .define "(0x0010)",UCBRF0 
+ A  1725                       .define "(0x0010)",UCBRF0_L 
+ A  1726                       .define "(0x0020)",UCBRF1 
+ A  1727                       .define "(0x0020)",UCBRF1_L 
+ A  1728                       .define "(0x0040)",UCBRF2 
+ A  1729                       .define "(0x0040)",UCBRF2_L 
+ A  1730                       .define "(0x0080)",UCBRF3 
+ A  1731                       .define "(0x0080)",UCBRF3_L 
+ A  1732                       .define "(0x00)",UCBRF_0 
+ A  1733                       .define "(0x10)",UCBRF_1 
+ A  1734                       .define "(0xA0)",UCBRF_10 
+ A  1735                       .define "(0xB0)",UCBRF_11 
+ A  1736                       .define "(0xC0)",UCBRF_12 
+ A  1737                       .define "(0xD0)",UCBRF_13 
+ A  1738                       .define "(0xE0)",UCBRF_14 
+ A  1739                       .define "(0xF0)",UCBRF_15 
+ A  1740                       .define "(0x20)",UCBRF_2 
+ A  1741                       .define "(0x30)",UCBRF_3 
+ A  1742                       .define "(0x40)",UCBRF_4 
+ A  1743                       .define "(0x50)",UCBRF_5 
+ A  1744                       .define "(0x60)",UCBRF_6 
+ A  1745                       .define "(0x70)",UCBRF_7 
+ A  1746                       .define "(0x80)",UCBRF_8 
+ A  1747                       .define "(0x90)",UCBRF_9 
+ A  1748                       .define "(0x0008)",UCBRK 
+ A  1749                       .define "(0x0010)",UCBRKIE 
+ A  1750                       .define "(0x0010)",UCBRKIE_L 
+ A  1751                       .define "(0x0100)",UCBRS0 
+ A  1752                       .define "(0x0001)",UCBRS0_H 
+ A  1753                       .define "(0x0200)",UCBRS1 
+ A  1754                       .define "(0x0002)",UCBRS1_H 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   33
+
+ A  1755                       .define "(0x0400)",UCBRS2 
+ A  1756                       .define "(0x0004)",UCBRS2_H 
+ A  1757                       .define "(0x0800)",UCBRS3 
+ A  1758                       .define "(0x0008)",UCBRS3_H 
+ A  1759                       .define "(0x1000)",UCBRS4 
+ A  1760                       .define "(0x0010)",UCBRS4_H 
+ A  1761                       .define "(0x2000)",UCBRS5 
+ A  1762                       .define "(0x0020)",UCBRS5_H 
+ A  1763                       .define "(0x4000)",UCBRS6 
+ A  1764                       .define "(0x0040)",UCBRS6_H 
+ A  1765                       .define "(0x8000)",UCBRS7 
+ A  1766                       .define "(0x0080)",UCBRS7_H 
+ A  1767                       .define "(0x04)",UCBTOE 
+ A  1768                       .define "(0x0001)",UCBUSY 
+ A  1769                       .define "(0x8000)",UCCKPH 
+ A  1770                       .define "(0x4000)",UCCKPL 
+ A  1771                       .define "(0x0040)",UCCLTO0 
+ A  1772                       .define "(0x0040)",UCCLTO0_L 
+ A  1773                       .define "(0x0080)",UCCLTO1 
+ A  1774                       .define "(0x0080)",UCCLTO1_L 
+ A  1775                       .define "(0x0080)",UCCLTOIE 
+ A  1776                       .define "(0x0080)",UCCLTOIFG 
+ A  1777                       .define "(0x0000)",UCCLTO_0 
+ A  1778                       .define "(0x0040)",UCCLTO_1 
+ A  1779                       .define "(0x0080)",UCCLTO_2 
+ A  1780                       .define "(0x00C0)",UCCLTO_3 
+ A  1781                       .define "(0x10)",UCDELIM0 
+ A  1782                       .define "(0x20)",UCDELIM1 
+ A  1783                       .define "(0x0008)",UCDORM 
+ A  1784                       .define "(0x0008)",UCDORM_L 
+ A  1785                       .define "(0x0100)",UCETXINT 
+ A  1786                       .define "(0x0001)",UCETXINT_H 
+ A  1787                       .define "(0x0040)",UCFE 
+ A  1788                       .define "(0x0020)",UCGC 
+ A  1789                       .define "(0x8000)",UCGCEN 
+ A  1790                       .define "(0x0080)",UCGCEN_H 
+ A  1791                       .define "(0x0001)",UCGLIT0 
+ A  1792                       .define "(0x0001)",UCGLIT0_L 
+ A  1793                       .define "(0x0002)",UCGLIT1 
+ A  1794                       .define "(0x0002)",UCGLIT1_L 
+ A  1795                       .define "(0x0000)",UCGLIT_0 
+ A  1796                       .define "(0x0001)",UCGLIT_1 
+ A  1797                       .define "(0x0002)",UCGLIT_2 
+ A  1798                       .define "(0x0003)",UCGLIT_3 
+ A  1799                       .define "(0x0002)",UCIDLE 
+ A  1800                       .define "(0x0001)",UCIREN 
+ A  1801                       .define "(0x0001)",UCIREN_L 
+ A  1802                       .define "(0x0100)",UCIRRXFE 
+ A  1803                       .define "(0x0001)",UCIRRXFE_H 
+ A  1804                       .define "(0x0400)",UCIRRXFL0 
+ A  1805                       .define "(0x0004)",UCIRRXFL0_H 
+ A  1806                       .define "(0x0800)",UCIRRXFL1 
+ A  1807                       .define "(0x0008)",UCIRRXFL1_H 
+ A  1808                       .define "(0x1000)",UCIRRXFL2 
+ A  1809                       .define "(0x0010)",UCIRRXFL2_H 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   34
+
+ A  1810                       .define "(0x2000)",UCIRRXFL3 
+ A  1811                       .define "(0x0020)",UCIRRXFL3_H 
+ A  1812                       .define "(0x4000)",UCIRRXFL4 
+ A  1813                       .define "(0x0040)",UCIRRXFL4_H 
+ A  1814                       .define "(0x8000)",UCIRRXFL5 
+ A  1815                       .define "(0x0080)",UCIRRXFL5_H 
+ A  1816                       .define "(0x0200)",UCIRRXPL 
+ A  1817                       .define "(0x0002)",UCIRRXPL_H 
+ A  1818                       .define "(0x0002)",UCIRTXCLK 
+ A  1819                       .define "(0x0002)",UCIRTXCLK_L 
+ A  1820                       .define "(0x0004)",UCIRTXPL0 
+ A  1821                       .define "(0x0004)",UCIRTXPL0_L 
+ A  1822                       .define "(0x0008)",UCIRTXPL1 
+ A  1823                       .define "(0x0008)",UCIRTXPL1_L 
+ A  1824                       .define "(0x0010)",UCIRTXPL2 
+ A  1825                       .define "(0x0010)",UCIRTXPL2_L 
+ A  1826                       .define "(0x0020)",UCIRTXPL3 
+ A  1827                       .define "(0x0020)",UCIRTXPL3_L 
+ A  1828                       .define "(0x0040)",UCIRTXPL4 
+ A  1829                       .define "(0x0040)",UCIRTXPL4_L 
+ A  1830                       .define "(0x0080)",UCIRTXPL5 
+ A  1831                       .define "(0x0080)",UCIRTXPL5_L 
+ A  1832                       .define "(0x0080)",UCLISTEN 
+ A  1833                       .define "(0x2000)",UCMM 
+ A  1834                       .define "(0x0020)",UCMM_H 
+ A  1835                       .define "(0x0200)",UCMODE0 
+ A  1836                       .define "(0x0002)",UCMODE0_H 
+ A  1837                       .define "(0x0400)",UCMODE1 
+ A  1838                       .define "(0x0004)",UCMODE1_H 
+ A  1839                       .define "(0x0000)",UCMODE_0 
+ A  1840                       .define "(0x0200)",UCMODE_1 
+ A  1841                       .define "(0x0400)",UCMODE_2 
+ A  1842                       .define "(0x0600)",UCMODE_3 
+ A  1843                       .define "(0x2000)",UCMSB 
+ A  1844                       .define "(0x0020)",UCMSB_H 
+ A  1845                       .define "(0x0800)",UCMST 
+ A  1846                       .define "(0x0020)",UCNACKIE 
+ A  1847                       .define "(0x0020)",UCNACKIFG 
+ A  1848                       .define "(0x0001)",UCOA0 
+ A  1849                       .define "(0x0001)",UCOA0_L 
+ A  1850                       .define "(0x0002)",UCOA1 
+ A  1851                       .define "(0x0002)",UCOA1_L 
+ A  1852                       .define "(0x0004)",UCOA2 
+ A  1853                       .define "(0x0004)",UCOA2_L 
+ A  1854                       .define "(0x0008)",UCOA3 
+ A  1855                       .define "(0x0008)",UCOA3_L 
+ A  1856                       .define "(0x0010)",UCOA4 
+ A  1857                       .define "(0x0010)",UCOA4_L 
+ A  1858                       .define "(0x0020)",UCOA5 
+ A  1859                       .define "(0x0020)",UCOA5_L 
+ A  1860                       .define "(0x0040)",UCOA6 
+ A  1861                       .define "(0x0040)",UCOA6_L 
+ A  1862                       .define "(0x0080)",UCOA7 
+ A  1863                       .define "(0x0080)",UCOA7_L 
+ A  1864                       .define "(0x0100)",UCOA8 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   35
+
+ A  1865                       .define "(0x0001)",UCOA8_H 
+ A  1866                       .define "(0x0200)",UCOA9 
+ A  1867                       .define "(0x0002)",UCOA9_H 
+ A  1868                       .define "(0x0400)",UCOAEN 
+ A  1869                       .define "(0x0004)",UCOAEN_H 
+ A  1870                       .define "(0x0020)",UCOE 
+ A  1871                       .define "(0x0001)",UCOS16 
+ A  1872                       .define "(0x0001)",UCOS16_L 
+ A  1873                       .define "(0x4000)",UCPAR 
+ A  1874                       .define "(0x0040)",UCPAR_H 
+ A  1875                       .define "(0x0010)",UCPE 
+ A  1876                       .define "(0x8000)",UCPEN 
+ A  1877                       .define "(0x0080)",UCPEN_H 
+ A  1878                       .define "(0x0020)",UCRXEIE 
+ A  1879                       .define "(0x0020)",UCRXEIE_L 
+ A  1880                       .define "(0x0004)",UCRXERR 
+ A  1881                       .define "(0x0001)",UCRXIE 
+ A  1882                       .define "(0x0001)",UCRXIE0 
+ A  1883                       .define "(0x0100)",UCRXIE1 
+ A  1884                       .define "(0x0400)",UCRXIE2 
+ A  1885                       .define "(0x1000)",UCRXIE3 
+ A  1886                       .define "(0x0001)",UCRXIFG 
+ A  1887                       .define "(0x0001)",UCRXIFG0 
+ A  1888                       .define "(0x0100)",UCRXIFG1 
+ A  1889                       .define "(0x0400)",UCRXIFG2 
+ A  1890                       .define "(0x1000)",UCRXIFG3 
+ A  1891                       .define "(0x0001)",UCSA0 
+ A  1892                       .define "(0x0001)",UCSA0_L 
+ A  1893                       .define "(0x0002)",UCSA1 
+ A  1894                       .define "(0x0002)",UCSA1_L 
+ A  1895                       .define "(0x0004)",UCSA2 
+ A  1896                       .define "(0x0004)",UCSA2_L 
+ A  1897                       .define "(0x0008)",UCSA3 
+ A  1898                       .define "(0x0008)",UCSA3_L 
+ A  1899                       .define "(0x0010)",UCSA4 
+ A  1900                       .define "(0x0010)",UCSA4_L 
+ A  1901                       .define "(0x0020)",UCSA5 
+ A  1902                       .define "(0x0020)",UCSA5_L 
+ A  1903                       .define "(0x0040)",UCSA6 
+ A  1904                       .define "(0x0040)",UCSA6_L 
+ A  1905                       .define "(0x0080)",UCSA7 
+ A  1906                       .define "(0x0080)",UCSA7_L 
+ A  1907                       .define "(0x0100)",UCSA8 
+ A  1908                       .define "(0x0001)",UCSA8_H 
+ A  1909                       .define "(0x0200)",UCSA9 
+ A  1910                       .define "(0x0002)",UCSA9_H 
+ A  1911                       .define "(0x0040)",UCSCLLOW 
+ A  1912                       .define "(0x4000)",UCSLA10 
+ A  1913                       .define "(0x0040)",UCSLA10_H 
+ A  1914                       .define "(0x0800)",UCSPB 
+ A  1915                       .define "(0x0008)",UCSPB_H 
+ A  1916                       .define "(0x0040)",UCSSEL0 
+ A  1917                       .define "(0x0040)",UCSSEL0_L 
+ A  1918                       .define "(0x0080)",UCSSEL1 
+ A  1919                       .define "(0x0080)",UCSSEL1_L 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   36
+
+ A  1920                       .define "(0x0000)",UCSSEL_0 
+ A  1921                       .define "(0x0040)",UCSSEL_1 
+ A  1922                       .define "(0x0080)",UCSSEL_2 
+ A  1923                       .define "(0x00C0)",UCSSEL_3 
+ A  1924                       .define "(0x0040)",UCSSEL__ACLK 
+ A  1925                       .define "(0x0080)",UCSSEL__SMCLK 
+ A  1926                       .define "(0x0000)",UCSSEL__UCLK 
+ A  1927                       .define "(0x0002)",UCSTEM 
+ A  1928                       .define "(0x08)",UCSTOE 
+ A  1929                       .define "(0x0008)",UCSTPIE 
+ A  1930                       .define "(0x0008)",UCSTPIFG 
+ A  1931                       .define "(0x0020)",UCSTPNACK 
+ A  1932                       .define "(0x0020)",UCSTPNACK_L 
+ A  1933                       .define "(0x0004)",UCSTTIE 
+ A  1934                       .define "(0x0004)",UCSTTIFG 
+ A  1935                       .define "(0x0010)",UCSWACK 
+ A  1936                       .define "(0x0010)",UCSWACK_L 
+ A  1937                       .define "(0x0001)",UCSWRST 
+ A  1938                       .define "(0x0001)",UCSWRST_L 
+ A  1939                       .define "(0x0100)",UCSYNC 
+ A  1940                       .define "(0x0001)",UCSYNC_H 
+ A  1941                       .define "(0x0001)",UCTBCNT0 
+ A  1942                       .define "(0x0002)",UCTBCNT1 
+ A  1943                       .define "(0x0004)",UCTBCNT2 
+ A  1944                       .define "(0x0008)",UCTBCNT3 
+ A  1945                       .define "(0x0010)",UCTBCNT4 
+ A  1946                       .define "(0x0020)",UCTBCNT5 
+ A  1947                       .define "(0x0040)",UCTBCNT6 
+ A  1948                       .define "(0x0080)",UCTBCNT7 
+ A  1949                       .define "(0x0010)",UCTR 
+ A  1950                       .define "(0x0010)",UCTR_L 
+ A  1951                       .define "(0x0020)",UCTXACK 
+ A  1952                       .define "(0x0020)",UCTXACK_L 
+ A  1953                       .define "(0x0004)",UCTXADDR 
+ A  1954                       .define "(0x0004)",UCTXADDR_L 
+ A  1955                       .define "(0x0002)",UCTXBRK 
+ A  1956                       .define "(0x0002)",UCTXBRK_L 
+ A  1957                       .define "(0x0008)",UCTXCPTIE 
+ A  1958                       .define "(0x0008)",UCTXCPTIFG 
+ A  1959                       .define "(0x0002)",UCTXIE 
+ A  1960                       .define "(0x0002)",UCTXIE0 
+ A  1961                       .define "(0x0200)",UCTXIE1 
+ A  1962                       .define "(0x0800)",UCTXIE2 
+ A  1963                       .define "(0x2000)",UCTXIE3 
+ A  1964                       .define "(0x0002)",UCTXIFG 
+ A  1965                       .define "(0x0002)",UCTXIFG0 
+ A  1966                       .define "(0x0200)",UCTXIFG1 
+ A  1967                       .define "(0x0800)",UCTXIFG2 
+ A  1968                       .define "(0x2000)",UCTXIFG3 
+ A  1969                       .define "(0x0008)",UCTXNACK 
+ A  1970                       .define "(0x0008)",UCTXNACK_L 
+ A  1971                       .define "(0x0004)",UCTXSTP 
+ A  1972                       .define "(0x0004)",UCTXSTP_L 
+ A  1973                       .define "(0x0002)",UCTXSTT 
+ A  1974                       .define "(0x0002)",UCTXSTT_L 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   37
+
+ A  1975                       .define """.int53""",UNMI_VECTOR 
+ A  1976                       .define """.int48""",USCI_A0_VECTOR 
+ A  1977                       .define """.int43""",USCI_A1_VECTOR 
+ A  1978                       .define """.int47""",USCI_B0_VECTOR 
+ A  1979                       .define "(0x0002)",USCI_I2C_UCALIFG 
+ A  1980                       .define "(0x001A)",USCI_I2C_UCBCNTIFG 
+ A  1981                       .define "(0x001E)",USCI_I2C_UCBIT9IFG 
+ A  1982                       .define "(0x001C)",USCI_I2C_UCCLTOIFG 
+ A  1983                       .define "(0x0004)",USCI_I2C_UCNACKIFG 
+ A  1984                       .define "(0x0016)",USCI_I2C_UCRXIFG0 
+ A  1985                       .define "(0x0012)",USCI_I2C_UCRXIFG1 
+ A  1986                       .define "(0x000E)",USCI_I2C_UCRXIFG2 
+ A  1987                       .define "(0x000A)",USCI_I2C_UCRXIFG3 
+ A  1988                       .define "(0x0008)",USCI_I2C_UCSTPIFG 
+ A  1989                       .define "(0x0006)",USCI_I2C_UCSTTIFG 
+ A  1990                       .define "(0x0018)",USCI_I2C_UCTXIFG0 
+ A  1991                       .define "(0x0014)",USCI_I2C_UCTXIFG1 
+ A  1992                       .define "(0x0010)",USCI_I2C_UCTXIFG2 
+ A  1993                       .define "(0x000C)",USCI_I2C_UCTXIFG3 
+ A  1994                       .define "(0x0000)",USCI_NONE 
+ A  1995                       .define "(0x0002)",USCI_SPI_UCRXIFG 
+ A  1996                       .define "(0x0004)",USCI_SPI_UCTXIFG 
+ A  1997                       .define "(0x0002)",USCI_UART_UCRXIFG 
+ A  1998                       .define "(0x0006)",USCI_UART_UCSTTIFG 
+ A  1999                       .define "(0x0008)",USCI_UART_UCTXCPTIFG 
+ A  2000                       .define "(0x0004)",USCI_UART_UCTXIFG 
+ A  2001                       .define "(0x0100)",V 
+ A  2002                       .define "(0x0008)",VMAIE 
+ A  2003                       .define "(0x0008)",VMAIE_L 
+ A  2004                       .define "(0x0008)",VMAIFG 
+ A  2005                       .define "(0x0008)",VMAIFG_L 
+ A  2006                       .define "(0x0008)",WDTCNTCL 
+ A  2007                       .define "(0x0008)",WDTCNTCL_L 
+ A  2008                       .define "(0x0080)",WDTHOLD 
+ A  2009                       .define "(0x0080)",WDTHOLD_L 
+ A  2010                       .define "(0x0001)",WDTIE 
+ A  2011                       .define "(0x0001)",WDTIE_L 
+ A  2012                       .define "(0x0001)",WDTIFG 
+ A  2013                       .define "(0x0001)",WDTIFG_L 
+ A  2014                       .define "(0x0001)",WDTIS0 
+ A  2015                       .define "(0x0001)",WDTIS0_L 
+ A  2016                       .define "(0x0002)",WDTIS1 
+ A  2017                       .define "(0x0002)",WDTIS1_L 
+ A  2018                       .define "(0x0004)",WDTIS2 
+ A  2019                       .define "(0x0004)",WDTIS2_L 
+ A  2020                       .define "(0*0x0001u)",WDTIS_0 
+ A  2021                       .define "(1*0x0001u)",WDTIS_1 
+ A  2022                       .define "(2*0x0001u)",WDTIS_2 
+ A  2023                       .define "(3*0x0001u)",WDTIS_3 
+ A  2024                       .define "(4*0x0001u)",WDTIS_4 
+ A  2025                       .define "(5*0x0001u)",WDTIS_5 
+ A  2026                       .define "(6*0x0001u)",WDTIS_6 
+ A  2027                       .define "(7*0x0001u)",WDTIS_7 
+ A  2028                       .define "(1*0x0001u)",WDTIS__128M 
+ A  2029                       .define "(0*0x0001u)",WDTIS__2G 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   38
+
+ A  2030                       .define "(4*0x0001u)",WDTIS__32K 
+ A  2031                       .define "(6*0x0001u)",WDTIS__512 
+ A  2032                       .define "(3*0x0001u)",WDTIS__512K 
+ A  2033                       .define "(7*0x0001u)",WDTIS__64 
+ A  2034                       .define "(5*0x0001u)",WDTIS__8192 
+ A  2035                       .define "(2*0x0001u)",WDTIS__8192K 
+ A  2036                       .define "(0x5A00)",WDTPW 
+ A  2037                       .define "(0x0020)",WDTSSEL0 
+ A  2038                       .define "(0x0020)",WDTSSEL0_L 
+ A  2039                       .define "(0x0040)",WDTSSEL1 
+ A  2040                       .define "(0x0040)",WDTSSEL1_L 
+ A  2041                       .define "(0*0x0020u)",WDTSSEL_0 
+ A  2042                       .define "(1*0x0020u)",WDTSSEL_1 
+ A  2043                       .define "(2*0x0020u)",WDTSSEL_2 
+ A  2044                       .define "(3*0x0020u)",WDTSSEL_3 
+ A  2045                       .define "(1*0x0020u)",WDTSSEL__ACLK 
+ A  2046                       .define "(0*0x0020u)",WDTSSEL__SMCLK 
+ A  2047                       .define "(2*0x0020u)",WDTSSEL__VLO 
+ A  2048                       .define "(0x0010)",WDTTMSEL 
+ A  2049                       .define "(0x0010)",WDTTMSEL_L 
+ A  2050                       .define "(WDTPW+WDTTMSEL+WDTCNTCL+WDTIS2+WDTSSEL0)",WDT_ADLY_1000 
+ A  2051                       .define "(WDTPW+WDTTMSEL+WDTCNTCL+WDTIS2+WDTSSEL0+WDTIS1)",WDT_ADLY_16 
+ A  2052                       .define "(WDTPW+WDTTMSEL+WDTCNTCL+WDTIS2+WDTSSEL0+WDTIS1+WDTIS0)",WDT_ADLY_1_9 
+ A  2053                       .define "(WDTPW+WDTTMSEL+WDTCNTCL+WDTIS2+WDTSSEL0+WDTIS0)",WDT_ADLY_250 
+ A  2054                       .define "(WDTPW+WDTCNTCL+WDTSSEL0+WDTIS2)",WDT_ARST_1000 
+ A  2055                       .define "(WDTPW+WDTCNTCL+WDTSSEL0+WDTIS2+WDTIS1)",WDT_ARST_16 
+ A  2056                       .define "(WDTPW+WDTCNTCL+WDTSSEL0+WDTIS2+WDTIS1+WDTIS0)",WDT_ARST_1_9 
+ A  2057                       .define "(WDTPW+WDTCNTCL+WDTSSEL0+WDTIS2+WDTIS0)",WDT_ARST_250 
+ A  2058                       .define "__MSP430_BASEADDRESS_WDT_A__",WDT_A_BASE 
+ A  2059                       .define "(WDTPW+WDTTMSEL+WDTCNTCL+WDTIS2+WDTIS1+WDTIS0)",WDT_MDLY_0_064 
+ A  2060                       .define "(WDTPW+WDTTMSEL+WDTCNTCL+WDTIS2+WDTIS1)",WDT_MDLY_0_5 
+ A  2061                       .define "(WDTPW+WDTTMSEL+WDTCNTCL+WDTIS2)",WDT_MDLY_32 
+ A  2062                       .define "(WDTPW+WDTTMSEL+WDTCNTCL+WDTIS2+WDTIS0)",WDT_MDLY_8 
+ A  2063                       .define "(WDTPW+WDTCNTCL+WDTIS2+WDTIS1+WDTIS0)",WDT_MRST_0_064 
+ A  2064                       .define "(WDTPW+WDTCNTCL+WDTIS2+WDTIS1)",WDT_MRST_0_5 
+ A  2065                       .define "(WDTPW+WDTCNTCL+WDTIS2)",WDT_MRST_32 
+ A  2066                       .define "(WDTPW+WDTCNTCL+WDTIS2+WDTIS0)",WDT_MRST_8 
+ A  2067                       .define """.int49""",WDT_VECTOR 
+ A  2068                       .define "(0x0010)",XT1BYPASS 
+ A  2069                       .define "(0x0010)",XT1BYPASS_L 
+ A  2070                       .define "(0x0040)",XT1DRIVE0 
+ A  2071                       .define "(0x0040)",XT1DRIVE0_L 
+ A  2072                       .define "(0x0080)",XT1DRIVE1 
+ A  2073                       .define "(0x0080)",XT1DRIVE1_L 
+ A  2074                       .define "(0x0000)",XT1DRIVE_0 
+ A  2075                       .define "(0x0040)",XT1DRIVE_1 
+ A  2076                       .define "(0x0080)",XT1DRIVE_2 
+ A  2077                       .define "(0x00C0)",XT1DRIVE_3 
+ A  2078                       .define "(0x0001)",XT1OFF 
+ A  2079                       .define "(0x0001)",XT1OFFG 
+ A  2080                       .define "(0x0001)",XT1OFFG_L 
+ A  2081                       .define "(0x0001)",XT1OFF_L 
+ A  2082                       .define "(0x1000)",XT2BYPASS 
+ A  2083                       .define "(0x0010)",XT2BYPASS_H 
+ A  2084                       .define "(0x4000)",XT2DRIVE0 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   39
+
+ A  2085                       .define "(0x0040)",XT2DRIVE0_H 
+ A  2086                       .define "(0x8000)",XT2DRIVE1 
+ A  2087                       .define "(0x0080)",XT2DRIVE1_H 
+ A  2088                       .define "(0x0000)",XT2DRIVE_0 
+ A  2089                       .define "(0x4000)",XT2DRIVE_1 
+ A  2090                       .define "(0x8000)",XT2DRIVE_2 
+ A  2091                       .define "(0xC000)",XT2DRIVE_3 
+ A  2092                       .define "(0x0100)",XT2OFF 
+ A  2093                       .define "(0x0002)",XT2OFFG 
+ A  2094                       .define "(0x0002)",XT2OFFG_L 
+ A  2095                       .define "(0x0001)",XT2OFF_H 
+ A  2096                       .define "(0x0020)",XTS 
+ A  2097                       .define "(0x0020)",XTS_L 
+ A  2098                       .define "(0x0002)",Z 
+ A  2099                       .define "1",_INLINE  
+ A  2100                       .define "1",_OPTIMIZE_FOR_SPACE 
+ A  2101                       .define "1",__ASM_HEADER__ 
+ A  2102                       .define "4004005",__COMPILER_VERSION__ 
+ A  2103                       .define """Oct 18 2017""",__DATE__ 
+ A  2104                       .define "int",__EDG_PTRDIFF_TYPE__ 
+ A  2105                       .define "unsigned int",__EDG_SIZE_TYPE__ 
+ A  2106                       .define "404",__EDG_VERSION__ 
+ A  2107                       .define "1",__GNUC_GNU_INLINE__ 
+ A  2108                       .define "3",__GNUC_MINOR__ 
+ A  2109                       .define "0",__GNUC_PATCHLEVEL__ 
+ A  2110                       .define "1",__MSP430FR5739 
+ A  2111                       .define "1",__MSP430FR5739__ 
+ A  2112                       .define "1",__MSP430FR57XX_FAMILY__ 
+ A  2113                       .define "0x0700",__MSP430_BASEADDRESS_ADC10_B__ 
+ A  2114                       .define "0x08C0",__MSP430_BASEADDRESS_COMPD__ 
+ A  2115                       .define "0x0150",__MSP430_BASEADDRESS_CRC__ 
+ A  2116                       .define "0x0160",__MSP430_BASEADDRESS_CS__ 
+ A  2117                       .define "0x0500",__MSP430_BASEADDRESS_DMAX_3__ 
+ A  2118                       .define "0x05C0",__MSP430_BASEADDRESS_EUSCI_A0__ 
+ A  2119                       .define "0x05E0",__MSP430_BASEADDRESS_EUSCI_A1__ 
+ A  2120                       .define "0x0640",__MSP430_BASEADDRESS_EUSCI_B0__ 
+ A  2121                       .define "0x0140",__MSP430_BASEADDRESS_FRAM_FR5XX__ 
+ A  2122                       .define "0x05A0",__MSP430_BASEADDRESS_MPU__ 
+ A  2123                       .define "0x04C0",__MSP430_BASEADDRESS_MPY32__ 
+ A  2124                       .define "0x0120",__MSP430_BASEADDRESS_PMM_FR5xx__ 
+ A  2125                       .define "0x0200",__MSP430_BASEADDRESS_PORT1_R__ 
+ A  2126                       .define "0x0200",__MSP430_BASEADDRESS_PORT2_R__ 
+ A  2127                       .define "0x0220",__MSP430_BASEADDRESS_PORT3_R__ 
+ A  2128                       .define "0x0220",__MSP430_BASEADDRESS_PORT4_R__ 
+ A  2129                       .define "0x0200",__MSP430_BASEADDRESS_PORTA_R__ 
+ A  2130                       .define "0x0220",__MSP430_BASEADDRESS_PORTB_R__ 
+ A  2131                       .define "0x0320",__MSP430_BASEADDRESS_PORTJ_R__ 
+ A  2132                       .define "0x01B0",__MSP430_BASEADDRESS_REF__ 
+ A  2133                       .define "0x04A0",__MSP430_BASEADDRESS_RTC_B__ 
+ A  2134                       .define "0x0100",__MSP430_BASEADDRESS_SFR__ 
+ A  2135                       .define "0x0180",__MSP430_BASEADDRESS_SYS__ 
+ A  2136                       .define "0x0340",__MSP430_BASEADDRESS_T0A3__ 
+ A  2137                       .define "0x03C0",__MSP430_BASEADDRESS_T0B3__ 
+ A  2138                       .define "0x0380",__MSP430_BASEADDRESS_T1A3__ 
+ A  2139                       .define "0x0400",__MSP430_BASEADDRESS_T1B3__ 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   40
+
+ A  2140                       .define "0x0440",__MSP430_BASEADDRESS_T2B3__ 
+ A  2141                       .define "0x0150",__MSP430_BASEADDRESS_WDT_A__ 
+ A  2142                       .define "1",__MSP430_HAS_ADC10_B__ 
+ A  2143                       .define "1",__MSP430_HAS_COMPD__ 
+ A  2144                       .define "1",__MSP430_HAS_CRC__ 
+ A  2145                       .define "1",__MSP430_HAS_CS__ 
+ A  2146                       .define "1",__MSP430_HAS_DMAX_3__ 
+ A  2147                       .define "1",__MSP430_HAS_EUSCI_A0__ 
+ A  2148                       .define "1",__MSP430_HAS_EUSCI_A1__ 
+ A  2149                       .define "1",__MSP430_HAS_EUSCI_B0__ 
+ A  2150                       .define "1",__MSP430_HAS_FRAM_FR5XX__ 
+ A  2151                       .define "1",__MSP430_HAS_MPU__ 
+ A  2152                       .define "1",__MSP430_HAS_MPY32__ 
+ A  2153                       .define "1",__MSP430_HAS_MSP430XV2_CPU__ 
+ A  2154                       .define "1",__MSP430_HAS_P1SEL0__ 
+ A  2155                       .define "1",__MSP430_HAS_P1SEL1__ 
+ A  2156                       .define "1",__MSP430_HAS_P2SEL0__ 
+ A  2157                       .define "1",__MSP430_HAS_P2SEL1__ 
+ A  2158                       .define "1",__MSP430_HAS_P3SEL0__ 
+ A  2159                       .define "1",__MSP430_HAS_P3SEL1__ 
+ A  2160                       .define "1",__MSP430_HAS_P4SEL0__ 
+ A  2161                       .define "1",__MSP430_HAS_P4SEL1__ 
+ A  2162                       .define "1",__MSP430_HAS_PASEL0__ 
+ A  2163                       .define "1",__MSP430_HAS_PASEL1__ 
+ A  2164                       .define "1",__MSP430_HAS_PBSEL0__ 
+ A  2165                       .define "1",__MSP430_HAS_PBSEL1__ 
+ A  2166                       .define "1",__MSP430_HAS_PJSEL0__ 
+ A  2167                       .define "1",__MSP430_HAS_PJSEL1__ 
+ A  2168                       .define "1",__MSP430_HAS_PMM_FR5xx__ 
+ A  2169                       .define "1",__MSP430_HAS_PORT1_R__ 
+ A  2170                       .define "1",__MSP430_HAS_PORT2_R__ 
+ A  2171                       .define "1",__MSP430_HAS_PORT3_R__ 
+ A  2172                       .define "1",__MSP430_HAS_PORT4_R__ 
+ A  2173                       .define "1",__MSP430_HAS_PORTA_R__ 
+ A  2174                       .define "1",__MSP430_HAS_PORTB_R__ 
+ A  2175                       .define "1",__MSP430_HAS_PORTJ_R__ 
+ A  2176                       .define "1",__MSP430_HAS_REF__ 
+ A  2177                       .define "1",__MSP430_HAS_RTC_B__ 
+ A  2178                       .define "1",__MSP430_HAS_SFR__ 
+ A  2179                       .define "1",__MSP430_HAS_SYS__ 
+ A  2180                       .define "1",__MSP430_HAS_T0A3__ 
+ A  2181                       .define "1",__MSP430_HAS_T0B3__ 
+ A  2182                       .define "1",__MSP430_HAS_T1A3__ 
+ A  2183                       .define "1",__MSP430_HAS_T1B3__ 
+ A  2184                       .define "1",__MSP430_HAS_T2B3__ 
+ A  2185                       .define "1",__MSP430_HAS_WDT_A__ 
+ A  2186                       .define "1173",__MSP430_HEADER_VERSION__ 
+ A  2187                       .define "1",__MSP430__ 
+ A  2188                       .define "int",__PTRDIFF_T_TYPE__ 
+ A  2189                       .define "unsigned",__SIZE_T_TYPE__ 
+ A  2190                       .define "199409L",__STDC_VERSION__ 
+ A  2191                       .define "1",__STDC__ 
+ A  2192                       .define """08:45:45""",__TIME__ 
+ A  2193                       .define "4004005",__TI_COMPILER_VERSION__ 
+ A  2194                       .define "1",__TI_EABI__ 
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   41
+
+ A  2195                       .define "1",__TI_GNU_ATTRIBUTE_SUPPORT__ 
+ A  2196                       .define "0",__TI_STRICT_ANSI_MODE__ 
+ A  2197                       .define "1",__TI_STRICT_FP_MODE__ 
+ A  2198                       .define "16",__TI_WCHAR_T_BITS__ 
+ A  2199                       .define """EDG gcc 4.3 mode""",__VERSION__ 
+ A  2200                       .define "unsigned int",__WCHAR_T_TYPE__ 
+ A  2201                       .define "1",__edg_front_end__ 
+ A  2202                       .define "1",__little_endian__ 
+ A  2203                       .define "1",__msp430 
+ A  2204                       .define "1",__unsigned_chars__ 
+ A  2205            
+ A  2206            ; =========== TYPE DEFINITIONS ===========
+ A  2207            
+ A  2208            ; =========== EXTERNAL FUNCTIONS ===========
+ A  2209            
+ A  2210            ; =========== EXTERNAL VARIABLES ===========
+ A  2211                       .global ADC10CTL0    
+ A  2212                       .global ADC10CTL0_L  
+ A  2213                       .global ADC10CTL0_H  
+ A  2214                       .global ADC10CTL1    
+ A  2215                       .global ADC10CTL1_L  
+ A  2216                       .global ADC10CTL1_H  
+ A  2217                       .global ADC10CTL2    
+ A  2218                       .global ADC10CTL2_L  
+ A  2219                       .global ADC10CTL2_H  
+ A  2220                       .global ADC10LO      
+ A  2221                       .global ADC10LO_L    
+ A  2222                       .global ADC10LO_H    
+ A  2223                       .global ADC10HI      
+ A  2224                       .global ADC10HI_L    
+ A  2225                       .global ADC10HI_H    
+ A  2226                       .global ADC10MCTL0   
+ A  2227                       .global ADC10MCTL0_L 
+ A  2228                       .global ADC10MCTL0_H 
+ A  2229                       .global ADC10MEM0    
+ A  2230                       .global ADC10MEM0_L  
+ A  2231                       .global ADC10MEM0_H  
+ A  2232                       .global ADC10IE      
+ A  2233                       .global ADC10IE_L    
+ A  2234                       .global ADC10IE_H    
+ A  2235                       .global ADC10IFG     
+ A  2236                       .global ADC10IFG_L   
+ A  2237                       .global ADC10IFG_H   
+ A  2238                       .global ADC10IV      
+ A  2239                       .global ADC10IV_L    
+ A  2240                       .global ADC10IV_H    
+ A  2241                       .global CSCTL0       
+ A  2242                       .global CSCTL0_L     
+ A  2243                       .global CSCTL0_H     
+ A  2244                       .global CSCTL1       
+ A  2245                       .global CSCTL1_L     
+ A  2246                       .global CSCTL1_H     
+ A  2247                       .global CSCTL2       
+ A  2248                       .global CSCTL2_L     
+ A  2249                       .global CSCTL2_H     
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   42
+
+ A  2250                       .global CSCTL3       
+ A  2251                       .global CSCTL3_L     
+ A  2252                       .global CSCTL3_H     
+ A  2253                       .global CSCTL4       
+ A  2254                       .global CSCTL4_L     
+ A  2255                       .global CSCTL4_H     
+ A  2256                       .global CSCTL5       
+ A  2257                       .global CSCTL5_L     
+ A  2258                       .global CSCTL5_H     
+ A  2259                       .global CSCTL6       
+ A  2260                       .global CSCTL6_L     
+ A  2261                       .global CSCTL6_H     
+ A  2262                       .global CDCTL0       
+ A  2263                       .global CDCTL0_L     
+ A  2264                       .global CDCTL0_H     
+ A  2265                       .global CDCTL1       
+ A  2266                       .global CDCTL1_L     
+ A  2267                       .global CDCTL1_H     
+ A  2268                       .global CDCTL2       
+ A  2269                       .global CDCTL2_L     
+ A  2270                       .global CDCTL2_H     
+ A  2271                       .global CDCTL3       
+ A  2272                       .global CDCTL3_L     
+ A  2273                       .global CDCTL3_H     
+ A  2274                       .global CDINT        
+ A  2275                       .global CDINT_L      
+ A  2276                       .global CDINT_H      
+ A  2277                       .global CDIV         
+ A  2278                       .global CDIV_L       
+ A  2279                       .global CDIV_H       
+ A  2280                       .global CRCDI        
+ A  2281                       .global CRCDI_L      
+ A  2282                       .global CRCDI_H      
+ A  2283                       .global CRCDIRB      
+ A  2284                       .global CRCDIRB_L    
+ A  2285                       .global CRCDIRB_H    
+ A  2286                       .global CRCINIRES    
+ A  2287                       .global CRCINIRES_L  
+ A  2288                       .global CRCINIRES_H  
+ A  2289                       .global CRCRESR      
+ A  2290                       .global CRCRESR_L    
+ A  2291                       .global CRCRESR_H    
+ A  2292                       .global DMACTL0      
+ A  2293                       .global DMACTL0_L    
+ A  2294                       .global DMACTL0_H    
+ A  2295                       .global DMACTL1      
+ A  2296                       .global DMACTL1_L    
+ A  2297                       .global DMACTL1_H    
+ A  2298                       .global DMACTL2      
+ A  2299                       .global DMACTL2_L    
+ A  2300                       .global DMACTL2_H    
+ A  2301                       .global DMACTL3      
+ A  2302                       .global DMACTL3_L    
+ A  2303                       .global DMACTL3_H    
+ A  2304                       .global DMACTL4      
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   43
+
+ A  2305                       .global DMACTL4_L    
+ A  2306                       .global DMACTL4_H    
+ A  2307                       .global DMAIV        
+ A  2308                       .global DMAIV_L      
+ A  2309                       .global DMAIV_H      
+ A  2310                       .global DMA0CTL      
+ A  2311                       .global DMA0CTL_L    
+ A  2312                       .global DMA0CTL_H    
+ A  2313                       .global DMA0SA       
+ A  2314                       .global DMA0SAL      
+ A  2315                       .global DMA0SAH      
+ A  2316                       .global DMA0DA       
+ A  2317                       .global DMA0DAL      
+ A  2318                       .global DMA0DAH      
+ A  2319                       .global DMA0SZ       
+ A  2320                       .global DMA1CTL      
+ A  2321                       .global DMA1CTL_L    
+ A  2322                       .global DMA1CTL_H    
+ A  2323                       .global DMA1SA       
+ A  2324                       .global DMA1SAL      
+ A  2325                       .global DMA1SAH      
+ A  2326                       .global DMA1DA       
+ A  2327                       .global DMA1DAL      
+ A  2328                       .global DMA1DAH      
+ A  2329                       .global DMA1SZ       
+ A  2330                       .global DMA2CTL      
+ A  2331                       .global DMA2CTL_L    
+ A  2332                       .global DMA2CTL_H    
+ A  2333                       .global DMA2SA       
+ A  2334                       .global DMA2SAL      
+ A  2335                       .global DMA2SAH      
+ A  2336                       .global DMA2DA       
+ A  2337                       .global DMA2DAL      
+ A  2338                       .global DMA2DAH      
+ A  2339                       .global DMA2SZ       
+ A  2340                       .global FRCTL0       
+ A  2341                       .global FRCTL0_L     
+ A  2342                       .global FRCTL0_H     
+ A  2343                       .global GCCTL0       
+ A  2344                       .global GCCTL0_L     
+ A  2345                       .global GCCTL0_H     
+ A  2346                       .global GCCTL1       
+ A  2347                       .global GCCTL1_L     
+ A  2348                       .global GCCTL1_H     
+ A  2349                       .global MPUCTL0      
+ A  2350                       .global MPUCTL0_L    
+ A  2351                       .global MPUCTL0_H    
+ A  2352                       .global MPUCTL1      
+ A  2353                       .global MPUCTL1_L    
+ A  2354                       .global MPUCTL1_H    
+ A  2355                       .global MPUSEG       
+ A  2356                       .global MPUSEG_L     
+ A  2357                       .global MPUSEG_H     
+ A  2358                       .global MPUSAM       
+ A  2359                       .global MPUSAM_L     
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   44
+
+ A  2360                       .global MPUSAM_H     
+ A  2361                       .global MPY          
+ A  2362                       .global MPY_L        
+ A  2363                       .global MPY_H        
+ A  2364                       .global MPYS         
+ A  2365                       .global MPYS_L       
+ A  2366                       .global MPYS_H       
+ A  2367                       .global MAC          
+ A  2368                       .global MAC_L        
+ A  2369                       .global MAC_H        
+ A  2370                       .global MACS         
+ A  2371                       .global MACS_L       
+ A  2372                       .global MACS_H       
+ A  2373                       .global OP2          
+ A  2374                       .global OP2_L        
+ A  2375                       .global OP2_H        
+ A  2376                       .global RESLO        
+ A  2377                       .global RESLO_L      
+ A  2378                       .global RESLO_H      
+ A  2379                       .global RESHI        
+ A  2380                       .global RESHI_L      
+ A  2381                       .global RESHI_H      
+ A  2382                       .global SUMEXT       
+ A  2383                       .global SUMEXT_L     
+ A  2384                       .global SUMEXT_H     
+ A  2385                       .global MPY32L       
+ A  2386                       .global MPY32L_L     
+ A  2387                       .global MPY32L_H     
+ A  2388                       .global MPY32H       
+ A  2389                       .global MPY32H_L     
+ A  2390                       .global MPY32H_H     
+ A  2391                       .global MPYS32L      
+ A  2392                       .global MPYS32L_L    
+ A  2393                       .global MPYS32L_H    
+ A  2394                       .global MPYS32H      
+ A  2395                       .global MPYS32H_L    
+ A  2396                       .global MPYS32H_H    
+ A  2397                       .global MAC32L       
+ A  2398                       .global MAC32L_L     
+ A  2399                       .global MAC32L_H     
+ A  2400                       .global MAC32H       
+ A  2401                       .global MAC32H_L     
+ A  2402                       .global MAC32H_H     
+ A  2403                       .global MACS32L      
+ A  2404                       .global MACS32L_L    
+ A  2405                       .global MACS32L_H    
+ A  2406                       .global MACS32H      
+ A  2407                       .global MACS32H_L    
+ A  2408                       .global MACS32H_H    
+ A  2409                       .global OP2L         
+ A  2410                       .global OP2L_L       
+ A  2411                       .global OP2L_H       
+ A  2412                       .global OP2H         
+ A  2413                       .global OP2H_L       
+ A  2414                       .global OP2H_H       
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   45
+
+ A  2415                       .global RES0         
+ A  2416                       .global RES0_L       
+ A  2417                       .global RES0_H       
+ A  2418                       .global RES1         
+ A  2419                       .global RES1_L       
+ A  2420                       .global RES1_H       
+ A  2421                       .global RES2         
+ A  2422                       .global RES2_L       
+ A  2423                       .global RES2_H       
+ A  2424                       .global RES3         
+ A  2425                       .global RES3_L       
+ A  2426                       .global RES3_H       
+ A  2427                       .global MPY32CTL0    
+ A  2428                       .global MPY32CTL0_L  
+ A  2429                       .global MPY32CTL0_H  
+ A  2430                       .global PMMCTL0      
+ A  2431                       .global PMMCTL0_L    
+ A  2432                       .global PMMCTL0_H    
+ A  2433                       .global PMMIFG       
+ A  2434                       .global PMMIFG_L     
+ A  2435                       .global PMMIFG_H     
+ A  2436                       .global PM5CTL0      
+ A  2437                       .global PM5CTL0_L    
+ A  2438                       .global PM5CTL0_H    
+ A  2439                       .global PAIN         
+ A  2440                       .global PAIN_L       
+ A  2441                       .global PAIN_H       
+ A  2442                       .global PAOUT        
+ A  2443                       .global PAOUT_L      
+ A  2444                       .global PAOUT_H      
+ A  2445                       .global PADIR        
+ A  2446                       .global PADIR_L      
+ A  2447                       .global PADIR_H      
+ A  2448                       .global PAREN        
+ A  2449                       .global PAREN_L      
+ A  2450                       .global PAREN_H      
+ A  2451                       .global PASEL0       
+ A  2452                       .global PASEL0_L     
+ A  2453                       .global PASEL0_H     
+ A  2454                       .global PASEL1       
+ A  2455                       .global PASEL1_L     
+ A  2456                       .global PASEL1_H     
+ A  2457                       .global PASELC       
+ A  2458                       .global PASELC_L     
+ A  2459                       .global PASELC_H     
+ A  2460                       .global PAIES        
+ A  2461                       .global PAIES_L      
+ A  2462                       .global PAIES_H      
+ A  2463                       .global PAIE         
+ A  2464                       .global PAIE_L       
+ A  2465                       .global PAIE_H       
+ A  2466                       .global PAIFG        
+ A  2467                       .global PAIFG_L      
+ A  2468                       .global PAIFG_H      
+ A  2469                       .global P1IV         
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   46
+
+ A  2470                       .global P2IV         
+ A  2471                       .global PBIN         
+ A  2472                       .global PBIN_L       
+ A  2473                       .global PBIN_H       
+ A  2474                       .global PBOUT        
+ A  2475                       .global PBOUT_L      
+ A  2476                       .global PBOUT_H      
+ A  2477                       .global PBDIR        
+ A  2478                       .global PBDIR_L      
+ A  2479                       .global PBDIR_H      
+ A  2480                       .global PBREN        
+ A  2481                       .global PBREN_L      
+ A  2482                       .global PBREN_H      
+ A  2483                       .global PBSEL0       
+ A  2484                       .global PBSEL0_L     
+ A  2485                       .global PBSEL0_H     
+ A  2486                       .global PBSEL1       
+ A  2487                       .global PBSEL1_L     
+ A  2488                       .global PBSEL1_H     
+ A  2489                       .global PBSELC       
+ A  2490                       .global PBSELC_L     
+ A  2491                       .global PBSELC_H     
+ A  2492                       .global PBIES        
+ A  2493                       .global PBIES_L      
+ A  2494                       .global PBIES_H      
+ A  2495                       .global PBIE         
+ A  2496                       .global PBIE_L       
+ A  2497                       .global PBIE_H       
+ A  2498                       .global PBIFG        
+ A  2499                       .global PBIFG_L      
+ A  2500                       .global PBIFG_H      
+ A  2501                       .global P3IV         
+ A  2502                       .global P4IV         
+ A  2503                       .global PJIN         
+ A  2504                       .global PJIN_L       
+ A  2505                       .global PJIN_H       
+ A  2506                       .global PJOUT        
+ A  2507                       .global PJOUT_L      
+ A  2508                       .global PJOUT_H      
+ A  2509                       .global PJDIR        
+ A  2510                       .global PJDIR_L      
+ A  2511                       .global PJDIR_H      
+ A  2512                       .global PJREN        
+ A  2513                       .global PJREN_L      
+ A  2514                       .global PJREN_H      
+ A  2515                       .global PJSEL0       
+ A  2516                       .global PJSEL0_L     
+ A  2517                       .global PJSEL0_H     
+ A  2518                       .global PJSEL1       
+ A  2519                       .global PJSEL1_L     
+ A  2520                       .global PJSEL1_H     
+ A  2521                       .global PJSELC       
+ A  2522                       .global PJSELC_L     
+ A  2523                       .global PJSELC_H     
+ A  2524                       .global REFCTL0      
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   47
+
+ A  2525                       .global REFCTL0_L    
+ A  2526                       .global REFCTL0_H    
+ A  2527                       .global RTCCTL01     
+ A  2528                       .global RTCCTL01_L   
+ A  2529                       .global RTCCTL01_H   
+ A  2530                       .global RTCCTL23     
+ A  2531                       .global RTCCTL23_L   
+ A  2532                       .global RTCCTL23_H   
+ A  2533                       .global RTCPS0CTL    
+ A  2534                       .global RTCPS0CTL_L  
+ A  2535                       .global RTCPS0CTL_H  
+ A  2536                       .global RTCPS1CTL    
+ A  2537                       .global RTCPS1CTL_L  
+ A  2538                       .global RTCPS1CTL_H  
+ A  2539                       .global RTCPS        
+ A  2540                       .global RTCPS_L      
+ A  2541                       .global RTCPS_H      
+ A  2542                       .global RTCIV        
+ A  2543                       .global RTCTIM0      
+ A  2544                       .global RTCTIM0_L    
+ A  2545                       .global RTCTIM0_H    
+ A  2546                       .global RTCTIM1      
+ A  2547                       .global RTCTIM1_L    
+ A  2548                       .global RTCTIM1_H    
+ A  2549                       .global RTCDATE      
+ A  2550                       .global RTCDATE_L    
+ A  2551                       .global RTCDATE_H    
+ A  2552                       .global RTCYEAR      
+ A  2553                       .global RTCYEAR_L    
+ A  2554                       .global RTCYEAR_H    
+ A  2555                       .global RTCAMINHR    
+ A  2556                       .global RTCAMINHR_L  
+ A  2557                       .global RTCAMINHR_H  
+ A  2558                       .global RTCADOWDAY   
+ A  2559                       .global RTCADOWDAY_L 
+ A  2560                       .global RTCADOWDAY_H 
+ A  2561                       .global BIN2BCD      
+ A  2562                       .global BCD2BIN      
+ A  2563                       .global SFRIE1       
+ A  2564                       .global SFRIE1_L     
+ A  2565                       .global SFRIE1_H     
+ A  2566                       .global SFRIFG1      
+ A  2567                       .global SFRIFG1_L    
+ A  2568                       .global SFRIFG1_H    
+ A  2569                       .global SFRRPCR      
+ A  2570                       .global SFRRPCR_L    
+ A  2571                       .global SFRRPCR_H    
+ A  2572                       .global SYSCTL       
+ A  2573                       .global SYSCTL_L     
+ A  2574                       .global SYSCTL_H     
+ A  2575                       .global SYSBSLC      
+ A  2576                       .global SYSBSLC_L    
+ A  2577                       .global SYSBSLC_H    
+ A  2578                       .global SYSJMBC      
+ A  2579                       .global SYSJMBC_L    
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   48
+
+ A  2580                       .global SYSJMBC_H    
+ A  2581                       .global SYSJMBI0     
+ A  2582                       .global SYSJMBI0_L   
+ A  2583                       .global SYSJMBI0_H   
+ A  2584                       .global SYSJMBI1     
+ A  2585                       .global SYSJMBI1_L   
+ A  2586                       .global SYSJMBI1_H   
+ A  2587                       .global SYSJMBO0     
+ A  2588                       .global SYSJMBO0_L   
+ A  2589                       .global SYSJMBO0_H   
+ A  2590                       .global SYSJMBO1     
+ A  2591                       .global SYSJMBO1_L   
+ A  2592                       .global SYSJMBO1_H   
+ A  2593                       .global SYSBERRIV    
+ A  2594                       .global SYSBERRIV_L  
+ A  2595                       .global SYSBERRIV_H  
+ A  2596                       .global SYSUNIV      
+ A  2597                       .global SYSUNIV_L    
+ A  2598                       .global SYSUNIV_H    
+ A  2599                       .global SYSSNIV      
+ A  2600                       .global SYSSNIV_L    
+ A  2601                       .global SYSSNIV_H    
+ A  2602                       .global SYSRSTIV     
+ A  2603                       .global SYSRSTIV_L   
+ A  2604                       .global SYSRSTIV_H   
+ A  2605                       .global TA0CTL       
+ A  2606                       .global TA0CCTL0     
+ A  2607                       .global TA0CCTL1     
+ A  2608                       .global TA0CCTL2     
+ A  2609                       .global TA0R         
+ A  2610                       .global TA0CCR0      
+ A  2611                       .global TA0CCR1      
+ A  2612                       .global TA0CCR2      
+ A  2613                       .global TA0IV        
+ A  2614                       .global TA0EX0       
+ A  2615                       .global TA1CTL       
+ A  2616                       .global TA1CCTL0     
+ A  2617                       .global TA1CCTL1     
+ A  2618                       .global TA1CCTL2     
+ A  2619                       .global TA1R         
+ A  2620                       .global TA1CCR0      
+ A  2621                       .global TA1CCR1      
+ A  2622                       .global TA1CCR2      
+ A  2623                       .global TA1IV        
+ A  2624                       .global TA1EX0       
+ A  2625                       .global TB0CTL       
+ A  2626                       .global TB0CCTL0     
+ A  2627                       .global TB0CCTL1     
+ A  2628                       .global TB0CCTL2     
+ A  2629                       .global TB0R         
+ A  2630                       .global TB0CCR0      
+ A  2631                       .global TB0CCR1      
+ A  2632                       .global TB0CCR2      
+ A  2633                       .global TB0EX0       
+ A  2634                       .global TB0IV        
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   49
+
+ A  2635                       .global TB1CTL       
+ A  2636                       .global TB1CCTL0     
+ A  2637                       .global TB1CCTL1     
+ A  2638                       .global TB1CCTL2     
+ A  2639                       .global TB1R         
+ A  2640                       .global TB1CCR0      
+ A  2641                       .global TB1CCR1      
+ A  2642                       .global TB1CCR2      
+ A  2643                       .global TB1IV        
+ A  2644                       .global TB1EX0       
+ A  2645                       .global TB2CTL       
+ A  2646                       .global TB2CCTL0     
+ A  2647                       .global TB2CCTL1     
+ A  2648                       .global TB2CCTL2     
+ A  2649                       .global TB2R         
+ A  2650                       .global TB2CCR0      
+ A  2651                       .global TB2CCR1      
+ A  2652                       .global TB2CCR2      
+ A  2653                       .global TB2IV        
+ A  2654                       .global TB2EX0       
+ A  2655                       .global UCA0CTLW0    
+ A  2656                       .global UCA0CTLW0_L  
+ A  2657                       .global UCA0CTLW0_H  
+ A  2658                       .global UCA0CTLW1    
+ A  2659                       .global UCA0CTLW1_L  
+ A  2660                       .global UCA0CTLW1_H  
+ A  2661                       .global UCA0BRW      
+ A  2662                       .global UCA0BRW_L    
+ A  2663                       .global UCA0BRW_H    
+ A  2664                       .global UCA0MCTLW    
+ A  2665                       .global UCA0MCTLW_L  
+ A  2666                       .global UCA0MCTLW_H  
+ A  2667                       .global UCA0STATW    
+ A  2668                       .global UCA0RXBUF    
+ A  2669                       .global UCA0RXBUF_L  
+ A  2670                       .global UCA0RXBUF_H  
+ A  2671                       .global UCA0TXBUF    
+ A  2672                       .global UCA0TXBUF_L  
+ A  2673                       .global UCA0TXBUF_H  
+ A  2674                       .global UCA0ABCTL    
+ A  2675                       .global UCA0IRCTL    
+ A  2676                       .global UCA0IRCTL_L  
+ A  2677                       .global UCA0IRCTL_H  
+ A  2678                       .global UCA0IE       
+ A  2679                       .global UCA0IE_L     
+ A  2680                       .global UCA0IE_H     
+ A  2681                       .global UCA0IFG      
+ A  2682                       .global UCA0IFG_L    
+ A  2683                       .global UCA0IFG_H    
+ A  2684                       .global UCA0IV       
+ A  2685                       .global UCB0CTLW0    
+ A  2686                       .global UCB0CTLW0_L  
+ A  2687                       .global UCB0CTLW0_H  
+ A  2688                       .global UCB0CTLW1    
+ A  2689                       .global UCB0CTLW1_L  
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   50
+
+ A  2690                       .global UCB0CTLW1_H  
+ A  2691                       .global UCB0BRW      
+ A  2692                       .global UCB0BRW_L    
+ A  2693                       .global UCB0BRW_H    
+ A  2694                       .global UCB0STATW    
+ A  2695                       .global UCB0STATW_L  
+ A  2696                       .global UCB0STATW_H  
+ A  2697                       .global UCB0TBCNT    
+ A  2698                       .global UCB0TBCNT_L  
+ A  2699                       .global UCB0TBCNT_H  
+ A  2700                       .global UCB0RXBUF    
+ A  2701                       .global UCB0RXBUF_L  
+ A  2702                       .global UCB0RXBUF_H  
+ A  2703                       .global UCB0TXBUF    
+ A  2704                       .global UCB0TXBUF_L  
+ A  2705                       .global UCB0TXBUF_H  
+ A  2706                       .global UCB0I2COA0   
+ A  2707                       .global UCB0I2COA0_L 
+ A  2708                       .global UCB0I2COA0_H 
+ A  2709                       .global UCB0I2COA1   
+ A  2710                       .global UCB0I2COA1_L 
+ A  2711                       .global UCB0I2COA1_H 
+ A  2712                       .global UCB0I2COA2   
+ A  2713                       .global UCB0I2COA2_L 
+ A  2714                       .global UCB0I2COA2_H 
+ A  2715                       .global UCB0I2COA3   
+ A  2716                       .global UCB0I2COA3_L 
+ A  2717                       .global UCB0I2COA3_H 
+ A  2718                       .global UCB0ADDRX    
+ A  2719                       .global UCB0ADDRX_L  
+ A  2720                       .global UCB0ADDRX_H  
+ A  2721                       .global UCB0ADDMASK  
+ A  2722                       .global UCB0ADDMASK_L 
+ A  2723                       .global UCB0ADDMASK_H 
+ A  2724                       .global UCB0I2CSA    
+ A  2725                       .global UCB0I2CSA_L  
+ A  2726                       .global UCB0I2CSA_H  
+ A  2727                       .global UCB0IE       
+ A  2728                       .global UCB0IE_L     
+ A  2729                       .global UCB0IE_H     
+ A  2730                       .global UCB0IFG      
+ A  2731                       .global UCB0IFG_L    
+ A  2732                       .global UCB0IFG_H    
+ A  2733                       .global UCB0IV       
+ A  2734                       .global UCA1CTLW0    
+ A  2735                       .global UCA1CTLW0_L  
+ A  2736                       .global UCA1CTLW0_H  
+ A  2737                       .global UCA1CTLW1    
+ A  2738                       .global UCA1CTLW1_L  
+ A  2739                       .global UCA1CTLW1_H  
+ A  2740                       .global UCA1BRW      
+ A  2741                       .global UCA1BRW_L    
+ A  2742                       .global UCA1BRW_H    
+ A  2743                       .global UCA1MCTLW    
+ A  2744                       .global UCA1MCTLW_L  
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   51
+
+ A  2745                       .global UCA1MCTLW_H  
+ A  2746                       .global UCA1STATW    
+ A  2747                       .global UCA1RXBUF    
+ A  2748                       .global UCA1RXBUF_L  
+ A  2749                       .global UCA1RXBUF_H  
+ A  2750                       .global UCA1TXBUF    
+ A  2751                       .global UCA1TXBUF_L  
+ A  2752                       .global UCA1TXBUF_H  
+ A  2753                       .global UCA1ABCTL    
+ A  2754                       .global UCA1IRCTL    
+ A  2755                       .global UCA1IRCTL_L  
+ A  2756                       .global UCA1IRCTL_H  
+ A  2757                       .global UCA1IE       
+ A  2758                       .global UCA1IE_L     
+ A  2759                       .global UCA1IE_H     
+ A  2760                       .global UCA1IFG      
+ A  2761                       .global UCA1IFG_L    
+ A  2762                       .global UCA1IFG_H    
+ A  2763                       .global UCA1IV       
+ A  2764                       .global WDTCTL       
+ A  2765                       .global WDTCTL_L     
+ A  2766                       .global WDTCTL_H     
+       7                        
+       8            ;-------------------------------------------------------------------------------
+       9                        .def    RESET                   ; Export program entry-point to
+      10                                                        ; make it known to linker.
+      11            ;-------------------------------------------------------------------------------
+      12 000000                   .text                           ; Assemble into program memory.
+      13                        .retain                         ; Override ELF conditional linking
+      14                                                        ; and retain current section.
+      15                        .retainrefs                     ; And retain any sections that have
+      16                                                        ; references to current section.
+      17            
+      18            ;-------------------------------------------------------------------------------
+      19      0211  uno             .equ    0x211
+      20            
+      21            
+      22      0000' backlabel       .equ    $
+      23 000000       RESET
+      24 000000 1004                  rrc     R4
+      25 000002 1044                  rrc.b   R4
+      26 000004 1014                  rrc     25(R4)
+         000006 0019 
+      27 000008 1054                  rrc.b   25(R4)
+         00000a 0019 
+      28 00000c 1024                  rrc     @R4
+      29 00000e 1064                  rrc.b   @R4
+      30 000010 1034                  rrc     @R4+
+      31 000012 1074                  rrc.b   @R4+
+      32            
+      33 000014 1084                  swpb    R4
+      34 000016 1094                  swpb    25(R4)
+         000018 0019 
+      35 00001a 10A4                  swpb    @R4
+      36 00001c 10B4                  swpb    @R4+
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   52
+
+      37            
+      38 00001e 1104                  rra     R4
+      39 000020 1144                  rra.b   R4
+      40 000022 1114                  rra     25(R4)
+         000024 0019 
+      41 000026 1154                  rra.b   25(R4)
+         000028 0019 
+      42 00002a 1124                  rra     @R4
+      43 00002c 1164                  rra.b   @R4
+      44 00002e 1134                  rra     @R4+
+      45 000030 1174                  rra.b   @R4+
+      46            
+      47 000032 1184                  sxt     R4
+      48 000034 1194                  sxt     25(R4)
+         000036 0019 
+      49 000038 11A4                  sxt     @R4
+      50 00003a 11B4                  sxt     @R4+
+      51            
+      52 00003c 1204                  push    R4
+      53 00003e 1244                  push.b  R4
+      54 000040 1214                  push    25(R4)
+         000042 0019 
+      55 000044 1254                  push.b  25(R4)
+         000046 0019 
+      56 000048 1224                  push    @R4
+      57 00004a 1264                  push.b  @R4
+      58 00004c 1234                  push    @R4+
+      59 00004e 1274                  push.b  @R4+
+      60            
+      61            
+      62            ;-------------------------------------------------------------------------------
+      63            ; Jump instructions
+      64            ;-------------------------------------------------------------------------------
+      65            
+      66 000050 23D7                  jne     backlabel
+      67 000052 206A                  jne     fwdlabel
+      68 000054 23D5                  jnz     backlabel
+      69 000056 2068                  jnz     fwdlabel
+      70            
+      71 000058 27D3                  jeq     backlabel
+      72 00005a 2466                  jeq     fwdlabel
+      73 00005c 27D1                  jz      backlabel
+      74 00005e 2464                  jz      fwdlabel
+      75            
+      76 000060 2BCF                  jnc     backlabel
+      77 000062 2862                  jnc     fwdlabel
+      78 000064 2BCD                  jlo     backlabel
+      79 000066 2860                  jlo     fwdlabel
+      80            
+      81 000068 2FCB                  jc      backlabel
+      82 00006a 2C5E                  jc      fwdlabel
+      83 00006c 2FC9                  jhs     backlabel
+      84 00006e 2C5C                  jhs     fwdlabel
+      85            
+      86 000070 33C7                  jn      backlabel
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   53
+
+      87 000072 305A                  jn      fwdlabel
+      88            
+      89 000074 37C5                  jge     backlabel
+      90 000076 3458                  jge     fwdlabel
+      91            
+      92 000078 3BC3                  jl      backlabel
+      93 00007a 3856                  jl      fwdlabel
+      94            
+      95 00007c 3FC1                  jmp     backlabel
+      96 00007e 3C54                  jmp     fwdlabel
+      97            
+      98            ;-------------------------------------------------------------------------------
+      99            ; Double operand instructions                     Source        Dest
+     100            ;-------------------------------------------------------------------------------
+     101 000080 4506                  mov     r5, r6                  ; 00, Rs        0, Rd
+     102 000082 4546                  mov.b   r5, r6
+     103            
+     104 000084 4500                  mov     r5, r0
+     105 000086 4500                  mov     r5, PC                  ; These three are all equivalent
+     106 000088 4500                  br      r5                      ; 'Emulated'
+     107            
+     108 00008a 4586                  mov     r5, 43(r6)              ; 00, Rs        1, Rd
+         00008c 002B 
+     109 00008e 45C6                  mov.b   r5, 44(r6)
+         000090 002C 
+     110 000092 4582                  mov     r5, &uno                ; 00, R2        1, Rd   Special Rs = 2
+         000094 0211 
+     111 000096 45C2                  mov.b   r5, &uno
+         000098 0211 
+     112                            ; mov   r5, uno INVALID
+     113            
+     114 00009a 4516                  mov     31(r5), r6              ; 01, Rs        0, Rd
+         00009c 001F 
+     115 00009e 4556                  mov.b   33(r5), r6
+         0000a0 0021 
+     116 0000a2 4596                  mov     31(r5), 43(r6)          ; 01, Rs        1, Rd
+         0000a4 001F 
+         0000a6 002B 
+     117 0000a8 45D6                  mov.b   33(r5), 44(r6)
+         0000aa 0021 
+         0000ac 002C 
+     118 0000ae 4592                  mov     31(r5), &uno            ; 01, R2        1, Rd   Special Rs = 2
+         0000b0 001F 
+         0000b2 0211 
+     119 0000b4 45D2                  mov.b   33(r5), &uno
+         0000b6 0021 
+         0000b8 0211 
+     120            
+     121 0000ba 4510                  mov     31(r5), r0              ;
+         0000bc 001F 
+     122 0000be 4510                  mov     31(r5), PC              ; Synonyms for 'mov 31(r5), r0'
+         0000c0 001F 
+     123 0000c2 4510                  br      31(r5)                  ;
+         0000c4 001F 
+     124            
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   54
+
+     125 0000c6 4526                  mov     @r5, r6                 ; 10, Rs        0, Rd
+     126 0000c8 4566                  mov.b   @r5, r6
+     127 0000ca 45A6                  mov     @r5, 43(r6)             ; 10, Rs        1, Rd
+         0000cc 002B 
+     128 0000ce 45E6                  mov.b   @r5, 44(r6)
+         0000d0 002C 
+     129 0000d2 45A2                  mov     @r5, &uno               ; 10, R2        1, Rd   Special Rs = 2
+         0000d4 0211 
+     130 0000d6 45E2                  mov.b   @r5, &uno
+         0000d8 0211 
+     131            
+     132 0000da 4520                  mov     @r5, r0                 ;
+     133 0000dc 4520                  mov     @r5, PC                 ; Synonyms for 'mov @r5, r0'
+     134 0000de 4520                  br      @r5                     ;
+     135            
+     136 0000e0 4536                  mov     @r5+, r6                ; 11, Rs        0, Rd
+     137 0000e2 4576                  mov.b   @r5+, r6
+     138 0000e4 45B6                  mov     @r5+, 43(r6)            ; 11, Rs        1, Rd
+         0000e6 002B 
+     139 0000e8 45F6                  mov.b   @r5+, 44(r6)
+         0000ea 002C 
+     140 0000ec 45B2                  mov     @r5+, &uno              ; 11, R2        1, Rd   Special Rs = 2
+         0000ee 0211 
+     141 0000f0 45F2                  mov.b   @r5+, &uno
+         0000f2 0211 
+     142            
+     143 0000f4 4530                  mov     @r5+, r0                ;
+     144 0000f6 4530                  mov     @r5+, PC                ; Synonyms for 'mov @r5, r0'
+     145 0000f8 4530                  br      @r5+                    ;
+     146            
+     147 0000fa 40B2                  mov     #123, &uno
+         0000fc 007B 
+         0000fe 0211 
+     148            
+     149 000100 4030                  mov     #123, r0                ;
+         000102 007B 
+     150 000104 4030                  mov     #123, PC                ; Synonyms for 'mov @r5, r0'
+         000106 007B 
+     151 000108 4030                  br      #123                    ;
+         00010a 007B 
+     152            
+     153 00010c 4307                  mov     #0, r7                  ; 00, R3        0, rd   Special Rs = 3
+     154 00010e 4347                  mov.b   #0, r7                  ; 00, R3        0, rd   Special Rs = 3
+     155 000110 4387                  mov     #0, 44(r7)              ; 00, R3        1, rd   Special Rs = 3
+         000112 002C 
+     156            
+     157 000114 4382                  mov     #0, &uno                ; 00, R3
+         000116 0211 
+     158 000118 4317                  mov     #1, r7                  ; 01, R3        0, rd   Special Rs = 3
+     159 00011a 4327                  mov     #2, r7                  ; 10, R3        0, rd   Special Rs = 3
+     160 00011c 4337                  mov     #-1, r7                 ; 11, R3        0, rd   Special Rs = 3
+     161            
+     162 00011e 4207                  mov     r2, r7                  ; 00, r2
+     163 000120 4217                  mov     &fwdlabel, r7           ; 01, r2
+         000122 0128'
+MSP430 Assembler Unix v4.4.5 Wed Oct 18 08:45:45 2017
+
+Tools Copyright (c) 2003-2015 Texas Instruments Incorporated
+../main.asm                                                          PAGE   55
+
+     164 000124 4227                  mov     #4, r7                  ; 10, r2
+     165 000126 4237                  mov     #8, r7                  ; 11, r2
+     166            
+     167      0128' fwdlabel        .equ    $
+     168            
+     169            ;-------------------------------------------------------------------------------
+     170            ; Main loop here
+     171            ;-------------------------------------------------------------------------------
+     172            
+     173                                                        
+     174            
+     175            ;-------------------------------------------------------------------------------
+     176            ; Stack Pointer definition
+     177            ;-------------------------------------------------------------------------------
+     178                        .global __STACK_END
+     179 000000                   .sect   .stack
+     180                        
+     181            ;-------------------------------------------------------------------------------
+     182            ; Interrupt Vectors
+     183            ;-------------------------------------------------------------------------------
+     184 000000                   .sect   ".reset"                ; MSP430 RESET Vector
+     185 000000 0000!             .short  RESET
+     186                        
+
+No Assembly Errors, No Assembly Warnings
