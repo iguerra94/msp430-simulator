@@ -399,7 +399,6 @@ class Source_code(Gtk.Frame):
     def step(self, btn):
         """ Ejecutar un paso de simulación """
         
-        # self.select_at_pc(0xfd16)
         self.toplevel.cpu.step(self.toplevel)
         self.toplevel.registers.show_registers()
 
@@ -418,6 +417,8 @@ class Source_code(Gtk.Frame):
         self.select_at_pc(self.toplevel.cpu.reg.get_PC())
 
         self.toplevel.exectime.reset_time()
+        self.toplevel.exectime.update_time(0)
+        self.toplevel.exectime.set_time_start()
 
 
 

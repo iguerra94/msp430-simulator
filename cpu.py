@@ -74,7 +74,6 @@ class CPU():                    #   ROM    RAM
 
         try:
             self.reg.set_PC(self.sim.one_step(self.reg.get_PC()))
-            print(self.reg.get_PC())
             
             if self.reg.get_PC() == None:
                 raise MemoryException()
