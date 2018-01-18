@@ -530,7 +530,6 @@ def test_line(an, linenr, line):
 
     except MemoryException:
         print("Error de memoria en línea {:d}".format(linenr))
-
     except:         # Ninguna de las capturas anteriores
         print("Excepción no reconocida", sys.exc_info()[0])
 
@@ -553,7 +552,8 @@ def main():
                 break
 
     syntax.symtable.dump()
-    print(syntax.mem.dump(0xC500, 200))
+    print(syntax.mem.dump(0xc200, 200))
+    cpu.ROM.store_word_at(0xfffe, syntax.mem.mem_start)
     print(syntax.mem.dump(0xffe0, 32))
     syntax.mem.store_to_intel("analyser_test.hex")
 

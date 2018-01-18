@@ -272,6 +272,7 @@ class Memory_editor(Gtk.Frame):
             self.mem.store_word_at(self.addr + addr, new_val)
 
 
+
 class ExecutionTime(Gtk.Frame):
     """ Muestra el tiempo de ejecucion en pasos del procesador
     """
@@ -286,14 +287,17 @@ class ExecutionTime(Gtk.Frame):
 
         self.time_start = datetime.now()                                # Tiempo de inicio
         self.delta_time = datetime.now() - self.time_start              # Delta de tiempo entre el tiempo actual y el inicial
+        self.accumulated = 0
+        self.is_reset = False
 
         self.label = Gtk.Label(self.format_value(self.delta_time.seconds))
-        self.label.modify_font(Pango.FontDescription("Mono 10"));
+        self.label.modify_font(Pango.FontDescription("Mono 10"))
         self.add(self.label)
 
     def format_value(self, delta_time_seconds):
-        return 'Tiempo de ejecución: {}'.format(timedelta(seconds=delta_time_seconds))
-
+        self.accumulated += delta_time_seconds
+        return 'Tiempo de ejecución: {}'.format(timedelta(seconds=self.accumulated))
+ 
     def get_time_start(self):
         return self.time_start
 
@@ -307,11 +311,15 @@ class ExecutionTime(Gtk.Frame):
         self.delta_time = datetime.now() - self.get_time_start()
 
     def update_time(self, delta_time_seconds):
-        self.label.set_text(self.format_value(delta_time_seconds))
+        if self.is_reset:
+            self.label.set_text(self.format_value(0))
+            self.is_reset = False
+        else:
+            self.label.set_text(self.format_value(delta_time_seconds))
 
     def reset_time(self):
-        print("0")
-        self.update_time(0)
+        self.accumulated = 0
+        self.is_reset = True
 
 
 class Tools(Gtk.Frame):
@@ -391,18 +399,19 @@ class Source_code(Gtk.Frame):
     def step(self, btn):
         """ Ejecutar un paso de simulación """
         
-        self.select_at_pc(0xfd16)
+        # self.select_at_pc(0xfd16)
         self.toplevel.cpu.step(self.toplevel)
         self.toplevel.registers.show_registers()
 
         self.select_at_pc(self.toplevel.cpu.reg.get_PC())
+        
+        if (self.toplevel.cpu.reg.get_PC() != self.toplevel.cpu.ROM.mem_start):
+            self.toplevel.exectime.set_delta_time()
+            self.toplevel.exectime.update_time(self.toplevel.exectime.get_delta_time().seconds)
+            self.toplevel.exectime.set_time_start()
 
-        self.toplevel.exectime.set_delta_time()
-        self.toplevel.exectime.update_time(self.toplevel.exectime.get_delta_time().seconds)
-        self.toplevel.exectime.set_time_start()
 
-
-    def reset(self, btn):
+    def reset(self, btn = None):
         """ Ejecutar un 'reset': PC buscará vector de inicio en 0xfffe """
         self.toplevel.cpu.reset()
         self.toplevel.registers.show_registers()

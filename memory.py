@@ -86,7 +86,7 @@ class Memory():
         """
         if not self.in_mem_range(offs) or not self.in_mem_range(offs+1):
             raise MemoryException("Dirección fuera de rango (Offset: 0x{:04x})".format(offs))
-
+        
         if self.mem[offs] == None or self.mem[offs+1] == None:
             raise MemoryException("Lectura de memoria no inicializada (Offset: 0x{:04x})".format(offs))
 
@@ -246,6 +246,7 @@ class Memory():
         """ Store almacena <value> en la memoria en la direccion <addr>
             Controla si <addr> se encuentra en el rango correcto.
         """
+        print("DIR: ",hex(addr))
         if addr < self.mem_start or addr >= (self.mem_start + self.mem_size):
             print("Direccion fuera de rango")
             return

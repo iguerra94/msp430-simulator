@@ -60,16 +60,21 @@ class CPU():                    #   ROM    RAM
 
     def reset(self):
         # pc = self.ROM.load_word_at(0xfffe)
+        # self.reg.set_PC(pc)
         self.reg.set_PC(0xfffe)
         self.reg.set_SR(0)
         self.reg.set(Registers.R1, 0xe000)
         self.reg.set(Registers.R4, 0xccd0)
+        self.reg.set(Registers.R5, 0xccd0)
 
 
     def step(self, toplevel):
         """ Ejecutar un paso desde el PC actual, luego actualizar el PC """
+        # self.reg.set_PC(self.sim.one_step(self.reg.get_PC()))
+
         try:
             self.reg.set_PC(self.sim.one_step(self.reg.get_PC()))
+            print(self.reg.get_PC())
             
             if self.reg.get_PC() == None:
                 raise MemoryException()
@@ -99,10 +104,7 @@ class CPU():                    #   ROM    RAM
             dlg.get_content_area().add(hbox)                            
 
             if dlg.run() == Gtk.ResponseType.ACCEPT:
-                try:
-                    toplevel.source.reset()
-                except:
-                    pass
+                toplevel.source.reset()
 
             dlg.destroy()
 

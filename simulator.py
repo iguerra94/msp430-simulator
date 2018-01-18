@@ -191,8 +191,8 @@ class Simulator():
 
                 self.mem.store_word_at(sp, self.regs.get(regnr))
 
-            if self.mem.load_byte_at(addr) != None:
-                return addr
+            # if self.mem.load_byte_at(addr) != None:
+            return addr
 
         elif As== 1:                                            # modo indexado
         #debo buscar lo que hay en la dirección + x lugares, que diga regnr, en memoria, y luego setearlo en regnr

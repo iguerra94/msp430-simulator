@@ -35,7 +35,7 @@ class Registers():
         self.reg[Registers.SR] = 0
         self.reg[Registers.R1] = 0xe000
         self.reg[Registers.R4] = 0xccd0
-        self.reg[Registers.R5] = 0xc500
+        self.reg[Registers.R5] = 0xccd0
 
 
 
