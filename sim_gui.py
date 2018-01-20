@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
 ##  cpu.py
@@ -250,6 +250,7 @@ class Memory_editor(Gtk.Frame):
                 self.mem_locs.append(word_edit)
 
 
+
     def update_rom(self):
         #~ pdb.set_trace()
         for lbl_nr, lbl in enumerate(self.labels):
@@ -264,13 +265,24 @@ class Memory_editor(Gtk.Frame):
             mem_loc.set(w)
 
 
+
     def callback(self, new_val, addr):
         if addr == -1:              # Editamos la direccion base
             self.addr = new_val
             self.update_rom()
         else:                       # Editamos contenido
             self.mem.store_word_at(self.addr + addr, new_val)
+            print(self.mem.dump(0xc200, 256))
 
+            self.toplevel.source.clear()
+            dis = Disassembler(self.mem)
+
+            dis_all = dis.disassemble_all()
+            for pc, _, s in dis_all:
+                if pc != 0xfffe:
+                    self.toplevel.source.append(pc, s)
+
+        self.toplevel.source.reset()
 
 
 class ExecutionTime(Gtk.Frame):
@@ -285,8 +297,8 @@ class ExecutionTime(Gtk.Frame):
 
         self.toplevel = toplevel
 
-        self.time_start = datetime.now()                                # Tiempo de inicio
-        self.delta_time = datetime.now() - self.time_start              # Delta de tiempo entre el tiempo actual y el inicial
+        self.time_start = datetime.now()                            # Tiempo de inicio
+        self.delta_time = datetime.now() - self.time_start          # Delta de tiempo entre el tiempo actual y el inicial
         self.accumulated = 0
         self.is_reset = False
 
@@ -311,11 +323,10 @@ class ExecutionTime(Gtk.Frame):
         self.delta_time = datetime.now() - self.get_time_start()
 
     def update_time(self, delta_time_seconds):
+        self.label.set_text(self.format_value(delta_time_seconds))
+
         if self.is_reset:
-            self.label.set_text(self.format_value(0))
             self.is_reset = False
-        else:
-            self.label.set_text(self.format_value(delta_time_seconds))
 
     def reset_time(self):
         self.accumulated = 0
@@ -399,15 +410,19 @@ class Source_code(Gtk.Frame):
     def step(self, btn):
         """ Ejecutar un paso de simulación """
         
+        if (self.toplevel.cpu.reg.get_PC() != self.toplevel.cpu.ROM.mem_start):
+            self.toplevel.exectime.set_time_start()
+
         self.toplevel.cpu.step(self.toplevel)
         self.toplevel.registers.show_registers()
-
         self.select_at_pc(self.toplevel.cpu.reg.get_PC())
-        
+
         if (self.toplevel.cpu.reg.get_PC() != self.toplevel.cpu.ROM.mem_start):
             self.toplevel.exectime.set_delta_time()
+            # print("START: ", self.toplevel.exectime.get_time_start())
+            # print("DELTA_TIME: ", self.toplevel.exectime.get_delta_time())
             self.toplevel.exectime.update_time(self.toplevel.exectime.get_delta_time().seconds)
-            self.toplevel.exectime.set_time_start()
+
 
 
     def reset(self, btn = None):
@@ -419,7 +434,7 @@ class Source_code(Gtk.Frame):
         self.toplevel.exectime.reset_time()
         self.toplevel.exectime.update_time(0)
         self.toplevel.exectime.set_time_start()
-
+    
 
 
 class MainWindow(Gtk.Window):
@@ -467,6 +482,7 @@ class MainWindow(Gtk.Window):
         Gtk.main()
 
 
+
     def create_buttons(self):
         for icon, handler, tooltext in (
                     ("media-playback-start", self.source.step, "Step"),
@@ -485,6 +501,7 @@ class MainWindow(Gtk.Window):
                                "Open", Gtk.ResponseType.ACCEPT))
 
         if fc.run() == Gtk.ResponseType.ACCEPT:
+            # Refrescar el contenido del Codigo Fuente
             self.source.clear()                     # Borrar la 'pantalla'
             fname = fc.get_filename()
             self.cpu.ROM.load_from_intel(fname)     # Carga el archivo en ROM
@@ -496,6 +513,7 @@ class MainWindow(Gtk.Window):
                 if pc != 0xfffe:
                     self.source.append(pc, s)
 
+        self.memedit.update_rom()
         fc.destroy()
 
 

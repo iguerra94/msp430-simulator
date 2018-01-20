@@ -33,9 +33,6 @@ class Registers():
         self.reg = [0] * 16
         self.reg[Registers.PC] = 0xfffe
         self.reg[Registers.SR] = 0
-        self.reg[Registers.R1] = 0xe000
-        self.reg[Registers.R4] = 0xccd0
-        self.reg[Registers.R5] = 0xccd0
 
 
 

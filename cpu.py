@@ -63,9 +63,7 @@ class CPU():                    #   ROM    RAM
         # self.reg.set_PC(pc)
         self.reg.set_PC(0xfffe)
         self.reg.set_SR(0)
-        self.reg.set(Registers.R1, 0xe000)
-        self.reg.set(Registers.R4, 0xccd0)
-        self.reg.set(Registers.R5, 0xccd0)
+        
 
 
     def step(self, toplevel):

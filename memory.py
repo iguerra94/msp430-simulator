@@ -246,7 +246,6 @@ class Memory():
         """ Store almacena <value> en la memoria en la direccion <addr>
             Controla si <addr> se encuentra en el rango correcto.
         """
-        print("DIR: ",hex(addr))
         if addr < self.mem_start or addr >= (self.mem_start + self.mem_size):
             print("Direccion fuera de rango")
             return
