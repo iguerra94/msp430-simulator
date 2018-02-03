@@ -222,6 +222,60 @@ class Memory():
         return
 
 
+    def store_to_intel_with_words_list(self, fname, words_list = []):
+        words_per_line = 8
+
+        addr = 0
+        intel = ""
+        line_break = True
+        word_count = 0
+        last_addr = -4
+
+        for word in words_list:
+            opcode = word
+            opc_l = opcode & 0xff
+            opc_h = (opcode & 0xff00) >> 8
+            addr_abs = addr + self.mem_start
+            addr_l = addr_abs & 0xff
+            addr_h = (addr_abs & 0xff00) >> 8
+
+            if (last_addr + 2) != addr:
+                if word_count != 0:
+                    checksum += word_count
+                    intel += ":{:02x}".format(word_count * 2) + \
+                                s + \
+                                "{:02x}\n".format(256 - checksum & 0xff)
+                    first_line = False
+                    word_count = 0
+
+                s = "{:04x}00".format(addr_abs)
+                checksum = addr_l + addr_h
+
+            s += "{:02x}{:02x}".format(opc_l, opc_h)
+            checksum += opc_l + opc_h
+            last_addr = addr
+
+            word_count += 1
+            if word_count == words_per_line:
+                last_addr -= 2              # Forzar salto de bloque
+
+            addr += 2
+
+        if word_count != 0:
+            checksum += word_count
+            intel += ":{:02x}".format(word_count * 2) + \
+                     s + \
+                     "{:02x}\n".format(256 - checksum & 0xff)
+
+        intel += ":02fffe0000c240\n"
+        intel += ":00000001FF\n"
+
+        with open(fname, "w") as outf:
+            outf.write(intel)
+
+        return
+
+
     def load_word_at(self, addr):
         """ Load devuelve el contenido de la memory en la direccion <addr>.
             Controla si <addr> se encuentra en el rango correcto.
@@ -237,12 +291,12 @@ class Memory():
         if (addr % 2) == 1:
             print("Dirección para acceso por palabra debe ser par (%d)" % (addr, ))
             return
-
+        
         w = self.load_mem_word_at(addr - self.mem_start)
         return w
 
 
-    def store_word_at(self, addr, value):
+    def store_word_at(self, addr, value, memory_word_only=False):
         """ Store almacena <value> en la memoria en la direccion <addr>
             Controla si <addr> se encuentra en el rango correcto.
         """
@@ -250,7 +304,7 @@ class Memory():
             print("Direccion fuera de rango")
             return
 
-        if (addr % 2) == 1:
+        if (addr % 2) == 1 and not memory_word_only:
             print("Dirección para acceso por palabra debe ser par (%d)" % (addr, ))
             return
 

@@ -138,15 +138,16 @@ class Disassembler():
                 s = "@R%d" % regnr
 
         elif As == 3:
-            if Rs == 0:
-                s = "#%d" % self.mem.load_word_at(self.addr)
-                self.addr += 2
-            elif Rs == 2:
-                s = "#8"
-            elif Rs == 3:
-                s = "#-1"
-            else:
-                s = "@R%d+" % regnr
+            # if Rs == 0:
+            #     s = "#%d" % self.mem.load_word_at(self.addr)
+            #     self.addr += 2
+            # elif Rs == 2:
+            #     s = "#8"
+            # elif Rs == 3:
+            #     s = "#-1"
+            # else:
+            s = "@R%d+" % regnr
+
         return s
 
 

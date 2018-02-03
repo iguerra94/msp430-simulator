@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 import pdb
 from parser import Parser, Token, ParserException

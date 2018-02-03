@@ -45,6 +45,7 @@ class CPU():                    #   ROM    RAM
         self.ROM = Memory(mem_size  = self.CPU_TABLE[part][0],
                           mem_start = 2**16 - self.CPU_TABLE[part][0],
                           readonly  = True)
+        self.ROM.store_word_at(65534, self.ROM.mem_start)
 
         # RAM inicia siempre en 0x200
         self.RAM = Memory(mem_size  = self.CPU_TABLE[part][1],
@@ -63,7 +64,7 @@ class CPU():                    #   ROM    RAM
         # self.reg.set_PC(pc)
         self.reg.set_PC(0xfffe)
         self.reg.set_SR(0)
-        
+
 
 
     def step(self, toplevel):
@@ -72,12 +73,11 @@ class CPU():                    #   ROM    RAM
 
         try:
             self.reg.set_PC(self.sim.one_step(self.reg.get_PC()))
-            
+            print(self.reg.get_PC())
             if self.reg.get_PC() == None:
                 raise MemoryException()
 
         except MemoryException:
-
             dlg = Gtk.Dialog(
                     parent = toplevel,
                     title = "Fin del programa",
