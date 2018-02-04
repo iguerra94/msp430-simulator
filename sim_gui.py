@@ -240,6 +240,10 @@ class Memory_editor_words_dialog(Gtk.Dialog):
             self.instr_content_entry.set_text("0x1004")
             self.instr_content_entry.set_editable(False)
 
+            value = self.instr_content_entry.get_text()
+            self.value = int(value, 16)
+            print(self.value)
+            self.modified = True
             self.is_memory_word_only = False
 
 
@@ -523,8 +527,9 @@ class Memory_editor_words_dialog(Gtk.Dialog):
                 print("0x{:04x}".format(value))
                 self.value = "0x{:04x}".format(value)
                 self.modified = True
-            except ValueError as err:
-                print(err)
+            except ValueError:
+                self.value = int(entry.get_text(), 16)
+                self.modified = True
         else:
             self.value_hex = entry.get_text()
 
@@ -611,7 +616,6 @@ class Word_editor(Gtk.EventBox):
             # print("3, ", int(value, 16))
             self.toplevel.memedit.mem_locs[pos].label.set_text(value)
             self.callback(int(value, 16), pos, memory_word_only)
-            
         
 
     def on_num_words_combo_changed(self, combo):
@@ -654,6 +658,7 @@ class Word_editor(Gtk.EventBox):
             if dlg.run() == Gtk.ResponseType.ACCEPT:
                 try:
                     new_value = int(dlg_entry.get_text(), 0)
+                    self.toplevel.memedit.base_addr = new_value
                     self.update(new_value)
                 except Exception as err:
                     print(err)
@@ -736,37 +741,46 @@ class Word_editor(Gtk.EventBox):
                                     value = dlg_words.get_instruction()
                                     pos = dlg_words.get_label_location()
                                     # print(type(value) is int)
-                                    self.update_at(pos, value, True)
+                                    # self.update_at(pos, value, True)
                                     # print("L: ", dlg_words.get_label_location())0
-                                    # self.toplevel.memedit.get_memory_words().insert_at(dlg_words.get_label_location(), dlg_words.get_instruction())
+                                    if type(value) is str:
+                                        value = int(value, 16)
+                                    self.toplevel.memedit.get_memory_words().append({ "LOCATION": self.toplevel.memedit.base_addr + pos*2, "CONTENT": value })
                                 except Exception as err:
                                     pass
                             else:
                                 if loc +1 > len(self.toplevel.memedit.get_memory_instruction_words()):
                                     # print(loc)
                                     # print("I: ", dlg_words.get_instruction(), "OFFS: ", dlg_words.get_instruction_offset())
-                                    self.toplevel.memedit.get_memory_instruction_words().append(dlg_words.get_instruction())
-                                    print(self.toplevel.memedit.get_memory_instruction_words())
 
-                                    if (dlg_words.get_instruction_offset() != None):
-                                        # print("2")
-                                        # print("I: ", dlg_words.get_instruction(), "OFFS: ", dlg_words.get_instruction_offset())
-                                        self.toplevel.memedit.get_memory_instruction_words().append(dlg_words.get_instruction_offset())
+                                    if dlg_words.get_instruction() >= int("0x1000", 16) and dlg_words.get_instruction() <= int("0x12B0", 16):
+                                        # value = dlg_words.get_instruction()
+                                        # pos = dlg_words.get_label_location()
+
+                                        self.toplevel.memedit.get_memory_instruction_words().append(dlg_words.get_instruction())
                                         print(self.toplevel.memedit.get_memory_instruction_words())
+
+                                        if (dlg_words.get_instruction_offset() != None):
+                                            # print("2")
+                                            # print("I: ", dlg_words.get_instruction(), "OFFS: ", dlg_words.get_instruction_offset())
+                                            self.toplevel.memedit.get_memory_instruction_words().append(dlg_words.get_instruction_offset())
+                                            print(self.toplevel.memedit.get_memory_instruction_words())
                                 else:
                                     # print("3")
                                     # print("YES, I: ", dlg_words.get_instruction(), "OFFS: ", dlg_words.get_instruction_offset())
-                                    self.toplevel.memedit.memory_instruction_words_insert_at(loc, dlg_words.get_instruction())
-                                    print(self.toplevel.memedit.get_memory_instruction_words())
-                                    if (dlg_words.get_instruction_offset() != None):
-                                        # print("4")
-                                        # print("I: ", dlg_words.get_instruction(), "OFFS: ", dlg_words.get_instruction_offset())
-                                        self.toplevel.memedit.get_memory_instruction_words().insert(loc+1, dlg_words.get_instruction_offset())
+                                    if dlg_words.get_instruction() >= int("0x1000", 16) and dlg_words.get_instruction() <= int("0x12B0", 16):
+                                        self.toplevel.memedit.memory_instruction_words_insert_at(loc, dlg_words.get_instruction())
                                         print(self.toplevel.memedit.get_memory_instruction_words())
+                                        if (dlg_words.get_instruction_offset() != None):
+                                            # print("4")
+                                            # print("I: ", dlg_words.get_instruction(), "OFFS: ", dlg_words.get_instruction_offset())
+                                            self.toplevel.memedit.get_memory_instruction_words().insert(loc+1, dlg_words.get_instruction_offset())
+                                            print(self.toplevel.memedit.get_memory_instruction_words())
 
-                                if dlg_words.get_buttons_text() == "Finalizar":
-                                    self.toplevel.memedit.mem.store_to_intel_with_words_list("input_main.hex", self.toplevel.memedit.get_memory_instruction_words())
-                                    self.toplevel.memedit.toplevel.open_intel_file_without_dialog("input_main.hex")
+                            if dlg_words.get_buttons_text() == "Finalizar":
+                                # print(self.toplevel.memedit.get_memory_words())
+                                self.toplevel.memedit.mem.store_to_intel_with_words_list("input_main.hex", self.toplevel.memedit.get_memory_instruction_words(), self.toplevel.memedit.get_memory_words())
+                                self.toplevel.memedit.toplevel.open_intel_file_without_dialog("input_main.hex")
                                     # for word in self.memory_instruction_words:
                                     #     self.toplevel.memedit.mem_locs[word["LABEL_LOCATION"]+indexed_words_count].label.set_text(self.format_value(word["INSTRUCTION"]))
                                     #     if word["OFFSET"] != None:
@@ -874,6 +888,7 @@ class Memory_editor(Gtk.Frame):
                         column_spacing = 8,
                         margin = 6)
         self.addr = 0xc200
+        self.base_addr = int(str(self.addr), 0)
         self.memory_instruction_words = []
         self.memory_words = []
 
@@ -894,6 +909,8 @@ class Memory_editor(Gtk.Frame):
 
         self.add(self.grid)
 
+    def memory_instruction_words_clear(self):
+        self.memory_instruction_words = []
 
     def get_memory_instruction_words(self):
         return self.memory_instruction_words
@@ -901,8 +918,11 @@ class Memory_editor(Gtk.Frame):
     def memory_instruction_words_insert_at(self, index, word):
         self.memory_instruction_words[index] = word
 
+    def memory_words_clear(self):
+        self.memory_words = []
+
     def get_memory_words(self):
-        return self.memory_instruction_words
+        return self.memory_words
 
     def memory_words_insert_at(self, index, word):
         self.memory_words[index] = word
@@ -1201,10 +1221,16 @@ class MainWindow(Gtk.Window):
 
             addr = self.cpu.ROM.mem_start
 
+            self.memedit.memory_instruction_words_clear()
+            self.memedit.memory_words_clear()
+
             while True:
                 try:
                     word = self.cpu.ROM.load_word_at(addr)
-                    self.memedit.get_memory_words().append(word)
+                    if word >= int("0x1000", 16) and word <= int("0x12B0", 16):
+                        self.memedit.get_memory_instruction_words().append(word)
+                    else:
+                        self.memedit.get_memory_words().append({ "LOCATION": addr, "CONTENT": word })
                     addr += 2
                     # print(self.memedit.get_memory_words())
                 except MemoryException:
@@ -1214,7 +1240,8 @@ class MainWindow(Gtk.Window):
 
             dis_all = dis.disassemble_all()
             for pc, _, s in dis_all:
-                if pc != 0xfffe:
+                if pc != int("0xfffe", 16) and s.strip() != 'nop' and self.cpu.ROM.load_word_at(pc) in self.memedit.get_memory_instruction_words():
+                    # print(pc, s)
                     self.source.append(pc, s)
 
         self.memedit.update_rom()
@@ -1232,7 +1259,8 @@ class MainWindow(Gtk.Window):
 
         dis_all = dis.disassemble_all()
         for pc, _, s in dis_all:
-            if pc != 0xfffe:
+            if pc != int("0xfffe", 16) and s.strip() != 'nop':
+                # print(s.strip(), len(s.strip()))
                 self.source.append(pc, s)
 
         self.memedit.update_rom()

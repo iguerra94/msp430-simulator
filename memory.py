@@ -125,7 +125,7 @@ class Memory():
         with open(fname, "r") as inf:
             for line in inf:
                 line = line.rstrip('\n')
-                print(line)
+                # print(line)
                 if line[0] != ":": continue
                 if len(line) < 11:
                     print("Linea invalida en archivo hex [%s]" % line)
@@ -222,16 +222,18 @@ class Memory():
         return
 
 
-    def store_to_intel_with_words_list(self, fname, words_list = []):
+    def store_to_intel_with_words_list(self, fname, instruction_words_list = [], memory_words_list = []):
         words_per_line = 8
 
+        print(instruction_words_list)
+        print(memory_words_list)
         addr = 0
         intel = ""
         line_break = True
         word_count = 0
         last_addr = -4
 
-        for word in words_list:
+        for word in instruction_words_list:
             opcode = word
             opc_l = opcode & 0xff
             opc_h = (opcode & 0xff00) >> 8
@@ -266,6 +268,28 @@ class Memory():
             intel += ":{:02x}".format(word_count * 2) + \
                      s + \
                      "{:02x}\n".format(256 - checksum & 0xff)
+
+        for word in memory_words_list:
+            # print(word["CONTENT"], type(word["CONTENT"]), word["LOCATION"], type(word["LOCATION"]))
+            opcode = word["CONTENT"]
+            opc_l = opcode & 0xff
+            opc_h = (opcode & 0xff00) >> 8
+            addr_abs = word["LOCATION"]
+            print(addr_abs)
+            addr_l = addr_abs & 0xff
+            addr_h = (addr_abs & 0xff00) >> 8
+
+            s = "{:04x}00".format(addr_abs)
+            checksum = addr_l + addr_h
+            checksum += 1
+
+            s += "{:02x}{:02x}".format(opc_l, opc_h)
+            checksum += opc_l + opc_h
+
+            intel += ":02" + \
+                         s + \
+                      "{:02x}\n".format(256 - checksum & 0xff)
+            
 
         intel += ":02fffe0000c240\n"
         intel += ":00000001FF\n"
