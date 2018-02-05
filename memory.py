@@ -37,8 +37,10 @@ class Memory():
         self.mem_start   = mem_start
         self.readonly    = readonly
 
-        self.initialize()
+        self.instruction_words = []
+        self.memory_words = []
 
+        self.initialize()
 
     def __str__(self):
         return self.dump()
@@ -78,6 +80,11 @@ class Memory():
     def in_mem_range(self, offs):
         return 0 <= offs < self.mem_size
 
+    def get_memory_words(self):
+        return self.memory_words
+
+    def get_instruction_words(self):
+        return self.instruction_words
 
     # Retorna el contenido de la memoria en la posicion <offs> y <offs +1>
     # Controla que esas posiciones no esten fuera de rango y que esten inicializadas
@@ -144,12 +151,48 @@ class Memory():
                         self.store_byte_at(adr, value)
                         adr += 1
                         s = ""
-                        byte_nr += 1
+                        byte_nr += 1                            
 
+                    addr = int(line[3:7], 16)
+                    
+                    #Inicializar las listas con las instrucciones y las palabras de memoria
+                    for i in range(0, nrb, 2):
+                        if hex(addr) != "0xfffe":
+                            if nrb > 0 and nrb <= 2:
+                                if self.load_word_at(addr) >= int("0x1000", 16) and self.load_word_at(addr) <= int("0x12B0", 16):
+                                    print("HOLA1")
+                                    # Instruction word
+                                    self.instruction_words.append({ "LOCATION": addr, "CONTENT": self.load_word_at(addr), "OFFSET": None, "OFFSET_LOCATION": None })
+                                else: 
+                                    print("HOLA2")
+                                    # Memory Word
+                                    self.memory_words.append({ "LOCATION": addr, "CONTENT": self.load_word_at(addr) })
+                            else:
+                                # Instruction word
+                                if (i+2) <= (nrb-2):
+                                    print(self.load_word_at(addr+2))
+                                    if self.load_word_at(addr+2) >= int("0x1000", 16) and self.load_word_at(addr+2) <= int("0x12B0", 16):
+                                        print("HOLA3")
+                                        # Instruction word sin offset
+                                        self.instruction_words.append({ "LOCATION": addr, "CONTENT": self.load_word_at(addr), "OFFSET": None, "OFFSET_LOCATION": None })
+                                    else:
+                                        print("HOLA4")
+                                        # Instruction word con offset
+                                        self.instruction_words.append({ "LOCATION": addr, "CONTENT": self.load_word_at(addr), "OFFSET": self.load_word_at(addr +2), "OFFSET_LOCATION": addr +2 })
+                        if (i > 0):
+                            addr += i
+                        else:
+                            addr += 2
+    
                 elif typ == 1:
                     break
                 else:
                     continue
+
+            print("M,", self.memory_words)
+            print("I,", self.instruction_words)
+
+
 
 
     def check_intel_line(self, line):
@@ -225,8 +268,9 @@ class Memory():
     def store_to_intel_with_words_list(self, fname, instruction_words_list = [], memory_words_list = []):
         words_per_line = 8
 
-        print(instruction_words_list)
-        print(memory_words_list)
+        print("I", instruction_words_list)
+        print("M", memory_words_list)
+
         addr = 0
         intel = ""
         line_break = True
@@ -234,10 +278,10 @@ class Memory():
         last_addr = -4
 
         for word in instruction_words_list:
-            opcode = word
+            opcode = word["CONTENT"]
             opc_l = opcode & 0xff
             opc_h = (opcode & 0xff00) >> 8
-            addr_abs = addr + self.mem_start
+            addr_abs = word["LOCATION"]
             addr_l = addr_abs & 0xff
             addr_h = (addr_abs & 0xff00) >> 8
 
@@ -263,6 +307,36 @@ class Memory():
 
             addr += 2
 
+            if (word["OFFSET"] != None):
+                opcode = word["OFFSET"]
+                opc_l = opcode & 0xff
+                opc_h = (opcode & 0xff00) >> 8
+                addr_abs = word["OFFSET_LOCATION"]
+                addr_l = addr_abs & 0xff
+                addr_h = (addr_abs & 0xff00) >> 8
+
+                if (last_addr + 2) != addr:
+                    if word_count != 0:
+                        checksum += word_count
+                        intel += ":{:02x}".format(word_count * 2) + \
+                                    s + \
+                                    "{:02x}\n".format(256 - checksum & 0xff)
+                        first_line = False
+                        word_count = 0
+
+                    s = "{:04x}00".format(addr_abs)
+                    checksum = addr_l + addr_h
+
+                s += "{:02x}{:02x}".format(opc_l, opc_h)
+                checksum += opc_l + opc_h
+                last_addr = addr
+
+                word_count += 1
+                if word_count == words_per_line:
+                    last_addr -= 2              # Forzar salto de bloque
+
+                addr += 2
+
         if word_count != 0:
             checksum += word_count
             intel += ":{:02x}".format(word_count * 2) + \
@@ -275,7 +349,7 @@ class Memory():
             opc_l = opcode & 0xff
             opc_h = (opcode & 0xff00) >> 8
             addr_abs = word["LOCATION"]
-            print(addr_abs)
+            # print(addr_abs)
             addr_l = addr_abs & 0xff
             addr_h = (addr_abs & 0xff00) >> 8
 
@@ -289,10 +363,11 @@ class Memory():
             intel += ":02" + \
                          s + \
                       "{:02x}\n".format(256 - checksum & 0xff)
-            
 
         intel += ":02fffe0000c240\n"
         intel += ":00000001FF\n"
+
+        print(intel)
 
         with open(fname, "w") as outf:
             outf.write(intel)
