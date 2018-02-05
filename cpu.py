@@ -59,17 +59,14 @@ class CPU():                    #   ROM    RAM
                 str(self.RAM) + "\n" +
                 str(self.ROM) + "\n")
 
+
     def reset(self):
-        # pc = self.ROM.load_word_at(0xfffe)
-        # self.reg.set_PC(pc)
         self.reg.set_PC(0xfffe)
         self.reg.set_SR(0)
 
 
-
     def step(self, toplevel):
         """ Ejecutar un paso desde el PC actual, luego actualizar el PC """
-        # self.reg.set_PC(self.sim.one_step(self.reg.get_PC()))
 
         try:
             self.reg.set_PC(self.sim.one_step(self.reg.get_PC()))

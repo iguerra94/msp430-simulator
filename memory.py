@@ -132,7 +132,6 @@ class Memory():
         with open(fname, "r") as inf:
             for line in inf:
                 line = line.rstrip('\n')
-                # print(line)
                 if line[0] != ":": continue
                 if len(line) < 11:
                     print("Linea invalida en archivo hex [%s]" % line)
@@ -160,23 +159,18 @@ class Memory():
                         if hex(addr) != "0xfffe":
                             if nrb > 0 and nrb <= 2:
                                 if self.load_word_at(addr) >= int("0x1000", 16) and self.load_word_at(addr) <= int("0x12B0", 16):
-                                    print("HOLA1")
                                     # Instruction word
                                     self.instruction_words.append({ "LOCATION": addr, "CONTENT": self.load_word_at(addr), "OFFSET": None, "OFFSET_LOCATION": None })
-                                else: 
-                                    print("HOLA2")
+                                else:
                                     # Memory Word
                                     self.memory_words.append({ "LOCATION": addr, "CONTENT": self.load_word_at(addr) })
                             else:
                                 # Instruction word
                                 if (i+2) <= (nrb-2):
-                                    print(self.load_word_at(addr+2))
                                     if self.load_word_at(addr+2) >= int("0x1000", 16) and self.load_word_at(addr+2) <= int("0x12B0", 16):
-                                        print("HOLA3")
                                         # Instruction word sin offset
                                         self.instruction_words.append({ "LOCATION": addr, "CONTENT": self.load_word_at(addr), "OFFSET": None, "OFFSET_LOCATION": None })
                                     else:
-                                        print("HOLA4")
                                         # Instruction word con offset
                                         self.instruction_words.append({ "LOCATION": addr, "CONTENT": self.load_word_at(addr), "OFFSET": self.load_word_at(addr +2), "OFFSET_LOCATION": addr +2 })
                         if (i > 0):
@@ -268,8 +262,8 @@ class Memory():
     def store_to_intel_with_words_list(self, fname, instruction_words_list = [], memory_words_list = []):
         words_per_line = 8
 
-        print("I", instruction_words_list)
         print("M", memory_words_list)
+        print("I", instruction_words_list)
 
         addr = 0
         intel = ""
@@ -344,12 +338,10 @@ class Memory():
                      "{:02x}\n".format(256 - checksum & 0xff)
 
         for word in memory_words_list:
-            # print(word["CONTENT"], type(word["CONTENT"]), word["LOCATION"], type(word["LOCATION"]))
             opcode = word["CONTENT"]
             opc_l = opcode & 0xff
             opc_h = (opcode & 0xff00) >> 8
             addr_abs = word["LOCATION"]
-            # print(addr_abs)
             addr_l = addr_abs & 0xff
             addr_h = (addr_abs & 0xff00) >> 8
 

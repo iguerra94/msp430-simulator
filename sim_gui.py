@@ -122,13 +122,6 @@ class Memory_editor_words_dialog(Gtk.Dialog):
         separator = Gtk.Separator(orientation = Gtk.Orientation.HORIZONTAL)
         vbox.pack_start(separator, True, True, 0)
 
-        # hbox_instruction_format = self.instruction_format_box(
-        #                             "Formato de instrucción",
-        #                             self.get_instruction_formats_list()
-        #                         )
-
-        # vbox.pack_start(hbox_instruction_format, True, True, 0)
-
         hbox_instruction = self.instruction_box(
                                     "Instrucción",
                                     self.get_instructions_list()
@@ -757,24 +750,18 @@ class Word_editor(Gtk.EventBox):
                                             offset = dlg_words.get_instruction_offset()
                                             
                                             self.toplevel.memedit.get_memory_instruction_words().append({ "LOCATION": self.toplevel.memedit.base_addr + pos*2, "CONTENT": value, "OFFSET_LOCATION": self.toplevel.memedit.base_addr + (pos+1)*2, "OFFSET": offset })
-                                            # print(self.toplevel.memedit.get_memory_instruction_words())
                                         else:
                                             self.toplevel.memedit.get_memory_instruction_words().append({ "LOCATION": self.toplevel.memedit.base_addr + pos*2, "CONTENT": value, "OFFSET_LOCATION": None, "OFFSET": None })
-                                            # print(self.toplevel.memedit.get_memory_instruction_words())
                                 else:
                                     if dlg_words.get_instruction() >= int("0x1000", 16) and dlg_words.get_instruction() <= int("0x12B0", 16):
                                         value = dlg_words.get_instruction()
                                         pos = dlg_words.get_label_location()
 
                                         self.toplevel.memedit.memory_instruction_words_insert_at(loc, dlg_words.get_instruction())
-                                        # print(self.toplevel.memedit.get_memory_instruction_words())
                                         if (dlg_words.get_instruction_offset() != None):
                                             self.toplevel.memedit.get_memory_instruction_words().insert(loc+1, dlg_words.get_instruction_offset())
-                                            # print(self.toplevel.memedit.get_memory_instruction_words())
 
                             if dlg_words.get_buttons_text() == "Finalizar":
-                                # print("ANTES => M", self.toplevel.memedit.get_memory_words())
-                                # print("ANTES => I", self.toplevel.memedit.get_memory_instruction_words())
                                 self.toplevel.memedit.mem.store_to_intel_with_words_list("input_main.hex", self.toplevel.memedit.get_memory_instruction_words(), self.toplevel.memedit.get_memory_words())
                                 self.toplevel.memedit.toplevel.open_intel_file_without_dialog("input_main.hex")
 
@@ -970,21 +957,7 @@ class Memory_editor(Gtk.Frame):
             self.addr = new_val
             self.update_rom()
         else:                       # Editamos contenido
-            # print(new_val, self.addr, addr)
             self.mem.store_word_at(self.addr + addr, new_val, memory_word_only)
-            # self.update_rom()
-        #     print(self.mem.dump(0xc200, 256))
-
-        #     self.toplevel.source.clear()
-        #     dis = Disassembler(self.mem)
-
-        #     dis_all = dis.disassemble_all()
-        #     for pc, _, s in dis_all:
-        #         if pc != 0xfffe:
-        #             self.toplevel.source.append(pc, s)
-
-        # self.toplevel.source.reset()
-
 
 
 class ExecutionTime(Gtk.Frame):
@@ -1217,9 +1190,6 @@ class MainWindow(Gtk.Window):
             self.memedit.set_memory_instruction_words(instruction_words_list)
             self.memedit.set_memory_words(memory_words_list)
 
-            # print("INSTR", self.memedit.get_memory_instruction_words())
-            # print("MEMORY", self.memedit.get_memory_words())
-
             dis = Disassembler(self.cpu.ROM)
 
             instructions_and_offsets_list = []    
@@ -1245,7 +1215,7 @@ class MainWindow(Gtk.Window):
         self.source.clear()                     # Borrar la 'pantalla'
 
         self.cpu.ROM.load_from_intel(fname)     # Carga el archivo en ROM
-        # print(self.cpu.ROM.dump(0xc200, 1024))
+        print(self.cpu.ROM.dump(0xc200, 1024))
         dis = Disassembler(self.cpu.ROM)
 
         instruction_words_list = self.cpu.ROM.get_instruction_words()
@@ -1266,18 +1236,15 @@ class MainWindow(Gtk.Window):
         dis_all = dis.disassemble_all()
         for pc, _, s in dis_all:
             if pc != int("0xfffe", 16) and s.strip() != 'nop' and self.cpu.ROM.load_word_at(pc) in instructions_and_offsets_list:
-                # print(s.strip(), len(s.strip()))
                 self.source.append(pc, s)
 
         self.memedit.update_rom()
-
 
 
 def main():
     mw = MainWindow()
     mw.run()
     return 0
-
 
 
 if __name__ == '__main__':
