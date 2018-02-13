@@ -54,6 +54,8 @@ class CPU():                    #   ROM    RAM
         self.reg = Registers()
         self.sim = Simulator(self.ROM, self.reg)
 
+        # self.count = 0
+
     def __str__(self):
         return (str(self.reg) + "\n" +
                 str(self.RAM) + "\n" +
@@ -67,12 +69,20 @@ class CPU():                    #   ROM    RAM
 
     def step(self, toplevel):
         """ Ejecutar un paso desde el PC actual, luego actualizar el PC """
-
+        
         try:
+            # if self.sim.opc_As(self.ROM.load_word_at(self.reg.get_PC())) != 1:
             self.reg.set_PC(self.sim.one_step(self.reg.get_PC()))
-            print(self.reg.get_PC())
             if self.reg.get_PC() == None:
                 raise MemoryException()
+            # else:
+            #     self.reg.set_PC(self.sim.one_step(self.reg.get_PC()))
+            #     if self.count == 1:
+            #         self.count = 0
+            #         raise MemoryException()
+            #     if self.reg.get_PC() == None:
+            #         self.count += 1
+                                
 
         except MemoryException:
             dlg = Gtk.Dialog(

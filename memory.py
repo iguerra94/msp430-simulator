@@ -38,7 +38,6 @@ class Memory():
         self.readonly    = readonly
 
         self.instruction_words = []
-        self.memory_words = []
 
         self.initialize()
 
@@ -79,9 +78,6 @@ class Memory():
     # Determina si el desplazamiento en la memoria <offs> esta dentro del rango de la memoria
     def in_mem_range(self, offs):
         return 0 <= offs < self.mem_size
-
-    def get_memory_words(self):
-        return self.memory_words
 
     def get_instruction_words(self):
         return self.instruction_words
@@ -129,6 +125,9 @@ class Memory():
         """
         self.initialize()
 
+        # Limpiar la lista de instrucciones
+        self.instruction_words.clear()
+
         with open(fname, "r") as inf:
             for line in inf:
                 line = line.rstrip('\n')
@@ -153,40 +152,50 @@ class Memory():
                         byte_nr += 1                            
 
                     addr = int(line[3:7], 16)
-                    
-                    #Inicializar las listas con las instrucciones y las palabras de memoria
-                    for i in range(0, nrb, 2):
+
+                    for i in range(0, int(nrb/2)):
+                        if hex(addr) != "0xfffe":
+                            try:
+                                if self.load_word_at(addr+2) < int("0x1000", 16) or self.load_word_at(addr+2) > int("0x12B0", 16):
+                                    nrb -= 2
+                                    # print(nrb)
+                                addr += 2
+                            except MemoryException:
+                                addr += 2
+
+                    addr = int(line[3:7], 16)
+
+                    # print(int(nrb/2))
+
+                    # Inicializar las listas con las instrucciones y las palabras de memoria
+                    for i in range(0, int(nrb/2)):
                         if hex(addr) != "0xfffe":
                             if nrb > 0 and nrb <= 2:
                                 if self.load_word_at(addr) >= int("0x1000", 16) and self.load_word_at(addr) <= int("0x12B0", 16):
                                     # Instruction word
                                     self.instruction_words.append({ "LOCATION": addr, "CONTENT": self.load_word_at(addr), "OFFSET": None, "OFFSET_LOCATION": None })
-                                else:
-                                    # Memory Word
-                                    self.memory_words.append({ "LOCATION": addr, "CONTENT": self.load_word_at(addr) })
                             else:
                                 # Instruction word
-                                if (i+2) <= (nrb-2):
-                                    if self.load_word_at(addr+2) >= int("0x1000", 16) and self.load_word_at(addr+2) <= int("0x12B0", 16):
+                                try:
+                                    if self.load_word_at(addr+2) < int("0x1000", 16) or self.load_word_at(addr+2) > int("0x12B0", 16):
+                                        # Instruction word con offset
+                                        self.instruction_words.append({ "LOCATION": addr, "CONTENT": self.load_word_at(addr), "OFFSET": self.load_word_at(addr+2), "OFFSET_LOCATION": addr+2 })
+                                        addr += 2
+                                    else:
                                         # Instruction word sin offset
                                         self.instruction_words.append({ "LOCATION": addr, "CONTENT": self.load_word_at(addr), "OFFSET": None, "OFFSET_LOCATION": None })
-                                    else:
-                                        # Instruction word con offset
-                                        self.instruction_words.append({ "LOCATION": addr, "CONTENT": self.load_word_at(addr), "OFFSET": self.load_word_at(addr +2), "OFFSET_LOCATION": addr +2 })
-                        if (i > 0):
-                            addr += i
-                        else:
+
+                                except MemoryException:
+                                    self.instruction_words.append({ "LOCATION": addr, "CONTENT": self.load_word_at(addr), "OFFSET": None, "OFFSET_LOCATION": None })
+
                             addr += 2
-    
+
                 elif typ == 1:
                     break
                 else:
                     continue
 
-            print("M,", self.memory_words)
-            print("I,", self.instruction_words)
-
-
+            # print("I,", self.instruction_words)
 
 
     def check_intel_line(self, line):
@@ -259,11 +268,10 @@ class Memory():
         return
 
 
-    def store_to_intel_with_words_list(self, fname, instruction_words_list = [], memory_words_list = []):
-        words_per_line = 8
+    def store_to_intel_with_words_list(self, fname, instruction_words_list = []):
+        # print(instruction_words_list)
 
-        print("M", memory_words_list)
-        print("I", instruction_words_list)
+        words_per_line = 8
 
         addr = 0
         intel = ""
@@ -337,29 +345,10 @@ class Memory():
                      s + \
                      "{:02x}\n".format(256 - checksum & 0xff)
 
-        for word in memory_words_list:
-            opcode = word["CONTENT"]
-            opc_l = opcode & 0xff
-            opc_h = (opcode & 0xff00) >> 8
-            addr_abs = word["LOCATION"]
-            addr_l = addr_abs & 0xff
-            addr_h = (addr_abs & 0xff00) >> 8
-
-            s = "{:04x}00".format(addr_abs)
-            checksum = addr_l + addr_h
-            checksum += 1
-
-            s += "{:02x}{:02x}".format(opc_l, opc_h)
-            checksum += opc_l + opc_h
-
-            intel += ":02" + \
-                         s + \
-                      "{:02x}\n".format(256 - checksum & 0xff)
-
         intel += ":02fffe0000c240\n"
         intel += ":00000001FF\n"
 
-        print(intel)
+        # print(intel)
 
         with open(fname, "w") as outf:
             outf.write(intel)
@@ -387,7 +376,7 @@ class Memory():
         return w
 
 
-    def store_word_at(self, addr, value, memory_word_only=False):
+    def store_word_at(self, addr, value):
         """ Store almacena <value> en la memoria en la direccion <addr>
             Controla si <addr> se encuentra en el rango correcto.
         """
@@ -395,7 +384,7 @@ class Memory():
             print("Direccion fuera de rango")
             return
 
-        if (addr % 2) == 1 and not memory_word_only:
+        if (addr % 2) == 1:
             print("Dirección para acceso por palabra debe ser par (%d)" % (addr, ))
             return
 

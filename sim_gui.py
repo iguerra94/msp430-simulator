@@ -33,529 +33,8 @@ from registers import Registers
 from main_menu import Sim_main_menu
 from disasm import Disassembler
 from memory import MemoryException
-from instructions_table import Instructions_table
+from memory_editor_words_dialog import Memory_editor_instruction_word_dialog, Memory_editor_memory_word_dialog
 import pdb
-
-# class 
-
-class ValueNegativeOrZeroException(Exception): pass
-
-class Memory_editor_words_dialog(Gtk.Dialog):
-    """
-    Cuadro de dialogo que permite ingresar las "n" palabras en 
-    el editor de memoria.
-    Los datos a ingresar son:
-        - Formato de instrucción:
-            - Hexadecimal
-            - Codigo Fuente
-        - Tipo de instrucción:
-            - Por registro
-            - Indexado
-            - Indirecto por registro
-            - Indirecto autoincrementado
-            - Palabra de memoria
-        - Contenido de la palabra:
-            Si el formato es hex:
-                Se muestra un campo de texto para ingresar el comtenido 
-                con el valor inicial '0x....' 
-            Sino:
-                - Se muestra a la izquierda un combobox con las instrucciones 
-                en codigo fuente (rrc, rra, sxt, swpb, etc..)
-                - A la derecha un campo de texto para completar la instruccion con el registro
-    """
-    def __init__(self, toplevel, title, loc, value, current_num_word, num_words, buttons):
-        super(Memory_editor_words_dialog, self).__init__(
-            parent = toplevel,
-            title = title,
-            buttons = buttons
-        )
-
-        self.loc = loc
-        self.toplevel = toplevel
-        self.value_hex = value
-        self.current_num_word = current_num_word
-        self.num_words = num_words
-        self.buttons = buttons
-        self.modified = False
-        self.is_memory_word_only = False
-        
-        # print("VALUE: ", self.value_hex)
-
-        self.instr_table = Instructions_table()
-
-
-        self.memory_instruction = [None] * 4
-        self.instruction_selected = None
-        self.addressing_type_selected = None
-        self.source_register_selected = None
-
-
-        if self.value_hex == "0x....":
-            self.instruction_selected = self.get_instructions_list()[0]
-            self.addressing_type_selected = self.get_addressing_types_list()[0]
-            self.source_register_selected = self.get_source_registers_list()[0]
-
-            self.memory_instruction = [
-                self.addressing_type_selected,
-                self.instruction_selected,
-                self.source_register_selected,
-                None
-            ]
-
-            self.value = self.instr_table.get_instruction_opcode(self.memory_instruction[0], self.memory_instruction[1]) | self.memory_instruction[2]
-            self.value_hex = hex(int(hex(self.instr_table.get_instruction_opcode(self.memory_instruction[0], self.memory_instruction[1])), 0) | self.memory_instruction[2])
-
-            self.modified = True
-        else:
-            self.value = int(self.value_hex, 16)
-
-        vbox = Gtk.VBox(margin = 10, spacing = 6)
-
-        vbox.pack_start(Gtk.Label(
-                            "PALABRA N°{:d}/{:d}".format(
-                                self.current_num_word,
-                                self.num_words)),
-                            True,
-                            True,
-                            0)
-
-        separator = Gtk.Separator(orientation = Gtk.Orientation.HORIZONTAL)
-        vbox.pack_start(separator, True, True, 0)
-
-        hbox_instruction = self.instruction_box(
-                                    "Instrucción",
-                                    self.get_instructions_list()
-                                )
-
-        vbox.pack_start(hbox_instruction, True, True, 0)
-
-        hbox_addressing_type = self.addressing_type_box(
-                                    "Modo de direccionamiento",
-                                    self.get_addressing_types_list()
-                                )
-
-        vbox.pack_start(hbox_addressing_type, True, True, 0)
-
-        self.hbox_instruction_offset = self.instruction_offset_box("Offset (Formato decimal)", 25)
-        
-        vbox.pack_start(self.hbox_instruction_offset, True, True, 0)        
-
-        hbox_source_register = self.source_register_box(
-                                 "Registro fuente",
-                                 self.get_source_registers_list()
-                               )
-
-        vbox.pack_start(hbox_source_register, True, True, 0)
-
-        hbox_instruction_content = self.instruction_content_box("Contenido", self.value_hex)
-
-        vbox.pack_start(hbox_instruction_content, True, True, 0)
-
-        vbox.show_all()
-
-        self.get_content_area().add(vbox)
-
-    # Getters
-
-    def get_instruction(self):
-        return self.value
-
-    def get_is_memory_word_only(self):
-        return self.is_memory_word_only
-
-    def get_instruction_offset(self):
-        return self.memory_instruction[3]
-
-    def get_label_location(self):
-        return self.loc
-
-    def get_buttons_text(self):
-        return self.buttons[0]
-
-    def is_modified(self):
-        return self.modified
-
-    # INSTRUCTION
-
-    def on_instruction_combo_changed(self, combo):
-        tree_iter = combo.get_active_iter()
-        if tree_iter != None:
-            model = combo.get_model()
-            self.instruction_selected = model[tree_iter][0]
-
-            self.memory_instruction[1] = self.instruction_selected
-            self.value = self.instr_table.get_instruction_opcode(self.memory_instruction[0], self.memory_instruction[1]) | self.memory_instruction[2]
-            self.value_hex = hex(int(hex(self.instr_table.get_instruction_opcode(self.memory_instruction[0], self.memory_instruction[1])), 0) | self.memory_instruction[2])
-            self.instr_content_entry.set_text(self.value_hex)
-
-            if (self.addressing_type_selected == "Indexado"):
-                value = int(self.instr_offset_entry.get_text(), 10)
-                self.memory_instruction[3] = value
-            
-            self.modified = True
-            print(self.memory_instruction)
-
-    # TODO: No parsear a hexadecimal la instruccion y el offset en caso que no sea None
-    def get_instructions_list(self):
-        return [
-            "RRC",
-            "RRC.b",
-            "SWPB",
-            "RRA",
-            "RRA.b",
-            "SXT",
-            "PUSH",
-            "PUSH.b",
-            "CALL"
-        ]
-
-    def on_memory_word_check_button_toggled(self, checkbtn, data=None):
-        option = ("OFF", "ON")[checkbtn.get_active()]
-
-        if option == "ON":
-            self.instruction_combo.set_sensitive(False)
-            self.addressing_types_combo.set_sensitive(False)
-            self.instr_offset_entry.set_sensitive(False)
-            self.source_register_combo.set_sensitive(False)
-            self.instr_content_entry.set_editable(True)
-            self.instr_content_entry.set_text("25")
-            
-            value = self.instr_content_entry.get_text()
-
-            self.value = int(value, 10)
-            self.modified = True
-            self.is_memory_word_only = True
-        
-        if option == "OFF":
-            self.instruction_combo.set_sensitive(True)
-            self.addressing_types_combo.set_sensitive(True)
-            self.source_register_combo.set_sensitive(True)
-            self.instr_content_entry.set_text("0x1004")
-            self.instr_content_entry.set_editable(False)
-
-            value = self.instr_content_entry.get_text()
-            self.value = int(value, 16)
-            print(self.value)
-            self.modified = True
-            self.is_memory_word_only = False
-
-
-    def instruction_box(self, prompt, instructions_list):
-        if not self.instruction_selected:
-            self.instruction_selected = instructions_list[0]
-            self.memory_instruction[1] = self.instruction_selected
-
-
-        hbox = Gtk.HBox(
-                    margin = 10,
-                    spacing = 6)
-
-        hbox.pack_start(Gtk.Label(
-                            "{:s}: ".format(prompt)),
-                            False,
-                            False,
-                            0)
-
-        instruction_store = Gtk.ListStore(str)
-        
-        for instr in instructions_list:
-            instruction_store.append([instr])
-
-        self.instruction_combo = Gtk.ComboBox.new_with_model(instruction_store)
-        self.instruction_combo.set_active(0)
-        self.instruction_combo.connect("changed", self.on_instruction_combo_changed)
-        renderer_text = Gtk.CellRendererText()
-        self.instruction_combo.pack_start(renderer_text, True)
-        self.instruction_combo.add_attribute(renderer_text, "text", 0)
-
-        hbox.pack_start(self.instruction_combo, True, True, 0)
-
-        separator = Gtk.Separator(orientation = Gtk.Orientation.VERTICAL)
-        hbox.pack_start(separator, True, True, 0)
-
-        memory_word_check_button = Gtk.CheckButton("Palabra de memoria")
-        memory_word_check_button.connect("toggled", self.on_memory_word_check_button_toggled, "toggle button memory word check button")
-
-        hbox.pack_start(memory_word_check_button, True, True, 4)
-
-        hbox.show_all()
-
-        return hbox
-
-    # ADDRESSING TYPE
-
-    def on_addressing_types_combo_changed(self, combo):
-        tree_iter = combo.get_active_iter()
-        if tree_iter != None:
-            model = combo.get_model()
-            
-            self.addressing_type_selected = model[tree_iter][0]
-
-            self.memory_instruction[0] = self.addressing_type_selected
-            self.value = self.instr_table.get_instruction_opcode(self.memory_instruction[0], self.memory_instruction[1]) | self.memory_instruction[2]
-            self.value_hex = hex(int(hex(self.instr_table.get_instruction_opcode(self.memory_instruction[0], self.memory_instruction[1])), 0) | self.memory_instruction[2])
-            self.instr_content_entry.set_text(self.value_hex)
-
-            if (self.addressing_type_selected == "Indexado"):
-                self.instr_offset_entry.set_sensitive(True)
-                value = int(self.instr_offset_entry.get_text(), 10)
-                self.memory_instruction[3] = value
-            else:
-                self.instr_offset_entry.set_sensitive(False)
-                self.memory_instruction[3] = None
-
-            self.modified = True
-
-            print(self.memory_instruction)
-
-
-    def get_addressing_types_list(self):
-        return [
-            "Por registro",
-            "Indexado",
-            "Indirecto por registro",
-            "Indirecto autoincrementado"
-        ]
-
-
-    def addressing_type_box(self, prompt, addressing_types_list):
-        if not self.addressing_type_selected:
-            self.addressing_type_selected = addressing_types_list[0]
-            self.memory_instruction[0] = self.addressing_type_selected
-
-
-        hbox = Gtk.HBox(
-                    margin = 10,
-                    spacing = 6)
-
-        hbox.pack_start(Gtk.Label(
-                            "{:s}: ".format(prompt)),
-                            False,
-                            False,
-                            0)
-
-        addressing_types_store = Gtk.ListStore(str)
-        
-        for addr_type in addressing_types_list:
-            addressing_types_store.append([addr_type])
-
-        self.addressing_types_combo = Gtk.ComboBox.new_with_model(addressing_types_store)
-        self.addressing_types_combo.set_active(0)
-        self.addressing_types_combo.connect("changed", self.on_addressing_types_combo_changed)
-        renderer_text = Gtk.CellRendererText()
-        self.addressing_types_combo.pack_start(renderer_text, True)
-        self.addressing_types_combo.add_attribute(renderer_text, "text", 0)
-
-        hbox.pack_start(self.addressing_types_combo, True, True, 0)
-        hbox.show_all()
-
-        return hbox
-
-    # INSTRUCTION CONTENT
-
-    def on_instr_offset_entry_changed(self, entry):
-
-        try:
-            value = int(entry.get_text(), 10)
-            print("0x{:04x}".format(value))
-
-            if value <= 0:
-                raise ValueNegativeOrZeroException("El offset debe ser mayor a 0 (cero).")
-            self.memory_instruction[3] = value
-
-            self.modified = True
-        except ValueError:
-
-            hbox = Gtk.HBox(
-                    margin = 10,
-                    spacing = 6)
-
-            hbox.pack_start(Gtk.Label(
-                        "{:s}".format("Debe ingresar un numero valido en el campo de offset.")),
-                        False,
-                        False,
-                        0)
-
-            hbox.show_all()
-
-            dlgError = Gtk.Dialog(
-                    parent = self,
-                    title = "Error",
-                    buttons = ("Aceptar",  Gtk.ResponseType.ACCEPT))
-
-            dlgError.get_content_area().add(hbox)
-
-            if dlgError.run() == Gtk.ResponseType.ACCEPT:
-                entry.set_text("25")
-                dlgError.destroy()
-        except ValueNegativeOrZeroException as err:
-
-            hbox = Gtk.HBox(
-                    margin = 10,
-                    spacing = 6)
-
-            hbox.pack_start(Gtk.Label(err),
-                            False,
-                            False,
-                            0)
-
-            hbox.show_all()
-
-            dlgError = Gtk.Dialog(
-                    parent = self,
-                    title = "Error",
-                    buttons = ("Aceptar",  Gtk.ResponseType.ACCEPT))
-
-            dlgError.get_content_area().add(hbox)
-
-            if dlgError.run() == Gtk.ResponseType.ACCEPT:
-                entry.set_text("25")
-                dlgError.destroy()
-
-
-    def instruction_offset_box(self, prompt, value):
-        hbox = Gtk.HBox(
-                    margin = 10,
-                    spacing = 6)
-
-        hbox.pack_start(Gtk.Label(
-                            "{:s}: ".format(prompt)),
-                            False,
-                            False,
-                            0)
-
-        self.instr_offset_entry = Gtk.Entry(
-                    width_chars = 10,
-                    text = value)
-        self.instr_offset_entry.connect('changed', self.on_instr_offset_entry_changed)
-        self.instr_offset_entry.set_sensitive(False)
-        hbox.pack_start(self.instr_offset_entry, True, True, 0)
-
-        hbox.show_all()
-
-        return hbox
-
-    # SOURCE REGISTER
-
-    def on_source_register_combo_changed(self, combo):
-        tree_iter = combo.get_active_iter()
-        if tree_iter != None:
-            model = combo.get_model()
-            self.source_register_selected = model[tree_iter][0]
-
-            self.memory_instruction[2] = self.source_register_selected
-            self.value = self.instr_table.get_instruction_opcode(self.memory_instruction[0], self.memory_instruction[1]) | self.memory_instruction[2]
-            self.value_hex = hex(int(hex(self.instr_table.get_instruction_opcode(self.memory_instruction[0], self.memory_instruction[1])), 0) | self.memory_instruction[2])
-            self.instr_content_entry.set_text(self.value_hex)
-
-            if (self.addressing_type_selected == "Indexado"):
-                self.instr_offset_entry.set_sensitive(True)
-                value = int(self.instr_offset_entry.get_text(), 10)
-                self.memory_instruction[3] = value
-            else:
-                self.instr_offset_entry.set_sensitive(False)
-                self.memory_instruction[3] = None
-
-            self.modified = True
-
-            print(self.memory_instruction)
-
-
-    def get_source_registers_list(self):
-        return [
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15
-        ]
-
-
-    def source_register_box(self, prompt, source_registers_list):
-        if not self.source_register_selected:
-            self.source_register_selected = source_registers_list[0]
-            self.memory_instruction[2] = self.source_register_selected
-
-        hbox = Gtk.HBox(
-                    margin = 10,
-                    spacing = 6)
-
-        hbox.pack_start(Gtk.Label(
-                            "{:s}: ".format(prompt)),
-                            False,
-                            False,
-                            0)
-
-        source_register_store = Gtk.ListStore(int)
-        
-        for src_reg in source_registers_list:
-            source_register_store.append([src_reg])
-
-        self.source_register_combo = Gtk.ComboBox.new_with_model(source_register_store)
-        self.source_register_combo.set_active(0)
-        self.source_register_combo.connect("changed", self.on_source_register_combo_changed)
-        renderer_text = Gtk.CellRendererText()
-        self.source_register_combo.pack_start(renderer_text, True)
-        self.source_register_combo.add_attribute(renderer_text, "text", 0)
-
-        hbox.pack_start(self.source_register_combo, True, True, 0)
-        hbox.show_all()
-
-        return hbox
-
-    # INSTRUCTION CONTENT
-
-    def on_instr_content_entry_changed(self, entry):
-        # print("CONTENIDO: {:s}".format(entry.get_text()))
-        if self.is_memory_word_only:
-            try:
-                value = int(entry.get_text())
-                print("0x{:04x}".format(value))
-                self.value = "0x{:04x}".format(value)
-                self.modified = True
-            except ValueError:
-                try:
-                    self.value = int(entry.get_text(), 16)
-                    self.modified = True
-                except ValueError:
-                    entry.set_text("0xc200")
-                    self.value = int(entry.get_text(), 16)
-                    self.modified = True
-        else:
-            self.value_hex = entry.get_text()
-
-
-    def instruction_content_box(self, prompt, value):
-        hbox = Gtk.HBox(
-                    margin = 10,
-                    spacing = 6)
-
-        hbox.pack_start(Gtk.Label(
-                            "{:s}: ".format(prompt)),
-                            False,
-                            False,
-                            0)
-
-        self.instr_content_entry = Gtk.Entry(
-                    width_chars = 10,
-                    text = self.value_hex)
-        self.instr_content_entry.set_editable(False)
-        self.instr_content_entry.connect('changed', self.on_instr_content_entry_changed)
-
-        hbox.pack_start(self.instr_content_entry, True, True, 0)
-
-        hbox.show_all()
-
-        return hbox
-
-
 
 class Word_editor(Gtk.EventBox):
     """ Editor para un valor:
@@ -581,10 +60,11 @@ class Word_editor(Gtk.EventBox):
         self.callback = callback        # Rutina para devolver resultado
         self.addr = addr                # Dirección (o número de registro)
         self.value = value              # Valor actual
-
+        
         self.label = Gtk.Label(self.format_value(value))
         self.label.modify_font(Pango.FontDescription("Mono 10"));
         self.add(self.label)
+
 
 
     def format_value(self, value):
@@ -602,26 +82,13 @@ class Word_editor(Gtk.EventBox):
     def update(self, value):
         self.set(value)
         if self.callback:
-            self.callback(value, self.addr)
-
-    def update_at(self, pos, value, memory_word_only=False):
-
-        if type(value) is int:
-            # print("2,", value, pos)
-            self.toplevel.memedit.mem_locs[pos].label.set_text(self.format_value(value))
-            self.callback(value, pos, memory_word_only)
-        if type(value) is str:
-            # print("3, ", int(value, 16))
-            self.toplevel.memedit.mem_locs[pos].label.set_text(value)
-            self.callback(int(value, 16), pos, memory_word_only)
-        
+            self.callback(value, self.addr)        
 
     def on_num_words_combo_changed(self, combo):
         tree_iter = combo.get_active_iter()
         if tree_iter != None:
             model = combo.get_model()
             self.num_words = model[tree_iter][0]
-
 
     def on_button_pressed(self, evbox, event):
         """ Cuando se cliquea sobre el campo del valor, inicia el diálogo
@@ -664,118 +131,247 @@ class Word_editor(Gtk.EventBox):
                 pass
             dlg.destroy()
         else:
-            num_words_store = Gtk.ListStore(int)
-            num_words = [1, 2, 3, 4, 5]
-            for num in num_words:
-                num_words_store.append([num])
+            # Rango de direcciones de instrucciones (0xc200 <= addr < 0xc300).
+            if (self.toplevel.memedit.base_addr + self.addr >= self.toplevel.memedit.mem.mem_start) and (self.toplevel.memedit.base_addr + self.addr < int("0xc300", 16)):
+                # Verifico que la palabra anterior a la posicion actual de memoria tenga contenido.
+                    # Si no tiene contenido, no se permite editar dicha posicion, y se imprime un mensaje correspondiente.
+                try:
+                    if (self.toplevel.memedit.base_addr + self.addr > self.toplevel.memedit.mem.mem_start):
+                        word = self.toplevel.memedit.mem.load_word_at(self.toplevel.memedit.base_addr + self.addr - 2)
+                except MemoryException:
+                    hbox = Gtk.HBox(
+                                margin = 10,
+                                spacing = 6)
 
-            num_words_combo = Gtk.ComboBox.new_with_model(num_words_store)
-            num_words_combo.set_active(0)
-            num_words_combo.connect("changed", self.on_num_words_combo_changed)
-            renderer_text = Gtk.CellRendererText()
-            num_words_combo.pack_start(renderer_text, True)
-            num_words_combo.add_attribute(renderer_text, "text", 0)
+                    hbox.pack_start(Gtk.Label(
+                                "{:s}".format("Debe ingresar las instrucciones una seguida de la otra. \nNo esta permitido dejar secciones de memoria vacios entre medio.")),
+                                False,
+                                False,
+                                0)
 
-            hbox.pack_start(num_words_combo, False, False, 0)
-            hbox.show_all()
+                    hbox.show_all()
 
-            self.num_words = num_words[0]
+                    dlgError = Gtk.Dialog(
+                            parent = self.toplevel,
+                            title = "Error",
+                            buttons = ("Aceptar",  Gtk.ResponseType.ACCEPT))
 
-            dlg = Gtk.Dialog(
-                    parent = self.toplevel,
-                    title = self.title,
-                    buttons = ("Cancelar", Gtk.ResponseType.CANCEL,
-                               "Continuar",  Gtk.ResponseType.ACCEPT)
-                )
+                    dlgError.get_content_area().add(hbox)
 
-            dlg.get_content_area().add(hbox)
-            # dlg_entry.connect("activate", lambda x: dlg.response(Gtk.ResponseType.ACCEPT))
+                    if dlgError.run() == Gtk.ResponseType.ACCEPT:
+                        dlgError.destroy()
+                        return
+                    else:
+                        dlgError.destroy()
+                        return
 
-            if dlg.run() == Gtk.ResponseType.ACCEPT:
-                dlg.destroy()
-                for num_word in range(0, self.num_words):
-                    ad = self.toplevel.cpu.ROM.mem_start + self.addr + num_word*2
+                # Verifico que el contenido del campo de memoria sea una instruccion y no el offset de una instrucción.
+                    #En caso de ser el offset, muestro un cuadro de dialogo de error con un mensaje correspondiente.
+                if (self.value == -1) or (self.value >= int("0x1000", 16) and (self.value <= int("0x12B0", 16))):
+
+                    # Verifico si hay contenido en la direccion actual
+                        # Si hay contenido, se lo reemplaza por el nuevo contenido
+                        # Sino se agrega la nueva instruccion
                     try:
-                        self.content = self.toplevel.cpu.ROM.load_word_at(ad)
-                    except MemoryException:
-                        self.content = -1
-                        
-                    dlg_words = None
+                        word = self.toplevel.memedit.mem.load_word_at(self.toplevel.memedit.base_addr + self.addr)
 
-                    # Label location
-                    loc = int(self.addr/2) + num_word
-
-                    if (num_word +1 < self.num_words):
-                        dlg_words = Memory_editor_words_dialog(
+                        dlg_words = Memory_editor_instruction_word_dialog(
                             self.toplevel,
                             self.title,
-                            loc,
-                            self.format_value(self.content),
-                            num_word +1,
-                            self.num_words,
-                            ("Continuar",  Gtk.ResponseType.ACCEPT)
-                        )
-                    else:                    
-                        dlg_words = Memory_editor_words_dialog(
-                            self.toplevel,
-                            self.title,
-                            loc,
-                            self.format_value(self.content),
-                            self.num_words,
-                            self.num_words,
+                            0,
+                            self.format_value(word),
+                            1,
+                            1,
                             ("Finalizar",  Gtk.ResponseType.ACCEPT)
                         )
 
-                    if dlg_words.run() == Gtk.ResponseType.ACCEPT:
+                        if dlg_words.run() == Gtk.ResponseType.ACCEPT:
+                            if dlg_words.is_modified():
+                                value = dlg_words.get_instruction()
 
-                        if dlg_words.is_modified():
-                            
-                            if dlg_words.get_is_memory_word_only():
+                                if (dlg_words.get_instruction_offset() != None):
+                                    offset = dlg_words.get_instruction_offset()
+                                    
+                                    for word in self.toplevel.memedit.get_memory_instruction_words():
+                                        # Verifico que coincidan las posiciones
+                                        if word["LOCATION"] == self.toplevel.memedit.base_addr + self.addr:
+                                            word["CONTENT"] = value
+                                            word["OFFSET_LOCATION"] = self.toplevel.memedit.base_addr + self.addr + 2
+                                            word["OFFSET"] = offset
+                                            break
+                                else:
+                                    for word in self.toplevel.memedit.get_memory_instruction_words():
+                                        # Verifico que coincidan las posiciones
+                                        if word["LOCATION"] == self.toplevel.memedit.base_addr + self.addr:
+                                            word["CONTENT"] = value
+                                            word["OFFSET_LOCATION"] = None
+                                            word["OFFSET"] = None
+                                            break
+
+                            dlg_words.destroy()
+                        else:
+                            dlg_words.destroy()
+                    except MemoryException:
+                        # No hay contenido en la direccion actual.
+                        num_words_store = Gtk.ListStore(int)
+                        num_words = [1, 2, 3]
+                        for num in num_words:
+                            num_words_store.append([num])
+
+                        num_words_combo = Gtk.ComboBox.new_with_model(num_words_store)
+                        num_words_combo.set_active(0)
+                        num_words_combo.connect("changed", self.on_num_words_combo_changed)
+                        renderer_text = Gtk.CellRendererText()
+                        num_words_combo.pack_start(renderer_text, True)
+                        num_words_combo.add_attribute(renderer_text, "text", 0)
+
+                        hbox.pack_start(num_words_combo, False, False, 0)
+                        hbox.show_all()
+
+                        self.num_words = num_words[0]
+
+                        dlg = Gtk.Dialog(
+                                parent = self.toplevel,
+                                title = self.title,
+                                buttons = ("Cancelar", Gtk.ResponseType.CANCEL,
+                                        "Continuar",  Gtk.ResponseType.ACCEPT)
+                            )
+
+                        dlg.get_content_area().add(hbox)
+
+                        if dlg.run() == Gtk.ResponseType.ACCEPT:
+                            dlg.destroy()
+                            for num_word in range(0, self.num_words):
+                                ad = self.toplevel.memedit.mem.mem_start + self.addr + num_word*2
                                 try:
-                                    value = dlg_words.get_instruction()
-                                    pos = dlg_words.get_label_location()
+                                    self.content = self.toplevel.cpu.ROM.load_word_at(ad)
+                                except MemoryException:
+                                    self.content = -1
+                                    
+                                dlg_words = None
 
-                                    if type(value) is str:
-                                        value = int(value, 16)
-                                    self.toplevel.memedit.get_memory_words().append({ "LOCATION": self.toplevel.memedit.base_addr + pos*2, "CONTENT": value })
-                                except Exception as err:
-                                    pass
-                            else:
-                                if loc +1 > len(self.toplevel.memedit.get_memory_instruction_words()):
-                                    if dlg_words.get_instruction() >= int("0x1000", 16) and dlg_words.get_instruction() <= int("0x12B0", 16):
+                                # Label location
+                                loc = int(self.addr/2) + num_word
+                                print("addr", ad)
+
+                                if (num_word +1 < self.num_words):
+                                    dlg_words = Memory_editor_instruction_word_dialog(
+                                        self.toplevel,
+                                        self.title,
+                                        loc,
+                                        self.format_value(self.content),
+                                        num_word +1,
+                                        self.num_words,
+                                        ("Continuar",  Gtk.ResponseType.ACCEPT)
+                                    )
+                                else:                    
+                                    dlg_words = Memory_editor_instruction_word_dialog(
+                                        self.toplevel,
+                                        self.title,
+                                        loc,
+                                        self.format_value(self.content),
+                                        self.num_words,
+                                        self.num_words,
+                                        ("Finalizar",  Gtk.ResponseType.ACCEPT)
+                                    )
+                                
+                                if dlg_words.run() == Gtk.ResponseType.ACCEPT:
+                                    if dlg_words.is_modified():
                                         value = dlg_words.get_instruction()
                                         pos = dlg_words.get_label_location()
- 
+
                                         if (dlg_words.get_instruction_offset() != None):
                                             offset = dlg_words.get_instruction_offset()
-                                            
-                                            self.toplevel.memedit.get_memory_instruction_words().append({ "LOCATION": self.toplevel.memedit.base_addr + pos*2, "CONTENT": value, "OFFSET_LOCATION": self.toplevel.memedit.base_addr + (pos+1)*2, "OFFSET": offset })
+                                            self.toplevel.memedit.get_memory_instruction_words().append({ "LOCATION": self.toplevel.memedit.base_addr + (pos+self.toplevel.memedit.countIndexedWords)*2, "CONTENT": value, "OFFSET_LOCATION": self.toplevel.memedit.base_addr + (pos+1)*2, "OFFSET": offset })
                                         else:
                                             self.toplevel.memedit.get_memory_instruction_words().append({ "LOCATION": self.toplevel.memedit.base_addr + pos*2, "CONTENT": value, "OFFSET_LOCATION": None, "OFFSET": None })
+
+                                        if dlg_words.get_buttons_text() == "Finalizar":
+                                            print(self.toplevel.memedit.get_memory_instruction_words())
+                                            self.toplevel.memedit.mem.store_to_intel_with_words_list("input_main.hex", self.toplevel.memedit.get_memory_instruction_words())
+                                            self.toplevel.memedit.toplevel.open_intel_file_without_dialog("input_main.hex")
+
+                                    dlg_words.destroy()
                                 else:
-                                    if dlg_words.get_instruction() >= int("0x1000", 16) and dlg_words.get_instruction() <= int("0x12B0", 16):
-                                        value = dlg_words.get_instruction()
-                                        pos = dlg_words.get_label_location()
+                                    dlg_words.destroy()
+                        else:
+                            dlg.destroy()
 
-                                        self.toplevel.memedit.memory_instruction_words_insert_at(loc, dlg_words.get_instruction())
-                                        if (dlg_words.get_instruction_offset() != None):
-                                            self.toplevel.memedit.get_memory_instruction_words().insert(loc+1, dlg_words.get_instruction_offset())
+                else:
+                    hbox = Gtk.HBox(
+                                margin = 10,
+                                spacing = 6)
 
-                            if dlg_words.get_buttons_text() == "Finalizar":
-                                self.toplevel.memedit.mem.store_to_intel_with_words_list("input_main.hex", self.toplevel.memedit.get_memory_instruction_words(), self.toplevel.memedit.get_memory_words())
-                                self.toplevel.memedit.toplevel.open_intel_file_without_dialog("input_main.hex")
+                    hbox.pack_start(Gtk.Label(
+                                "{:s}".format("No puede seleccionar el offset de una instrucción. \nSeleccione la instrucción directamente.")),
+                                False,
+                                False,
+                                0)
 
-                        dlg_words.destroy()
+                    hbox.show_all()
+
+                    dlgError = Gtk.Dialog(
+                            parent = self.toplevel,
+                            title = "Error",
+                            buttons = ("Aceptar",  Gtk.ResponseType.ACCEPT))
+
+                    dlgError.get_content_area().add(hbox)
+
+                    if dlgError.run() == Gtk.ResponseType.ACCEPT:
+                        dlgError.destroy()
                     else:
-                        dlg_words.destroy()
-                        break
+                        dlgError.destroy()
+                                
+            # Rango de direcciones de palabras de memoria (0xc300 <= addr < 0xffc0).
+            elif (self.toplevel.memedit.base_addr + self.addr >= int("0xc300", 16)) and (self.toplevel.memedit.base_addr + self.addr < int("0xffc0", 16)):              
+  
+                dlg_memory_word = Memory_editor_memory_word_dialog(
+                    self.toplevel,
+                    self.title,
+                    0,
+                    self.format_value(self.value),
+                    1,
+                    1,
+                    ("Finalizar",  Gtk.ResponseType.ACCEPT)
+                )
 
+                if dlg_memory_word.run() == Gtk.ResponseType.ACCEPT:
+                    try:
+                        value = dlg_memory_word.get_instruction()
+                        self.update(value)
+                        dlg_memory_word.destroy()
+                    except Exception as err:
+                        print(err)
+                else:
+                    dlg_memory_word.destroy()
+
+            # Rango de direcciones incorrectos.
             else:
-                dlg.destroy()
-                pass
+                hbox = Gtk.HBox(
+                    margin = 10,
+                    spacing = 6)
 
+                hbox.pack_start(Gtk.Label(
+                            "{:s}".format("No tiene permitido editar el contenido en esta seccion de la memoria.\nPuede ingresar instrucciones en el rango de direcciones 0xc200..0xc2ff.\nPuede ingresar palabras de memoria en el rango de direcciones 0xc300..0xffbf.")),
+                            False,
+                            False,
+                            0)
 
+                hbox.show_all()
 
+                dlgError = Gtk.Dialog(
+                        parent = self.toplevel,
+                        title = "Error",
+                        buttons = ("Aceptar",  Gtk.ResponseType.ACCEPT))
+
+                dlgError.get_content_area().add(hbox)
+
+                if dlgError.run() == Gtk.ResponseType.ACCEPT:
+                    dlgError.destroy()
+                else:
+                    dlgError.destroy()
+
+                    
 class Sim_registers(Gtk.Frame):
     """ Cuadro que contiene para editor todos los registros """
     def __init__(self, toplevel, regs):
@@ -844,8 +440,6 @@ class Sim_registers(Gtk.Frame):
         self.regs[reg_nr] = new_val
 
 
-
-# TODO: Add the possibility to insert more than one word in the Word_Editor
 class Memory_editor(Gtk.Frame):
     """ Cuadro para editar el contenido de la memoria """
     def __init__(self, toplevel, mem):
@@ -860,7 +454,8 @@ class Memory_editor(Gtk.Frame):
         self.addr = 0xc200
         self.base_addr = int(str(self.addr), 0)
         self.memory_instruction_words = []
-        self.memory_words = []
+
+        self.countIndexedWords = -1
 
         # Dirección base para mostra memoria
         addr_lbl = Gtk.Label("Inicio:")
@@ -890,18 +485,6 @@ class Memory_editor(Gtk.Frame):
 
     def memory_instruction_words_insert_at(self, index, word):
         self.memory_instruction_words[index] = word
-
-    def memory_words_clear(self):
-        self.memory_words = []
-
-    def get_memory_words(self):
-        return self.memory_words
-
-    def set_memory_words(self, memory_words=[]):
-        self.memory_words = memory_words
-
-    def memory_words_insert_at(self, index, word):
-        self.memory_words[index] = word
 
     def show_rom(self):
         self.labels = []
@@ -935,8 +518,6 @@ class Memory_editor(Gtk.Frame):
                 self.grid.attach(word_edit, 3 + w, line, 1, 1)
                 self.mem_locs.append(word_edit)
 
-
-
     def update_rom(self):
         #~ pdb.set_trace()
         for lbl_nr, lbl in enumerate(self.labels):
@@ -952,12 +533,12 @@ class Memory_editor(Gtk.Frame):
 
 
 
-    def callback(self, new_val, addr, memory_word_only=False):
+    def callback(self, new_val, addr):
         if addr == -1:              # Editamos la direccion base
             self.addr = new_val
             self.update_rom()
         else:                       # Editamos contenido
-            self.mem.store_word_at(self.addr + addr, new_val, memory_word_only)
+            self.mem.store_word_at(self.addr + addr, new_val)
 
 
 class ExecutionTime(Gtk.Frame):
@@ -1008,7 +589,6 @@ class ExecutionTime(Gtk.Frame):
         self.is_reset = True
 
 
-
 class Tools(Gtk.Frame):
     """ Botones para hacer pasos, reset, etc """
     def __init__(self, toplevel, label):
@@ -1026,7 +606,6 @@ class Tools(Gtk.Frame):
         btn.connect("clicked", handler)
         btn.set_tooltip_text(tooltext)
         self.vbox.pack_start(btn, False, False, 0)
-
 
 
 class Source_code(Gtk.Frame):
@@ -1105,13 +684,12 @@ class Source_code(Gtk.Frame):
         """ Ejecutar un 'reset': PC buscará vector de inicio en 0xfffe """
         self.toplevel.cpu.reset()
         self.toplevel.registers.show_registers()
-        self.select_at_pc("0xfffe")
+        self.select_at_pc(0xfffe)
 
         self.toplevel.exectime.reset_time()
         self.toplevel.exectime.update_time(0)
         self.toplevel.exectime.set_time_start()
     
-
 
 class MainWindow(Gtk.Window):
     def __init__(self):
@@ -1182,22 +760,18 @@ class MainWindow(Gtk.Window):
             self.cpu.ROM.load_from_intel(fname)     # Carga el archivo en ROM
 
             instruction_words_list = self.cpu.ROM.get_instruction_words()
-            memory_words_list = self.cpu.ROM.get_memory_words()
 
             self.memedit.memory_instruction_words_clear()
-            self.memedit.memory_words_clear()
 
             self.memedit.set_memory_instruction_words(instruction_words_list)
-            self.memedit.set_memory_words(memory_words_list)
 
-            dis = Disassembler(self.cpu.ROM)
-
-            instructions_and_offsets_list = []    
+            instructions_and_offsets_list = []
             for word in self.memedit.get_memory_instruction_words():
                 instructions_and_offsets_list.append(word["CONTENT"])
                 if word["OFFSET"] != None:
                     instructions_and_offsets_list.append(word["OFFSET"])
 
+            dis = Disassembler(self.cpu.ROM)
             dis_all = dis.disassemble_all()
 
             for pc, _, s in dis_all:
@@ -1215,17 +789,13 @@ class MainWindow(Gtk.Window):
         self.source.clear()                     # Borrar la 'pantalla'
 
         self.cpu.ROM.load_from_intel(fname)     # Carga el archivo en ROM
-        print(self.cpu.ROM.dump(0xc200, 1024))
-        dis = Disassembler(self.cpu.ROM)
+        # print(self.cpu.ROM.dump(0xc200, 1024))
 
         instruction_words_list = self.cpu.ROM.get_instruction_words()
-        memory_words_list = self.cpu.ROM.get_memory_words()
 
         self.memedit.memory_instruction_words_clear()
-        self.memedit.memory_words_clear()
 
         self.memedit.set_memory_instruction_words(instruction_words_list)
-        self.memedit.set_memory_words(memory_words_list)
 
         instructions_and_offsets_list = []    
         for word in self.memedit.get_memory_instruction_words():
@@ -1233,7 +803,9 @@ class MainWindow(Gtk.Window):
             if word["OFFSET"] != None:
                 instructions_and_offsets_list.append(word["OFFSET"])
                 
+        dis = Disassembler(self.cpu.ROM)
         dis_all = dis.disassemble_all()
+
         for pc, _, s in dis_all:
             if pc != int("0xfffe", 16) and s.strip() != 'nop' and self.cpu.ROM.load_word_at(pc) in instructions_and_offsets_list:
                 self.source.append(pc, s)
