@@ -33,8 +33,9 @@ from registers import Registers
 from main_menu import Sim_main_menu
 from disasm import Disassembler
 from memory import MemoryException
-from memory_editor_words_dialog import Memory_editor_instruction_word_dialog, Memory_editor_memory_word_dialog
+from memory_editor_words_dialog import Memory_editor_instruction_word_dialog, Memory_editor_memory_word_dialog, ValueIsNotEvenException, ValueNegativeOrZeroException
 import pdb
+
 
 class Word_editor(Gtk.EventBox):
     """ Editor para un valor:
@@ -189,9 +190,9 @@ class Word_editor(Gtk.EventBox):
                             if dlg_words.is_modified():
                                 value = dlg_words.get_instruction()
 
-                                if (dlg_words.get_instruction_offset() != None):
+                                if (dlg_words.get_instruction_offset() != None):                                    
                                     offset = dlg_words.get_instruction_offset()
-                                    
+                                    # print(self.toplevel.memedit.get_memory_instruction_words())
                                     for word in self.toplevel.memedit.get_memory_instruction_words():
                                         # Verifico que coincidan las posiciones
                                         if word["LOCATION"] == self.toplevel.memedit.base_addr + self.addr:
@@ -199,6 +200,7 @@ class Word_editor(Gtk.EventBox):
                                             word["OFFSET_LOCATION"] = self.toplevel.memedit.base_addr + self.addr + 2
                                             word["OFFSET"] = offset
                                             break
+
                                 else:
                                     for word in self.toplevel.memedit.get_memory_instruction_words():
                                         # Verifico que coincidan las posiciones
@@ -207,6 +209,11 @@ class Word_editor(Gtk.EventBox):
                                             word["OFFSET_LOCATION"] = None
                                             word["OFFSET"] = None
                                             break
+                                
+                                if dlg_words.get_buttons_text() == "Finalizar":
+                                    # print(self.toplevel.memedit.get_memory_instruction_words())
+                                    self.toplevel.memedit.mem.store_to_intel_with_words_list("input_main.hex", self.toplevel.memedit.get_memory_instruction_words())
+                                    self.toplevel.memedit.toplevel.open_intel_file_without_dialog("input_main.hex")
 
                             dlg_words.destroy()
                         else:
@@ -252,8 +259,7 @@ class Word_editor(Gtk.EventBox):
 
                                 # Label location
                                 loc = int(self.addr/2) + num_word
-                                print("addr", ad)
-
+                                
                                 if (num_word +1 < self.num_words):
                                     dlg_words = Memory_editor_instruction_word_dialog(
                                         self.toplevel,
@@ -282,7 +288,8 @@ class Word_editor(Gtk.EventBox):
 
                                         if (dlg_words.get_instruction_offset() != None):
                                             offset = dlg_words.get_instruction_offset()
-                                            self.toplevel.memedit.get_memory_instruction_words().append({ "LOCATION": self.toplevel.memedit.base_addr + (pos+self.toplevel.memedit.countIndexedWords)*2, "CONTENT": value, "OFFSET_LOCATION": self.toplevel.memedit.base_addr + (pos+1)*2, "OFFSET": offset })
+
+                                            self.toplevel.memedit.get_memory_instruction_words().append({ "LOCATION": self.toplevel.memedit.base_addr + pos*2, "CONTENT": value, "OFFSET_LOCATION": self.toplevel.memedit.base_addr + (pos+1)*2, "OFFSET": offset })
                                         else:
                                             self.toplevel.memedit.get_memory_instruction_words().append({ "LOCATION": self.toplevel.memedit.base_addr + pos*2, "CONTENT": value, "OFFSET_LOCATION": None, "OFFSET": None })
 
@@ -508,13 +515,6 @@ class Memory_editor(Gtk.Frame):
                             old_word,
                             self.callback,
                             line*16 + w*2)
-                # word_edit = Word_editor(
-                #             self.toplevel,
-                #             "Editar memoria",
-                #             "Contenido nuevo",
-                #             old_word,
-                #             self.callback,
-                #             line*16 + w*2)
                 self.grid.attach(word_edit, 3 + w, line, 1, 1)
                 self.mem_locs.append(word_edit)
 
@@ -765,6 +765,8 @@ class MainWindow(Gtk.Window):
 
             self.memedit.set_memory_instruction_words(instruction_words_list)
 
+            # print(self.memedit.get_memory_instruction_words())
+
             instructions_and_offsets_list = []
             for word in self.memedit.get_memory_instruction_words():
                 instructions_and_offsets_list.append(word["CONTENT"])
@@ -796,6 +798,8 @@ class MainWindow(Gtk.Window):
         self.memedit.memory_instruction_words_clear()
 
         self.memedit.set_memory_instruction_words(instruction_words_list)
+
+        # print(self.memedit.get_memory_instruction_words())
 
         instructions_and_offsets_list = []    
         for word in self.memedit.get_memory_instruction_words():

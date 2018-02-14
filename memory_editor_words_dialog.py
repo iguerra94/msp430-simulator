@@ -8,21 +8,15 @@ from instructions_table import Instructions_table
 class ValueNegativeOrZeroException(Exception): pass
 
 
+class ValueIsNotEvenException(Exception): pass
+
+
 class ValueIsInstructionError(Exception): pass
 
 
 class Memory_editor_words_dialog(Gtk.Dialog):
-    def __init__(self, 
-        toplevel, title, 
-        loc, 
-        value, 
-        current_num_word, num_words, 
-        buttons):
-        super(Memory_editor_words_dialog, self).__init__(
-            parent = toplevel,
-            title = title,
-            buttons = buttons
-        )
+    def __init__(self, toplevel, title, loc, value, current_num_word, num_words, buttons):
+        super(Memory_editor_words_dialog, self).__init__(parent = toplevel, title = title, buttons = buttons)
 
         self.loc = loc
         self.toplevel = toplevel
@@ -115,7 +109,7 @@ class Memory_editor_instruction_word_dialog(Memory_editor_words_dialog):
 
         vbox.pack_start(hbox_addressing_type, True, True, 0)
 
-        self.hbox_instruction_offset = self.instruction_offset_box("Offset (Formato decimal)", 25)
+        self.hbox_instruction_offset = self.instruction_offset_box("Offset (Formato decimal)", 256)
         
         vbox.pack_start(self.hbox_instruction_offset, True, True, 0)        
 
@@ -285,8 +279,6 @@ class Memory_editor_instruction_word_dialog(Memory_editor_words_dialog):
             value = int(entry.get_text(), 10)
             print("0x{:04x}".format(value))
 
-            if value <= 0:
-                raise ValueNegativeOrZeroException("El offset debe ser mayor a 0 (cero).")
             self.memory_instruction[3] = value
 
             self.modified = True
@@ -312,11 +304,24 @@ class Memory_editor_instruction_word_dialog(Memory_editor_words_dialog):
             dlgError.get_content_area().add(hbox)
 
             if dlgError.run() == Gtk.ResponseType.ACCEPT:
-                entry.set_text("25")
+                entry.set_text("256")
                 dlgError.destroy()
             else:
+                entry.set_text("256")
                 dlgError.destroy()
+
+
+    def on_instr_offset_focus_out(self, entry, list):
+
+        try:
+            value = int(entry.get_text(), 10)
+
+            if value < 256:
+                raise ValueNegativeOrZeroException("El valor minimo del offset debe ser mayor o igual a 256 (0x100).")
                 
+            if value % 2 == 1:
+                raise ValueIsNotEvenException("El valor del offset debe ser par.")
+        
         except ValueNegativeOrZeroException as err:
 
             hbox = Gtk.HBox(
@@ -338,8 +343,42 @@ class Memory_editor_instruction_word_dialog(Memory_editor_words_dialog):
             dlgError.get_content_area().add(hbox)
 
             if dlgError.run() == Gtk.ResponseType.ACCEPT:
-                entry.set_text("25")
+                entry.set_text("256")
                 dlgError.destroy()
+            else:
+                entry.set_text("256")
+                dlgError.destroy()                                        
+
+            return False
+
+        except ValueIsNotEvenException as err:
+
+            hbox = Gtk.HBox(
+                    margin = 10,
+                    spacing = 6)
+
+            hbox.pack_start(Gtk.Label(err),
+                            False,
+                            False,
+                            0)
+
+            hbox.show_all()
+
+            dlgError = Gtk.Dialog(
+                    parent = self,
+                    title = "Error",
+                    buttons = ("Aceptar",  Gtk.ResponseType.ACCEPT))
+
+            dlgError.get_content_area().add(hbox)
+
+            if dlgError.run() == Gtk.ResponseType.ACCEPT:
+                entry.set_text("256")
+                dlgError.destroy()
+            else:
+                entry.set_text("256")
+                dlgError.destroy()
+
+            return False
 
 
     def instruction_offset_box(self, prompt, value):
@@ -357,6 +396,7 @@ class Memory_editor_instruction_word_dialog(Memory_editor_words_dialog):
                     width_chars = 10,
                     text = value)
         self.instr_offset_entry.connect('changed', self.on_instr_offset_entry_changed)
+        self.instr_offset_entry.connect('focus-out-event', self.on_instr_offset_focus_out)
         self.instr_offset_entry.set_sensitive(False)
         hbox.pack_start(self.instr_offset_entry, True, True, 0)
 
@@ -466,7 +506,6 @@ class Memory_editor_instruction_word_dialog(Memory_editor_words_dialog):
         hbox.show_all()
 
         return hbox
-
 
 
 class Memory_editor_memory_word_dialog(Memory_editor_words_dialog):
