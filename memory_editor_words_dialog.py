@@ -544,6 +544,8 @@ class Memory_editor_memory_word_dialog(Memory_editor_words_dialog):
 
         self.get_content_area().add(vbox)
 
+    # INSTRUCTION CONTENT    
+
     def on_instr_content_entry_changed(self, entry):
         try:
             value = entry.get_text()
@@ -597,8 +599,6 @@ class Memory_editor_memory_word_dialog(Memory_editor_words_dialog):
                 self.modified = True
                 dlgError.destroy()
             
-
-
 
     def instruction_content_box(self, prompt, value):
         hbox = Gtk.HBox(

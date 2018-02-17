@@ -104,6 +104,7 @@ class Word_editor(Gtk.EventBox):
                     False,
                     0)
 
+
         if self.title in ("Editor de registros", "Cambiar desplazamiento"):            
             dlg_entry = Gtk.Entry(
                             width_chars = 10,
@@ -124,7 +125,8 @@ class Word_editor(Gtk.EventBox):
             if dlg.run() == Gtk.ResponseType.ACCEPT:
                 try:
                     new_value = int(dlg_entry.get_text(), 0)
-                    self.toplevel.memedit.base_addr = new_value
+                    if self.title == "Cambiar desplazamiento":
+                        self.toplevel.memedit.base_addr = new_value
                     self.update(new_value)
                 except Exception as err:
                     print(err)
@@ -133,8 +135,10 @@ class Word_editor(Gtk.EventBox):
             dlg.destroy()
         else:
             # Rango de direcciones de instrucciones (0xc200 <= addr < 0xc300).
+            print(self.toplevel.memedit.base_addr + self.addr)
             if (self.toplevel.memedit.base_addr + self.addr >= self.toplevel.memedit.mem.mem_start) and (self.toplevel.memedit.base_addr + self.addr < int("0xc300", 16)):
-                # Verifico que la palabra anterior a la posicion actual de memoria tenga contenido.
+                # Verifico que la palabra anterior a la posicion actual de memoria tenga contenido, 
+                # siempre y cuando la posicion actual sea distinta de la posicion inicial de la memoria.
                     # Si no tiene contenido, no se permite editar dicha posicion, y se imprime un mensaje correspondiente.
                 try:
                     if (self.toplevel.memedit.base_addr + self.addr > self.toplevel.memedit.mem.mem_start):
@@ -172,7 +176,7 @@ class Word_editor(Gtk.EventBox):
 
                     # Verifico si hay contenido en la direccion actual
                         # Si hay contenido, se lo reemplaza por el nuevo contenido
-                        # Sino se agrega la nueva instruccion
+                        # Sino se agrega la/s nueva/s instruccion/es
                     try:
                         word = self.toplevel.memedit.mem.load_word_at(self.toplevel.memedit.base_addr + self.addr)
 
@@ -484,14 +488,11 @@ class Memory_editor(Gtk.Frame):
     def memory_instruction_words_clear(self):
         self.memory_instruction_words = []
 
-    def set_memory_instruction_words(self, instruction_words=[]):
-        self.memory_instruction_words = instruction_words
-
     def get_memory_instruction_words(self):
         return self.memory_instruction_words
 
-    def memory_instruction_words_insert_at(self, index, word):
-        self.memory_instruction_words[index] = word
+    def set_memory_instruction_words(self, instruction_words=[]):
+        self.memory_instruction_words = instruction_words
 
     def show_rom(self):
         self.labels = []
@@ -519,7 +520,6 @@ class Memory_editor(Gtk.Frame):
                 self.mem_locs.append(word_edit)
 
     def update_rom(self):
-        #~ pdb.set_trace()
         for lbl_nr, lbl in enumerate(self.labels):
             lbl.set_text("0x{:04x}".format(self.addr + lbl_nr*16))
             
@@ -546,8 +546,7 @@ class ExecutionTime(Gtk.Frame):
     """
     def __init__(self, toplevel):
         super(ExecutionTime, self).__init__()
-        # self.connect("button-press-event", self.on_button_pressed)
-
+        
         # Quito el borde del Gtk.Frame
         self.set_shadow_type(Gtk.ShadowType.NONE)
 
@@ -674,8 +673,8 @@ class Source_code(Gtk.Frame):
 
         if (self.toplevel.cpu.reg.get_PC() != self.toplevel.cpu.ROM.mem_start):
             self.toplevel.exectime.set_delta_time()
-            # print("START: ", self.toplevel.exectime.get_time_start())
-            # print("DELTA_TIME: ", self.toplevel.exectime.get_delta_time())
+            print("START: ", self.toplevel.exectime.get_time_start())
+            print("DELTA_TIME: ", self.toplevel.exectime.get_delta_time())
             self.toplevel.exectime.update_time(self.toplevel.exectime.get_delta_time().seconds)
 
 
@@ -696,6 +695,7 @@ class MainWindow(Gtk.Window):
         super(MainWindow, self).__init__()
         self.connect("destroy", lambda x: Gtk.main_quit())
         self.set_size_request(400, 500)
+        self.set_title("MSP430 Simulator - CRUC IUA")
 
         self.cpu = CPU("MSP430iua")             # Modelo CPU
                                                 # ROM: 0xc200..0xffff

@@ -35,7 +35,6 @@ class Registers():
         self.reg[Registers.SR] = 0
 
 
-
     def __str__(self):
         s = ""
 
