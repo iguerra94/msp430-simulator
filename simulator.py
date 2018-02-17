@@ -25,7 +25,14 @@
 
 import pdb
 from memory import Memory, MemoryException
-
+from instructions_utils import 
+                            simulate_rrc_instruction, 
+                            simulate_rra_instruction, 
+                            simulate_push_instruction,
+                            simulate_swpb_instruction,
+                            simulate_sxt_instruction,
+                            simulate_call_instruction
+                            
 class Simulator():
     JNZ, JZ, JNC, JC, JGE, JN, JL, JMP = range(8)
     MOV, ADD, ADDC, SUBC, SUB, CMP, DADD, BIT, BIC, BIS, XOR, AND = range(12)
@@ -97,30 +104,6 @@ class Simulator():
     def opc_source(self, opc):      return (opc >> 8) & 0x000f
     def opc_suffix(self, opc):      return '.b' if self.opc_Byte(opc) else ''
 
-    #función que resuelve las excepciones MemoryException
-    #situaciones como "la dirección debe ser par" y "en X lugar de memoria no hay nada"
-    #devuelve el contenido de la dirección "suma" que mando como parámetro
-    # def a(self, suma):
-
-    #     if (suma % 2) == 1:
-    #         try:
-    #             suma1 = suma + 0x0001
-    #             self.mem.store_word_at(suma1, 0xccce)
-    #         except MemoryException as ex:
-    #             print(str(ex))
-    #         finally:
-    #             return self.mem.load_word_at(suma1)
-
-    #     else:
-    #         try:
-    #             self.mem.store_word_at(suma, 0xccce)
-    #         except MemoryException as ex:
-    #             print(str(ex))
-    #         finally:
-    #             return self.mem.load_word_at(suma)
-
-
-
     #
     #   Instrucciones de simple operando
     #
@@ -139,57 +122,11 @@ class Simulator():
         if As == 0:                                             # modo por registro
 
             if opcstr == 0: # Instruccion RRC.w o RRC.b
-
-                # Hacer la operación de desplazamiento
-                self.regs.set(regnr, self.regs.get(regnr) >> 1)
-
-                # Mover el bit 0 del registro al CY
-                self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                # Acordarse del estado del CY en ST
-                cy = self.regs.get_SR('C')
-
-                # y setear el bit mas significativo con la memoria
-                if self.opc_Byte(opcode):
-                    self.regs.set(regnr, cy, 7)
-                    self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                        # borra bits 8-15
-                else:
-                    self.regs.set(regnr, cy, 15)
-
-                # Ajustar los otros bits del status
-                self.regs.set_SR('V', False)                        # Siempre a 0
-                self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                simulate_rrc_instruction(self, regnr, opcode)
             elif opcstr == 2: # Instruccion RRA.w o RRA.b
-
-                # Mover el bit 0 del registro al CY
-                self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                # Acordarse del estado del CY en ST
-                cy = self.regs.get_SR('C')
-
-                if self.opc_Byte(opcode):
-                    self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                        # borra bits 8-15
-
-                self.regs.set(regnr, self.regs.get(regnr) // 2)
-
-                # Ajustar los otros bits del status
-                self.regs.set_SR('V', False)                        # Siempre a 0
-                self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                simulate_rra_instruction(self, regnr, opcode)
             elif opcstr == 4: # Instruccion PUSH.w o PUSH.b
-                sp = self.regs.get(1) - 0x0002
-                self.regs.set(1, sp)
-
-                if self.opc_Byte(opcode):
-                    self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                    # borra bits 8-15
-
-                self.mem.store_word_at(sp, self.regs.get(regnr))
+                simulate_push_instruction(self, regnr, opcode)
 
             return addr
 
@@ -198,115 +135,81 @@ class Simulator():
             if opcstr == 0: # Instruccion RRC.w o RRC.b
                 cy = None
                 sumacontenidomemoria = None
-                if self.opc_Byte(opcode): #si es byte
+                try:
                     sumacontenidomemoria = self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)
 
-                    if (sumacontenidomemoria > 0xfffe):
-                        sumacontenidomemoria = self.regs.get(regnr) + self.mem.load_word_at(addr)
-
-                    contenido_memoria = self.mem.load_word_at(sumacontenidomemoria)
-                    self.regs.set(regnr, contenido_memoria)
-
-                    #~ # Mover el bit 0 del registro al CY
-                    self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                    # Hacer la operación de desplazamiento
-                    self.regs.set(regnr, self.regs.get(regnr) >> 1)
-
-                    cy = self.regs.get_SR('C')
-
-                    self.regs.clear_upper(regnr)                    # Cada operacion de byte, borra bits 8-15
-
-                    # print("self.regs.get(regnr) >> 1: %d"%(self.regs.get(regnr) >> 1))
-
-                    self.regs.set(regnr, cy, 7)
-
-                else: #si es word
-                    sumacontenidomemoria = self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)
-
-                    if (sumacontenidomemoria > 0xfffe):
+                    if (sumacontenidomemoria >= 0xffc0): # estamos en la tabla de interrupciones
                         sumacontenidomemoria = self.regs.get(regnr) + self.mem.load_word_at(addr)
 
                     contenido_memoria = self.mem.load_word_at(sumacontenidomemoria)
 
-                    # print("{:04x}".format(contenido_memoria));
                     self.regs.set(regnr, contenido_memoria)
 
-                    #~ # Mover el bit 0 del registro al CY
-                    self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-                    
-                    # Hacer la operación de desplazamiento
-                    self.regs.set(regnr, self.regs.get(regnr) >> 1)
-                    
-                    cy = self.regs.get_SR('C')
-                    
-                    self.regs.set(regnr, cy, 15)
+                    simulate_rrc_instruction(self, regnr, opcode)
+                except MemoryException as ex:
+                    if "Lectura de memoria no inicializada" in str(ex):
+                        self.mem.store_word_at(sumacontenidomemoria, 0xabcd)
+                        self.regs.set(regnr, self.mem.load_word_at(sumacontenidomemoria))
 
-                #Ajustar los otros bits del status
-                self.regs.set_SR('V', False)                        # Siempre a 0
-                self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                self.regs.set_SR('N', cy)                           # Mismo estado que Carry
+                        simulate_rrc_instruction(self, regnr, opcode)
+                    elif "Direccion fuera de rango" in str(ex):
+                        self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr), 0xabcd)
+                        self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)))
+
+                        simulate_rrc_instruction(self, regnr, opcode)
 
             elif opcstr == 2: # Instruccion RRA.w o RRA.b
                 sumacontenidomemoria = None
-                if self.opc_Byte(opcode):
+                try:                
                     sumacontenidomemoria = self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)
 
-                    if (sumacontenidomemoria > 0xfffe):
+                    if (sumacontenidomemoria >= 0xffc0): # estamos en la tabla de interrupciones
                         sumacontenidomemoria = self.regs.get(regnr) + self.mem.load_word_at(addr)
 
                     contenido_memoria = self.mem.load_word_at(sumacontenidomemoria)
+
                     self.regs.set(regnr, contenido_memoria)
 
-                    self.regs.clear_upper(regnr)                    # Cada operacion de byte, borra bits 8-15
+                    simulate_rra_instruction(self, regnr, opcode)
+                except MemoryException as ex:
+                    if "Lectura de memoria no inicializada" in str(ex):
+                        self.mem.store_word_at(sumacontenidomemoria, 0xabcd)
+                        self.regs.set(regnr, self.mem.load_word_at(sumacontenidomemoria))
 
-                else: #si es word
-                    sumacontenidomemoria = self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)
+                        simulate_rra_instruction(self, regnr, opcode)
+                    elif "Direccion fuera de rango" in str(ex):
+                        self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr), 0xabcd)
+                        self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)))
 
-                    if sumacontenidomemoria > 0xfffe:
-                        sumacontenidomemoria = self.regs.get(regnr) + self.mem.load_word_at(addr)
-
-                    contenido_memoria = self.mem.load_word_at(sumacontenidomemoria)
-                    self.regs.set(regnr, contenido_memoria)
-
-                # Mover el bit 0 del registro al CY
-                self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                cy = self.regs.get_SR('C')
-
-                self.regs.set(regnr, self.regs.get(regnr) // 2)
-
-                # Ajustar los otros bits del status
-                self.regs.set_SR('V', False)                        # Siempre a 0
-                self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                self.regs.set_SR('N', cy)                           # Mismo estado que Carry
+                        simulate_rra_instruction(self, regnr, opcode)
 
             elif opcstr == 4: # Instruccion PUSH.w o PUSH.b
+                sumacontenidomemoria = None
+                try:
+                    sumacontenidomemoria = self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)
 
-                sumacontenidomemoria = self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)
+                    if (sumacontenidomemoria >= 0xffc0): # estamos en la tabla de interrupciones
+                        sumacontenidomemoria = self.regs.get(regnr) + self.mem.load_word_at(addr)
 
-                if (sumacontenidomemoria > 0xfffe):
-                    sumacontenidomemoria = self.regs.get(regnr) + self.mem.load_word_at(addr)
+                    contenido_memoria = self.mem.load_word_at(sumacontenidomemoria)
 
-                contenido_memoria = self.mem.load_word_at(sumacontenidomemoria)
+                    self.regs.set(regnr, contenido_memoria)
 
-                self.regs.set(regnr, contenido_memoria)
+                    simulate_push_instruction(self, regnr, opcode)
+                except MemoryException as ex:
+                    if "Lectura de memoria no inicializada" in str(ex):
+                        self.mem.store_word_at(sumacontenidomemoria, 0xabcd)
+                        self.regs.set(regnr, self.mem.load_word_at(sumacontenidomemoria))
 
-                sp = self.regs.get(1) - 0x0002
-                self.regs.set(1, sp)
+                        simulate_push_instruction(self, regnr, opcode))
 
-                if self.opc_Byte(opcode):
-                    self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                        # borra bits 8-15
-                    self.mem.store_byte_at(sp, self.regs.get(regnr))
-                else:
-                    self.mem.store_word_at(sp, self.regs.get(regnr))
+                    elif "Direccion fuera de rango" in str(ex):
+                        self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr), 0xabcd)
+                        self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)))
+                        
+                        simulate_push_instruction(self, regnr, opcode)
 
-                print("SP: %x" % sp)
-                print(self.mem.dump(0xdff0, 32))
-            
-            if self.mem.load_byte_at(addr+2) != None:
-                return addr+2
+            return addr+2
     
         elif As == 2:                                            # modo indirecto por registro
             if opcstr == 0: # Instruccion RRC.w o RRC.b
@@ -314,159 +217,44 @@ class Simulator():
                 try:
                     contenido_memoria = self.mem.load_word_at(self.regs.get(regnr))
 
-                    #print(self.mem.dump(self.regs.get(regnr), 32))
-
                     self.regs.set(regnr, contenido_memoria)
 
-                    #~ # Mover el bit 0 del registro al CY
-                    self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                    cy = self.regs.get_SR('C')
-
-                    # Hacer la operación de desplazamiento
-                    self.regs.set(regnr, self.regs.get(regnr) >> 1)
-
-                    # y setear el bit mas significativo con la memoria
-                    if self.opc_Byte(opcode):
-                        self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                            # borra bits 8-15
-                        self.regs.set(regnr, cy, 7)
-                    else:
-                        self.regs.set(regnr, cy, 15)
-
-                    # Ajustar los otros bits del status
-                    self.regs.set_SR('V', False)                        # Siempre a 0
-                    self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                    self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                    simulate_rrc_instruction(self, regnr, opcode)
                 except MemoryException as ex:
                     if str(ex) == "Lectura de memoria no inicializada":
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
-                        #print(self.mem.dump(self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
 
-                        #~ # Mover el bit 0 del registro al CY
-                        self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                        cy = self.regs.get_SR('C')
-
-                        # Hacer la operación de desplazamiento
-                        self.regs.set(regnr, self.regs.get(regnr) >> 1)
-
-                        # y setear el bit mas significativo con la memoria
-                        if self.opc_Byte(opcode):
-                            self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                                # borra bits 8-15
-                            self.regs.set(regnr, cy, 7)
-                        else:
-                            self.regs.set(regnr, cy, 15)
-
-                        # Ajustar los otros bits del status
-                        self.regs.set_SR('V', False)                        # Siempre a 0
-                        self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                        self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                        simulate_rrc_instruction(self, regnr, opcode)
                     elif "Direccion fuera de rango" in str(ex):
                         self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr), 0xABCD)
 
-                        #print(self.mem.dump(self.mem.mem_start + self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
 
-                        # Mover el bit 0 del registro al CY
-                        self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                        cy = self.regs.get_SR('C')
-
-                        # Hacer la operación de desplazamiento
-                        self.regs.set(regnr, self.regs.get(regnr) >> 1)
-
-                        # y setear el bit mas significativo con la memoria
-                        if self.opc_Byte(opcode):
-                            self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                                # borra bits 8-15
-                            self.regs.set(regnr, cy, 7)
-                        else:
-                            self.regs.set(regnr, cy, 15)
-
-                        # Ajustar los otros bits del status
-                        self.regs.set_SR('V', False)                        # Siempre a 0
-                        self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                        self.regs.set_SR('N', cy)                           # Mismo estado que Carry
+                        simulate_rrc_instruction(self, regnr, opcode)
 
             elif opcstr == 2: # Instruccion RRA.w o RRA.b
 
                 try:
                     contenido_memoria = self.mem.load_word_at(self.regs.get(regnr))
 
-                    print(self.mem.dump(self.regs.get(regnr), 32))
-
                     self.regs.set(regnr, contenido_memoria)
 
-                    # Mover el bit 0 del registro al CY
-                    self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                    cy = self.regs.get_SR('C')
-
-                    if self.opc_Byte(opcode):
-                        self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                            # borra bits 8-15
-
-                    self.regs.set(regnr, self.regs.get(regnr) // 2)
-
-                    # Ajustar los otros bits del status
-                    self.regs.set_SR('V', False)                        # Siempre a 0
-                    self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                    self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                    simulate_rra_instruction(self, regnr, opcode)
                 except MemoryException as ex:
                     if str(ex) == "Lectura de memoria no inicializada":
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
-
-                        # Mover el bit 0 del registro al CY
-                        self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                        cy = self.regs.get_SR('C')
-
-                        if self.opc_Byte(opcode):
-                            self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                                # borra bits 8-15
-
-                        self.regs.set(regnr, self.regs.get(regnr) // 2)
-
-                        # Ajustar los otros bits del status
-                        self.regs.set_SR('V', False)                        # Siempre a 0
-                        self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                        self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                        
+                        simulate_rra_instruction(self, regnr, opcode)
                     elif "Direccion fuera de rango" in str(ex):
                         self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.mem.mem_start + self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
-
-                        # Mover el bit 0 del registro al CY
-                        self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                        cy = self.regs.get_SR('C')
-
-                        if self.opc_Byte(opcode):
-                            self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                                # borra bits 8-15
-
-                        self.regs.set(regnr, self.regs.get(regnr) // 2)
-
-                        # Ajustar los otros bits del status
-                        self.regs.set_SR('V', False)                        # Siempre a 0
-                        self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                        self.regs.set_SR('N', cy)                           # Mismo estado que Carry
+                        
+                        simulate_rra_instruction(self, regnr, opcode)
 
             elif opcstr == 4: # Instruccion PUSH.w o PUSH.b
 
@@ -477,19 +265,7 @@ class Simulator():
 
                     self.regs.set(regnr, contenido_memoria)
 
-                    sp = self.regs.get(1) - 0x0002
-                    self.regs.set(1, sp)
-
-                    if self.opc_Byte(opcode):
-                        self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                            # borra bits 8-15
-
-                    #AGREGUE ESTO
-                    self.mem.store_word_at(sp, self.regs.get(regnr))
-
-                    print("SP: %x" % sp)
-                    print(self.mem.dump(0xdff0, 32))
-
+                    simulate_push_instruction(self, regnr, opcode)
                 except MemoryException as ex:
                     if str(ex) == "Lectura de memoria no inicializada":
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
@@ -498,19 +274,7 @@ class Simulator():
 
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
 
-                        sp = self.regs.get(1) - 0x0002
-                        self.regs.set(1, sp)
-
-                        if self.opc_Byte(opcode):
-                            self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                                # borra bits 8-15
-
-                        #AGREGUE ESTO
-                        self.mem.store_word_at(sp, self.regs.get(regnr))
-
-                        print("SP: %x" % sp)
-                        print(self.mem.dump(0xdff0, 32))
-
+                        simulate_push_instruction(self, regnr, opcode)
                     elif "Direccion fuera de rango" in str(ex):
                         self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr), 0xABCD)
 
@@ -518,19 +282,7 @@ class Simulator():
 
                         self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
 
-                        sp = self.regs.get(1) - 0x0002
-                        self.regs.set(1, sp)
-
-                        if self.opc_Byte(opcode):
-                            self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                                # borra bits 8-15
-
-                        #AGREGUE ESTO
-                        self.mem.store_word_at(sp, self.regs.get(regnr))
-
-                        print("SP: %x" % sp)
-                        print(self.mem.dump(0xdff0, 32))
-
+                        simulate_push_instruction(self, regnr, opcode)
             if self.mem.load_byte_at(addr) != None:
                 return addr
 
@@ -541,88 +293,22 @@ class Simulator():
                 try:
                     contenido_memoria = self.mem.load_word_at(self.regs.get(regnr))
 
-                    #print(self.mem.dump(self.regs.get(regnr), 32))
-
                     self.regs.set(regnr, contenido_memoria)
 
-                    #~ # Mover el bit 0 del registro al CY
-                    self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                    cy = self.regs.get_SR('C')
-
-                    # Hacer la operación de desplazamiento
-                    self.regs.set(regnr, self.regs.get(regnr) >> 1)
-
-                    # y setear el bit mas significativo con la memoria
-                    if self.opc_Byte(opcode):
-                        self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                            # borra bits 8-15
-                        self.regs.set(regnr, cy, 7)
-                    else:
-                        self.regs.set(regnr, cy, 15)
-
-                    # Ajustar los otros bits del status
-                    self.regs.set_SR('V', False)                        # Siempre a 0
-                    self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                    self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                    simulate_rrc_instruction(self, regnr, opcode)
                 except MemoryException as ex:
                     if str(ex) == "Lectura de memoria no inicializada":
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
 
-                        #~ # Mover el bit 0 del registro al CY
-                        self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                        cy = self.regs.get_SR('C')
-
-                        # Hacer la operación de desplazamiento
-                        self.regs.set(regnr, self.regs.get(regnr) >> 1)
-
-                        # y setear el bit mas significativo con la memoria
-                        if self.opc_Byte(opcode):
-                            self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                                # borra bits 8-15
-                            self.regs.set(regnr, cy, 7)
-                        else:
-                            self.regs.set(regnr, cy, 15)
-
-                        # Ajustar los otros bits del status
-                        self.regs.set_SR('V', False)                        # Siempre a 0
-                        self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                        self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                        simulate_rrc_instruction(self, regnr, opcode)
                     elif "Direccion fuera de rango" in str(ex):
                         self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.mem.mem_start + self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
 
-                        # Mover el bit 0 del registro al CY
-                        self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                        cy = self.regs.get_SR('C')
-
-                        # Hacer la operación de desplazamiento
-                        self.regs.set(regnr, self.regs.get(regnr) >> 1)
-
-                        # y setear el bit mas significativo con la memoria
-                        if self.opc_Byte(opcode):
-                            self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                                # borra bits 8-15
-                            self.regs.set(regnr, cy, 7)
-                        else:
-                            self.regs.set(regnr, cy, 15)
-
-                        # Ajustar los otros bits del status
-                        self.regs.set_SR('V', False)                        # Siempre a 0
-                        self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                        self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                        simulate_rrc_instruction(self, regnr, opcode)
                 finally:
                     if self.opc_Byte(opcode):
                         self.regs.set(regnr, self.regs.get(regnr) + 0x0001)
@@ -634,73 +320,22 @@ class Simulator():
                 try:
                     contenido_memoria = self.mem.load_word_at(self.regs.get(regnr))
 
-                    print(self.mem.dump(self.regs.get(regnr), 32))
-
                     self.regs.set(regnr, contenido_memoria)
 
-                    # Mover el bit 0 del registro al CY
-                    self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                    cy = self.regs.get_SR('C')
-
-                    if self.opc_Byte(opcode):
-                        self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                            # borra bits 8-15
-
-                    self.regs.set(regnr, self.regs.get(regnr) // 2)
-
-                    # Ajustar los otros bits del status
-                    self.regs.set_SR('V', False)                        # Siempre a 0
-                    self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                    self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                    simulate_rra_instruction(self, regnr, opcode)
                 except MemoryException as ex:
                     if str(ex) == "Lectura de memoria no inicializada":
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
 
-                        # Mover el bit 0 del registro al CY
-                        self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                        cy = self.regs.get_SR('C')
-
-                        if self.opc_Byte(opcode):
-                            self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                                # borra bits 8-15
-
-                        self.regs.set(regnr, self.regs.get(regnr) // 2)
-
-                        # Ajustar los otros bits del status
-                        self.regs.set_SR('V', False)                        # Siempre a 0
-                        self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                        self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                        simulate_rra_instruction(self, regnr, opcode)
                     elif "Direccion fuera de rango" in str(ex):
                         self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.mem.mem_start + self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
 
-                        # Mover el bit 0 del registro al CY
-                        self.regs.set_SR(self.regs.get(regnr, 0), 'C')
-
-                        cy = self.regs.get_SR('C')
-
-                        if self.opc_Byte(opcode):
-                            self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                                # borra bits 8-15
-
-                        self.regs.set(regnr, self.regs.get(regnr) // 2)
-
-                        # Ajustar los otros bits del status
-                        self.regs.set_SR('V', False)                        # Siempre a 0
-                        self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                        self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                        simulate_rra_instruction(self, regnr, opcode)
                 finally:
                     if self.opc_Byte(opcode):
                         self.regs.set(regnr, self.regs.get(regnr) + 0x0001)
@@ -712,64 +347,22 @@ class Simulator():
                 try:
                     contenido_memoria = self.mem.load_word_at(self.regs.get(regnr))
 
-                    print(self.mem.dump(self.regs.get(regnr), 32))
-
                     self.regs.set(regnr, contenido_memoria)
 
-                    sp = self.regs.get(1) - 0x0002
-                    self.regs.set(1, sp)
-
-                    if self.opc_Byte(opcode):
-                        self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                            # borra bits 8-15
-
-                    #AGREGUE ESTO
-                    self.mem.store_word_at(sp, self.regs.get(regnr))
-
-                    print("SP: %x" % sp)
-                    print(self.mem.dump(0xdff0, 32))
-
+                    simulate_push_instruction(self, regnr, opcode)
                 except MemoryException as ex:
                     if str(ex) == "Lectura de memoria no inicializada":
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
 
-                        sp = self.regs.get(1) - 0x0002
-                        self.regs.set(1, sp)
-
-                        if self.opc_Byte(opcode):
-                            self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                                # borra bits 8-15
-
-                        #AGREGUE ESTO
-                        self.mem.store_word_at(sp, self.regs.get(regnr))
-
-                        print("SP: %x" % sp)
-                        print(self.mem.dump(0xdff0, 32))
-
+                        simulate_push_instruction(self, regnr, opcode)
                     elif "Direccion fuera de rango" in str(ex):
                         self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.mem.mem_start + self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
 
-                        sp = self.regs.get(1) - 0x0002
-                        self.regs.set(1, sp)
-
-                        if self.opc_Byte(opcode):
-                            self.regs.clear_upper(regnr)                    # Cada operacion de byte
-                                                                                # borra bits 8-15
-
-                        #AGREGUE ESTO
-                        self.mem.store_word_at(sp, self.regs.get(regnr))
-
-                        print("SP: %x" % sp)
-                        print(self.mem.dump(0xdff0, 32))
-
+                        simulate_push_instruction(self, regnr, opcode)
                 finally:
                     if self.opc_Byte(opcode):
                         self.regs.set(regnr, self.regs.get(regnr) + 0x0001)
@@ -794,38 +387,11 @@ class Simulator():
         if As == 0:                                             # modo por registro
 
             if opcstr == 1:     # INSTRUCCION SWPB
-                lb = self.regs.get(regnr) & 0x00ff
-                hb = self.regs.get(regnr) >> 8
-                updated_reg = "0x{:02x}{:02x}".format(lb, hb) # nuevo valor del regnr, con los bytes intercambiados
-                self.regs.set(regnr, int(updated_reg, 16) & 0xffff)
-
+                simulate_swpb_instruction(self, regnr)
             elif opcstr == 3:   # INSTRUCCION SXT
-                sb_lb = self.regs.get(regnr) & 0x0080 # extraigo el sign bit del low byte
-
-                for pos in range(8,20,1):
-                    self.regs.set(regnr, sb_lb, pos) # Seteo cada posicion desde bit 8.. 19 con el bit que estaba en sb_lb
-
-                # Ajustar los otros bits del status
-                self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                self.regs.set_SR('C', self.regs.get(regnr) != 0)
-                self.regs.set_SR('V', False)                        # Siempre a 0
-
-                # Acordarse del estado del CY en ST
-                cy = self.regs.get_SR('C')
-
-                self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                simulate_sxt_instruction(self, regnr, True)
             elif opcstr == 5:   # INSTRUCCION CALL
-                tmp = self.regs.get(regnr) # guardo en tmp el contenido de regnr
-
-                sp = self.regs.get(1) - 0x0002 # Decremento el registro SP en 2
-                self.regs.set(1, sp) # Seteo el nuevo valor de SP
-
-                self.mem.store_word_at(sp, self.regs.get(0) + 0x0002) # Seteo en la direccion que apunta el registro SP el valor de PC + 2
-                print(self.mem.dump(0xdff0, 32))
-
-                self.regs.set(0, tmp) # Seteo el PC con el valor de tmp, obtenido anteriormente
-
+                simulate_call_instruction(self, regnr)
                 return self.regs.get(0)
 
             return addr
@@ -835,124 +401,65 @@ class Simulator():
                 try:
                     sumacontenidomemoria = self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)
 
-                    if (sumacontenidomemoria > 0xfffe):
+                    if (sumacontenidomemoria >= 0xffc0): # estamos en la tabla de interrupciones
                         sumacontenidomemoria = self.regs.get(regnr) + self.mem.load_word_at(addr)
 
                     contenido_memoria = self.mem.load_word_at(sumacontenidomemoria)
 
                     self.regs.set(regnr, contenido_memoria)
 
-                    lb = self.regs.get(regnr) & 0x00ff
-                    hb = self.regs.get(regnr) >> 8
-                    updated_reg = "0x{:02x}{:02x}".format(lb, hb) # nuevo valor del regnr, con los bytes intercambiados
-                    self.regs.set(regnr, int(updated_reg, 16) & 0xffff)
-
+                    simulate_swpb_instruction(self, regnr)
                 except MemoryException as ex:
                     if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(sumacontenidomemoria, 0xabcd)
                         self.regs.set(regnr, self.mem.load_word_at(sumacontenidomemoria))
 
-                        lb = self.regs.get(regnr) & 0x00ff
-                        hb = self.regs.get(regnr) >> 8
-                        updated_reg = "0x{:02x}{:02x}".format(lb, hb) # nuevo valor del regnr, con los bytes intercambiados
-                        self.regs.set(regnr, int(updated_reg, 16) & 0xffff)
+                        simulate_swpb_instruction(self, regnr)        
                     elif "Direccion fuera de rango" in str(ex):
-                            self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr), 0xabcd)
-                            self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)))
+                        self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr), 0xabcd)
+                        self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)))
 
-                            lb = self.regs.get(regnr) & 0x00ff
-                            hb = self.regs.get(regnr) >> 8
-                            updated_reg = "0x{:02x}{:02x}".format(lb, hb) # nuevo valor del regnr, con los bytes intercambiados
-                            self.regs.set(regnr, int(updated_reg, 16) & 0xffff)
+                        simulate_swpb_instruction(self, regnr)
 
             elif opcstr == 3: # INSTRUCCION SXT
                 sumacontenidomemoria = None
                 try:
                     sumacontenidomemoria = self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)
 
-                    if (sumacontenidomemoria > 0xfffe):
+                    if (sumacontenidomemoria >= 0xffc0): # estamos en la tabla de interrupciones
                         sumacontenidomemoria = self.regs.get(regnr) + self.mem.load_word_at(addr)
 
                     contenido_memoria = self.mem.load_word_at(sumacontenidomemoria)
 
                     self.regs.set(regnr, contenido_memoria)
 
-                    sb_lb = contenido_memoria & 0x0080 # extraigo el sign bit del low byte
-
-                    for pos in range(8,16,1):
-                        self.regs.set(regnr, sb_lb, pos) # Seteo cada posicion desde bit 8.. 15 con el bit que estaba en sb_lb
-
-                    # Ajustar los otros bits del status
-                    self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                    self.regs.set_SR('C', self.regs.get(regnr) != 0)
-                    self.regs.set_SR('V', False)                        # Siempre a 0
-
-                    # Acordarse del estado del CY en ST
-                    cy = self.regs.get_SR('C')
-
-                    self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                    simulate_sxt_instruction(self, regnr)
                 except MemoryException as ex:
                     if str(ex) == "Lectura de memoria no inicializada":
                         self.mem.store_word_at(sumacontenidomemoria, 0xABCD)
 
                         self.regs.set(regnr, self.mem.load_word_at(sumacontenidomemoria))
 
-                        sb_lb = contenido_memoria & 0x0080 # extraigo el sign bit del low byte
-
-                        for pos in range(8,16,1):
-                            self.regs.set(regnr, sb_lb, pos) # Seteo cada posicion desde bit 8.. 15 con el bit que estaba en sb_lb
-
-                        # Ajustar los otros bits del status
-                        self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                        self.regs.set_SR('C', self.regs.get(regnr) != 0)
-                        self.regs.set_SR('V', False)                        # Siempre a 0
-
-                        # Acordarse del estado del CY en ST
-                        cy = self.regs.get_SR('C')
-
-                        self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                        simulate_sxt_instruction(self, regnr)
                     elif "Direccion fuera de rango" in str(ex):
                         self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr), 0xabcd)
                         self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)))
 
-                        sb_lb = contenido_memoria & 0x0080 # extraigo el sign bit del low byte
-
-                        for pos in range(8,16,1):
-                            self.regs.set(regnr, sb_lb, pos) # Seteo cada posicion desde bit 8.. 15 con el bit que estaba en sb_lb
-
-                        # Ajustar los otros bits del status
-                        self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                        self.regs.set_SR('C', self.regs.get(regnr) != 0)
-                        self.regs.set_SR('V', False)                        # Siempre a 0
-
-                        # Acordarse del estado del CY en ST
-                        cy = self.regs.get_SR('C')
-
-                        self.regs.set_SR('N', cy)                           # Mismo estado que Carry
+                        simulate_sxt_instruction(self, regnr)
             
             elif opcstr == 5: # INSTRUCCION CALL
                 sumacontenidomemoria = None
                 try:
                     sumacontenidomemoria = self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)
 
-                    if (sumacontenidomemoria > 0xfffe):
+                    if (sumacontenidomemoria >= 0xffc0): # estamos en la tabla de interrupciones
                         sumacontenidomemoria = self.regs.get(regnr) + self.mem.load_word_at(addr)
 
                     contenido_memoria = self.mem.load_word_at(sumacontenidomemoria)
 
                     self.regs.set(regnr, contenido_memoria)
 
-                    tmp = contenido_memoria # guardo en tmp el contenido de regnr
-
-                    sp = self.regs.get(1) - 0x0002 # Decremento el registro SP en 2
-                    self.regs.set(1, sp) # Seteo el nuevo valor de SP
-
-                    self.mem.store_word_at(sp, self.regs.get(0) + 0x0002) # Seteo en la direccion que apunta el registro SP el valor de PC + 2
-                    print(self.mem.dump(0xdff0, 32))
-
-                    self.regs.set(0, tmp) # Seteo el PC con el valor de tmp, obtenido anteriormente
+                    simulate_call_instruction(self, regnr)
 
                     return self.regs.get(0)
 
@@ -962,15 +469,7 @@ class Simulator():
 
                         self.regs.set(regnr, self.mem.load_word_at(sumacontenidomemoria))
 
-                        tmp = contenido_memoria # guardo en tmp el contenido de regnr
-
-                        sp = self.regs.get(1) - 0x0002 # Decremento el registro SP en 2
-                        self.regs.set(1, sp) # Seteo el nuevo valor de SP
-
-                        self.mem.store_word_at(sp, self.regs.get(0) + 0x0002) # Seteo en la direccion que apunta el registro SP el valor de PC + 2
-                        print(self.mem.dump(0xdff0, 32))
-
-                        self.regs.set(0, tmp) # Seteo el PC con el valor de tmp, obtenido anteriormente
+                        simulate_call_instruction(self, regnr)
 
                         return self.regs.get(0)
 
@@ -978,15 +477,7 @@ class Simulator():
                         self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr), 0xabcd)
                         self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr)))
 
-                        tmp = contenido_memoria # guardo en tmp el contenido de regnr
-
-                        sp = self.regs.get(1) - 0x0002 # Decremento el registro SP en 2
-                        self.regs.set(1, sp) # Seteo el nuevo valor de SP
-
-                        self.mem.store_word_at(sp, self.regs.get(0) + 0x0002) # Seteo en la direccion que apunta el registro SP el valor de PC + 2
-                        print(self.mem.dump(0xdff0, 32))
-
-                        self.regs.set(0, tmp) # Seteo el PC con el valor de tmp, obtenido anteriormente
+                        simulate_call_instruction(self, regnr)
 
                         return self.regs.get(0)
 
@@ -1000,103 +491,42 @@ class Simulator():
 
                     self.regs.set(regnr, contenido_memoria)
 
-                    lb = self.regs.get(regnr) & 0x00ff
-                    hb = self.regs.get(regnr) >> 8
-                    updated_reg = "0x{:02x}{:02x}".format(lb, hb) # nuevo valor del regnr, con los bytes intercambiados
-                    self.regs.set(regnr, int(updated_reg, 16) & 0xffff)
-
+                    simulate_swpb_instruction(self, regnr)
                 except MemoryException as ex:
                     if str(ex) == "Lectura de memoria no inicializada":
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
 
-                        lb = self.regs.get(regnr) & 0x00ff
-                        hb = self.regs.get(regnr) >> 8
-                        updated_reg = "0x{:02x}{:02x}".format(lb, hb) # nuevo valor del regnr, con los bytes intercambiados
-                        self.regs.set(regnr, int(updated_reg, 16) & 0xffff)
+                        simulate_swpb_instruction(self, regnr)
                     elif "Direccion fuera de rango" in str(ex):
                         self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.mem.mem_start + self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
 
-                        lb = self.regs.get(regnr) & 0x00ff
-                        hb = self.regs.get(regnr) >> 8
-                        updated_reg = "0x{:02x}{:02x}".format(lb, hb) # nuevo valor del regnr, con los bytes intercambiados
-                        self.regs.set(regnr, int(updated_reg, 16) & 0xffff)
+                        simulate_swpb_instruction(self, regnr)
 
             elif opcstr == 3: # INSTRUCCION SXT
 
                 try:
                     contenido_memoria = self.mem.load_word_at(self.regs.get(regnr))
 
-                    print(self.mem.dump(self.regs.get(regnr), 32))
-
                     self.regs.set(regnr, contenido_memoria)
 
-                    sb_lb = self.regs.get(regnr) & 0x0080 # extraigo el sign bit del low byte
-
-                    for pos in range(8,16,1):
-                        self.regs.set(regnr, sb_lb, pos) # Seteo cada posicion desde bit 8.. 15 con el bit que estaba en sb_lb
-
-                    # Ajustar los otros bits del status
-                    self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                    self.regs.set_SR('C', self.regs.get(regnr) != 0)
-                    self.regs.set_SR('V', False)                        # Siempre a 0
-
-                    # Acordarse del estado del CY en ST
-                    cy = self.regs.get_SR('C')
-
-                    self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                    simulate_sxt_instruction(self, regnr)
                 except MemoryException as ex:
                     if str(ex) == "Lectura de memoria no inicializada":
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
 
-                        sb_lb = self.regs.get(regnr) & 0x0080 # extraigo el sign bit del low byte
-
-                        for pos in range(8,16,1):
-                            self.regs.set(regnr, sb_lb, pos) # Seteo cada posicion desde bit 8.. 15 con el bit que estaba en sb_lb
-
-                        # Ajustar los otros bits del status
-                        self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                        self.regs.set_SR('C', self.regs.get(regnr) != 0)
-                        self.regs.set_SR('V', False)                        # Siempre a 0
-
-                        # Acordarse del estado del CY en ST
-                        cy = self.regs.get_SR('C')
-
-                        self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                        simulate_sxt_instruction(self, regnr)
                     elif "Direccion fuera de rango" in str(ex):
-                            self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr), 0xABCD)
+                        self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr), 0xABCD)
 
-                            print(self.mem.dump(self.mem.mem_start + self.regs.get(regnr), 32))
+                        self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
 
-                            self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
-
-                            sb_lb = self.regs.get(regnr) & 0x0080 # extraigo el sign bit del low byte
-
-                            for pos in range(8,16,1):
-                                self.regs.set(regnr, sb_lb, pos) # Seteo cada posicion desde bit 8.. 15 con el bit que estaba en sb_lb
-
-                            # Ajustar los otros bits del status
-                            self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                            self.regs.set_SR('C', self.regs.get(regnr) != 0)
-                            self.regs.set_SR('V', False)                        # Siempre a 0
-
-                            # Acordarse del estado del CY en ST
-                            cy = self.regs.get_SR('C')
-
-                            self.regs.set_SR('N', cy)                           # Mismo estado que Carry
+                        simulate_sxt_instruction(self, regnr)
 
             elif opcstr == 5: # INSTRUCCION CALL
 
@@ -1107,16 +537,8 @@ class Simulator():
 
                     self.regs.set(regnr, contenido_memoria)
 
-                    tmp = self.regs.get(regnr) # guardo en tmp el contenido de regnr
-
-                    sp = self.regs.get(1) - 0x0002 # Decremento el registro SP en 2
-                    self.regs.set(1, sp) # Seteo el nuevo valor de SP
-
-                    self.mem.store_word_at(sp, self.regs.get(0) + 0x0002) # Seteo en la direccion que apunta el registro SP el valor de PC + 2
-                    print(self.mem.dump(0xdff0, 32))
-
-                    self.regs.set(0, tmp) # Seteo el PC con el valor de tmp, obtenido anteriormente
-
+                    simulate_call_instruction(self, regnr)
+  
                     return self.regs.get(0)
 
                 except MemoryException as ex:
@@ -1127,36 +549,20 @@ class Simulator():
 
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
 
-                        tmp = self.regs.get(regnr) # guardo en tmp el contenido de regnr
-
-                        sp = self.regs.get(1) - 0x0002 # Decremento el registro SP en 2
-                        self.regs.set(1, sp) # Seteo el nuevo valor de SP
-
-                        self.mem.store_word_at(sp, self.regs.get(0) + 0x0002) # Seteo en la direccion que apunta el registro SP el valor de PC + 2
-                        print(self.mem.dump(0xdff0, 32))
-
-                        self.regs.set(0, tmp) # Seteo el PC con el valor de tmp, obtenido anteriormente
+                        simulate_call_instruction(self, regnr)
 
                         return self.regs.get(0)
 
                     elif "Direccion fuera de rango" in str(ex):
-                            self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr), 0xABCD)
+                        self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr), 0xABCD)
 
-                            print(self.mem.dump(self.mem.mem_start + self.regs.get(regnr), 32))
+                        print(self.mem.dump(self.mem.mem_start + self.regs.get(regnr), 32))
 
-                            self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
+                        self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
 
-                            tmp = self.regs.get(regnr) # guardo en tmp el contenido de regnr
+                        simulate_call_instruction(self, regnr)
 
-                            sp = self.regs.get(1) - 0x0002 # Decremento el registro SP en 2
-                            self.regs.set(1, sp) # Seteo el nuevo valor de SP
-
-                            self.mem.store_word_at(sp, self.regs.get(0) + 0x0002) # Seteo en la direccion que apunta el registro SP el valor de PC + 2
-                            print(self.mem.dump(0xdff0, 32))
-
-                            self.regs.set(0, tmp) # Seteo el PC con el valor de tmp, obtenido anteriormente
-
-                            return self.regs.get(0)
+                        return self.regs.get(0)
 
             return addr
         elif As == 3:                                           # modo indirecto autoincrementado
@@ -1168,35 +574,20 @@ class Simulator():
 
                     self.regs.set(regnr, contenido_memoria)
 
-                    lb = self.regs.get(regnr) & 0x00ff
-                    hb = self.regs.get(regnr) >> 8
-                    updated_reg = "0x{:02x}{:02x}".format(lb, hb) # nuevo valor del regnr, con los bytes intercambiados
-                    self.regs.set(regnr, int(updated_reg, 16) & 0xffff)
-
+                    simulate_swpb_instruction(self, regnr)
                 except MemoryException as ex:
                     if str(ex) == "Lectura de memoria no inicializada":
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
 
-                        lb = self.regs.get(regnr) & 0x00ff
-                        hb = self.regs.get(regnr) >> 8
-                        updated_reg = "0x{:02x}{:02x}".format(lb, hb) # nuevo valor del regnr, con los bytes intercambiados
-                        self.regs.set(regnr, int(updated_reg, 16) & 0xffff)
+                        simulate_swpb_instruction(self, regnr)                    
                     elif "Direccion fuera de rango" in str(ex):
                         self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.mem.mem_start + self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
 
-                        lb = self.regs.get(regnr) & 0x00ff
-                        hb = self.regs.get(regnr) >> 8
-                        updated_reg = "0x{:02x}{:02x}".format(lb, hb) # nuevo valor del regnr, con los bytes intercambiados
-                        self.regs.set(regnr, int(updated_reg, 16) & 0xffff)
-
+                        simulate_swpb_instruction(self, regnr)
                 finally:
                     self.regs.set(regnr, self.regs.get(regnr) + 0x0002)
 
@@ -1205,70 +596,25 @@ class Simulator():
                 try:
                     contenido_memoria = self.mem.load_word_at(self.regs.get(regnr))
 
-                    print(self.mem.dump(self.regs.get(regnr), 32))
-
                     self.regs.set(regnr, contenido_memoria)
 
-                    sb_lb = self.regs.get(regnr) & 0x0080 # extraigo el sign bit del low byte
-
-                    for pos in range(8,16,1):
-                        self.regs.set(regnr, sb_lb, pos) # Seteo cada posicion desde bit 8.. 15 con el bit que estaba en sb_lb
-
-                    # Ajustar los otros bits del status
-                    self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                    self.regs.set_SR('C', self.regs.get(regnr) != 0)
-                    self.regs.set_SR('V', False)                        # Siempre a 0
-
-                    # Acordarse del estado del CY en ST
-                    cy = self.regs.get_SR('C')
-
-                    self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                    simulate_sxt_instruction(self, regnr)
+                
                 except MemoryException as ex:
                     if str(ex) == "Lectura de memoria no inicializada":
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
 
-                        sb_lb = self.regs.get(regnr) & 0x0080 # extraigo el sign bit del low byte
-
-                        for pos in range(8,16,1):
-                            self.regs.set(regnr, sb_lb, pos) # Seteo cada posicion desde bit 8.. 15 con el bit que estaba en sb_lb
-
-                        # Ajustar los otros bits del status
-                        self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                        self.regs.set_SR('C', self.regs.get(regnr) != 0)
-                        self.regs.set_SR('V', False)                        # Siempre a 0
-
-                        # Acordarse del estado del CY en ST
-                        cy = self.regs.get_SR('C')
-
-                        self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                        simulate_sxt_instruction(self, regnr)
+                    
                     elif "Direccion fuera de rango" in str(ex):
                         self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr), 0xABCD)
 
-                        print(self.mem.dump(self.mem.mem_start + self.regs.get(regnr), 32))
-
                         self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
 
-                        sb_lb = self.regs.get(regnr) & 0x0080 # extraigo el sign bit del low byte
-
-                        for pos in range(8,16,1):
-                            self.regs.set(regnr, sb_lb, pos) # Seteo cada posicion desde bit 8.. 15 con el bit que estaba en sb_lb
-
-                        # Ajustar los otros bits del status
-                        self.regs.set_SR('Z', self.regs.get(regnr) == 0)    # Según valor registro
-                        self.regs.set_SR('C', self.regs.get(regnr) != 0)
-                        self.regs.set_SR('V', False)                        # Siempre a 0
-
-                        # Acordarse del estado del CY en ST
-                        cy = self.regs.get_SR('C')
-
-                        self.regs.set_SR('N', cy)                           # Mismo estado que Carry
-
+                        simulate_sxt_instruction(self, regnr)
+                    
                 finally:
                     self.regs.set(regnr, self.regs.get(regnr) + 0x0002)
 
@@ -1281,16 +627,8 @@ class Simulator():
 
                     self.regs.set(regnr, contenido_memoria)
 
-                    tmp = self.regs.get(regnr) # guardo en tmp el contenido de regnr
-
-                    sp = self.regs.get(1) - 0x0002 # Decremento el registro SP en 2
-                    self.regs.set(1, sp) # Seteo el nuevo valor de SP
-
-                    self.mem.store_word_at(sp, self.regs.get(0) + 0x0002) # Seteo en la direccion que apunta el registro SP el valor de PC + 2
-                    print(self.mem.dump(0xdff0, 32))
-
-                    self.regs.set(0, tmp) # Seteo el PC con el valor de tmp, obtenido anteriormente
-
+                    simulate_call_instruction(self, regnr)
+                    
                     return self.regs.get(0)
 
                 except MemoryException as ex:
@@ -1301,16 +639,8 @@ class Simulator():
 
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
 
-                        tmp = self.regs.get(regnr) # guardo en tmp el contenido de regnr
-
-                        sp = self.regs.get(1) - 0x0002 # Decremento el registro SP en 2
-                        self.regs.set(1, sp) # Seteo el nuevo valor de SP
-
-                        self.mem.store_word_at(sp, self.regs.get(0) + 0x0002) # Seteo en la direccion que apunta el registro SP el valor de PC + 2
-                        print(self.mem.dump(0xdff0, 32))
-
-                        self.regs.set(0, tmp) # Seteo el PC con el valor de tmp, obtenido anteriormente
-
+                        simulate_call_instruction(self, regnr)
+                        
                         return self.regs.get(0)
 
                     elif "Direccion fuera de rango" in str(ex):
@@ -1320,16 +650,8 @@ class Simulator():
 
                         self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
 
-                        tmp = self.regs.get(regnr) # guardo en tmp el contenido de regnr
-
-                        sp = self.regs.get(1) - 0x0002 # Decremento el registro SP en 2
-                        self.regs.set(1, sp) # Seteo el nuevo valor de SP
-
-                        self.mem.store_word_at(sp, self.regs.get(0) + 0x0002) # Seteo en la direccion que apunta el registro SP el valor de PC + 2
-                        print(self.mem.dump(0xdff0, 32))
-
-                        self.regs.set(0, tmp) # Seteo el PC con el valor de tmp, obtenido anteriormente
-
+                        simulate_call_instruction(self, regnr)
+                        
                         return self.regs.get(0)
 
                 finally:
