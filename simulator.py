@@ -22,16 +22,8 @@
 #
 #
 
-
-import pdb
 from memory import Memory, MemoryException
-from instructions_utils import 
-                            simulate_rrc_instruction, 
-                            simulate_rra_instruction, 
-                            simulate_push_instruction,
-                            simulate_swpb_instruction,
-                            simulate_sxt_instruction,
-                            simulate_call_instruction
+from instructions_utils import simulate_rrc_instruction, simulate_rra_instruction, simulate_push_instruction, simulate_swpb_instruction, simulate_sxt_instruction, simulate_call_instruction
                             
 class Simulator():
     JNZ, JZ, JNC, JC, JGE, JN, JL, JMP = range(8)
@@ -201,7 +193,7 @@ class Simulator():
                         self.mem.store_word_at(sumacontenidomemoria, 0xabcd)
                         self.regs.set(regnr, self.mem.load_word_at(sumacontenidomemoria))
 
-                        simulate_push_instruction(self, regnr, opcode))
+                        simulate_push_instruction(self, regnr, opcode)
 
                     elif "Direccion fuera de rango" in str(ex):
                         self.mem.store_word_at(self.mem.mem_start + self.regs.get(regnr) + self.mem.load_word_at(addr), 0xabcd)
@@ -221,7 +213,7 @@ class Simulator():
 
                     simulate_rrc_instruction(self, regnr, opcode)
                 except MemoryException as ex:
-                    if str(ex) == "Lectura de memoria no inicializada":
+                    if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
@@ -243,7 +235,7 @@ class Simulator():
 
                     simulate_rra_instruction(self, regnr, opcode)
                 except MemoryException as ex:
-                    if str(ex) == "Lectura de memoria no inicializada":
+                    if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
@@ -267,7 +259,7 @@ class Simulator():
 
                     simulate_push_instruction(self, regnr, opcode)
                 except MemoryException as ex:
-                    if str(ex) == "Lectura de memoria no inicializada":
+                    if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
                         print(self.mem.dump(self.regs.get(regnr), 32))
@@ -283,6 +275,7 @@ class Simulator():
                         self.regs.set(regnr, self.mem.load_word_at(self.mem.mem_start + self.regs.get(regnr)))
 
                         simulate_push_instruction(self, regnr, opcode)
+            
             if self.mem.load_byte_at(addr) != None:
                 return addr
 
@@ -297,7 +290,7 @@ class Simulator():
 
                     simulate_rrc_instruction(self, regnr, opcode)
                 except MemoryException as ex:
-                    if str(ex) == "Lectura de memoria no inicializada":
+                    if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
@@ -324,7 +317,7 @@ class Simulator():
 
                     simulate_rra_instruction(self, regnr, opcode)
                 except MemoryException as ex:
-                    if str(ex) == "Lectura de memoria no inicializada":
+                    if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
@@ -351,7 +344,7 @@ class Simulator():
 
                     simulate_push_instruction(self, regnr, opcode)
                 except MemoryException as ex:
-                    if str(ex) == "Lectura de memoria no inicializada":
+                    if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
@@ -435,7 +428,7 @@ class Simulator():
 
                     simulate_sxt_instruction(self, regnr)
                 except MemoryException as ex:
-                    if str(ex) == "Lectura de memoria no inicializada":
+                    if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(sumacontenidomemoria, 0xABCD)
 
                         self.regs.set(regnr, self.mem.load_word_at(sumacontenidomemoria))
@@ -464,7 +457,7 @@ class Simulator():
                     return self.regs.get(0)
 
                 except MemoryException as ex:
-                    if str(ex) == "Lectura de memoria no inicializada":
+                    if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(sumacontenidomemoria, 0xabcd)
 
                         self.regs.set(regnr, self.mem.load_word_at(sumacontenidomemoria))
@@ -493,7 +486,7 @@ class Simulator():
 
                     simulate_swpb_instruction(self, regnr)
                 except MemoryException as ex:
-                    if str(ex) == "Lectura de memoria no inicializada":
+                    if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
@@ -515,7 +508,7 @@ class Simulator():
 
                     simulate_sxt_instruction(self, regnr)
                 except MemoryException as ex:
-                    if str(ex) == "Lectura de memoria no inicializada":
+                    if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
@@ -542,7 +535,7 @@ class Simulator():
                     return self.regs.get(0)
 
                 except MemoryException as ex:
-                    if str(ex) == "Lectura de memoria no inicializada":
+                    if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
                         print(self.mem.dump(self.regs.get(regnr), 32))
@@ -569,14 +562,14 @@ class Simulator():
 
             if opcstr == 1: # INSTRUCCION SWPB
 
-                try:
+                try:                    
                     contenido_memoria = self.mem.load_word_at(self.regs.get(regnr))
 
                     self.regs.set(regnr, contenido_memoria)
 
                     simulate_swpb_instruction(self, regnr)
                 except MemoryException as ex:
-                    if str(ex) == "Lectura de memoria no inicializada":
+                    if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
@@ -601,7 +594,7 @@ class Simulator():
                     simulate_sxt_instruction(self, regnr)
                 
                 except MemoryException as ex:
-                    if str(ex) == "Lectura de memoria no inicializada":
+                    if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
                         self.regs.set(regnr, self.mem.load_word_at(self.regs.get(regnr)))
@@ -632,7 +625,7 @@ class Simulator():
                     return self.regs.get(0)
 
                 except MemoryException as ex:
-                    if str(ex) == "Lectura de memoria no inicializada":
+                    if "Lectura de memoria no inicializada" in str(ex):
                         self.mem.store_word_at(self.regs.get(regnr), 0xABCD)
 
                         print(self.mem.dump(self.regs.get(regnr), 32))
